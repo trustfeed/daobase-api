@@ -70,7 +70,7 @@ exports.login = (req, res) => {
                         }, 
                         privateKey, 
                         {
-                            expiresIn: '2s',
+                            expiresIn: '1d',
                             issuer: 'velopert.com',
                             subject: 'userInfo'
                         }, (err, token) => {
