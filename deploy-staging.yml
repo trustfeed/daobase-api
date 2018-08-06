@@ -1,0 +1,36 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+    name: tokenadmin-api-staging
+spec:
+    replicas: 1
+    strategy:
+        type: RollingUpdate
+    template:
+        metadata:
+            labels: 
+                name: tokenadmin-api-staging
+        spec:
+            containers:
+                - name: tokenadmin-api-staging
+                  image: registry.tokenadmin.work/jpw/tokenadmin-api:${BUILD_NUMBER}
+                  ports:
+                      - containerPort: 3000
+            imagePullSecrets:
+                - name: registry-secret
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: tokenadmin-api-staging
+    labels:
+        name: tokenadmin-api-staging
+spec:
+  ports:
+  - port:       80
+    targetPort: 3000
+  selector:
+    name: tokenadmin-api-staging
+  type: ClusterIP
