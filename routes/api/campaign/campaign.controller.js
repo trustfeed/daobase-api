@@ -4,13 +4,13 @@ const checkString = function (name) {
   return function (input) {
     return new Promise(function (resolve, reject) {
       if (!(name in input)) {
-        reject(Error(`missing ${name}`));
+        throw new Error(`missing ${name}`);
       } else if (typeof input[name] !== 'string') {
-        reject(Error(`${name} not a string`));
+        throw new Error(`${name} not a string`);
       } else if (input[name].length === 0) {
-        reject(Error(`${name} is empty`));
+        throw new Error(`${name} is empty`);
       } else {
-        resolve(input);
+        return input;
       }
     });
   };
@@ -20,13 +20,13 @@ const checkDate = function (nm) {
   return function (input) {
     return new Promise(function (resolve, reject) {
       if (!(nm in input)) {
-        reject(Error(`missing ${nm}`));
+        throw new Error(`missing ${nm}`);
       } else if (typeof input[nm] !== 'number') {
-        reject(Error(`${nm} not a number`));
+        throw new Error(`${nm} not a number`);
       } else {
         const mnt = moment.unix(input[nm]);
         input[nm] = mnt;
-        resolve(input);
+        return input;
       }
     });
   };
@@ -36,9 +36,9 @@ const checkInterval = function (input) {
   return new Promise(function (resolve, reject) {
     const minDuration = 24 * 60 * 60 * 1000;
     if ((input.endDate - input.startDate) < minDuration) {
-      reject(Error('duration is invalid'));
+      throw new Error('duration is invalid');
     } else {
-      resolve(input);
+      return input;
     }
   });
 };
