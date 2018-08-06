@@ -1,13 +1,5 @@
 pipeline {
   agent any
-
-  environment {
-    user = 'jpw'
-    label = 'tokenadmin-api'
-    registry = 'registry.tokenadmin.work'
-    registryCredential = 'registry-credentials'
-  }
-
   stages {
     stage('Build image') {
       steps {
@@ -17,5 +9,11 @@ pipeline {
 
       }
     }
+  }
+  environment {
+    user = 'jpw'
+    label = 'tokenadmin-api'
+    registry = 'registry.tokenadmin.work'
+    registryCredential = 'registry-credentials'
   }
 }
