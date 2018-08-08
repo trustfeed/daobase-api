@@ -22,7 +22,11 @@ pipeline {
             dockerImage.push()
           }
         }
-
+      }
+    }
+   stage('Deploy') {
+      steps {
+        kubernetesDeploy(kubeconfigId: 'k8s-trustfeed', configs: 'deploy.yml', enableConfigSubstitution: true)
       }
     }
   }
