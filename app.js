@@ -27,11 +27,14 @@ const options = {
 //  user: process.env.MONGO_USERNAME || 'test',
 //  pass: process.env.MONGO_PASSWORD || 'test',
 };
-const user = process.env.MONGO_USERNAME || 'test';
-const pass = process.env.MONGO_PASSWORD || 'test';
+//const user = process.env.MONGO_USERNAME || 'test';
+//const pass = process.env.MONGO_PASSWORD || 'test';
 
-const uri = 'mongodb://' + user + ':' + pass + '@' + mongoHost +
+// const uri = 'mongodb://' + user + ':' + pass + '@' + mongoHost +
+//    ':' + mongoPort + '/crowdsale-api?authSource=admin';
+const uri = 'mongodb://' + mongoHost +
     ':' + mongoPort + '/crowdsale-api?authSource=admin';
+console.log(uri);
 mongoose.connect(uri, options);
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
