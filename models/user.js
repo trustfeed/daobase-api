@@ -1,53 +1,33 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const crypto = require('crypto');
-
-const salt = process.env.salt || 'somesalt';
 
 const User = new Schema({
-  username: {
+  publicAddress: {
     type: String,
     index: true,
     unique: true,
+    required: true,
   },
-  password: String,
-  campaigns: {
-    type: [mongoose.Schema.Types.ObjectId],
-    default: [],
+  nonce: {
+    type: String,
+    required: true,
   },
 });
 
-User.statics.create = function (username, password) {
-  const encrypted = crypto.createHmac('sha1', salt)
-    .update(password)
-    .digest('base64');
-
-  const user = new this({
-    username,
-    password: encrypted,
-  });
-
-  return user.save();
-};
-
-User.statics.findOneByUsername = function (username) {
+User.statics.findOneByPublicAddress = function (publicAddress) {
   return this.findOne({
-    username,
+    publicAddress,
   }).exec();
 };
 
-User.methods.verify = function (password) {
-  const encrypted = crypto.createHmac('sha1', salt)
-    .update(password)
-    .digest('base64');
-  console.log(this.password === encrypted);
+User.statics.create = function (publicAddress) {
+  const nonce = Math.floor(Math.random() * 10000).toString();
+  const user = this({
+    publicAddress,
+    nonce,
+  });
 
-  return this.password === encrypted;
-};
-
-User.methods.assignAdmin = function () {
-  this.admin = true;
-  return this.save();
+  return user.save();
 };
 
 module.exports = mongoose.model('User', User);

@@ -21,7 +21,12 @@ app.listen(port, () => {
   console.log(`express is running on port ${port}`);
 });
 
-mongoose.connect('mongodb://test:test@localhost:27017/crowdsale-api?authSource=admin');
+const options = {
+	user: 'test',
+	pass: 'test',
+	useMongoClient: true
+}
+mongoose.connect('mongodb://localhost:27017/crowdsale-api?authSource=admin', options)
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
 db.on('error', console.error);

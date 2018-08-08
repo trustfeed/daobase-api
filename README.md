@@ -15,7 +15,7 @@
 Start mongodb with docker
 
 ```bash
-docker run --name crowdsale-mongo-dev -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=test -e MONGO_INITDB_ROOT_PASSWORD=test -d mongo:latest
+docker run --name crowdsale-mongo-dev -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=test -e MONGO_INITDB_ROOT_PASSWORD=test -d mongo:4.0.1
 ```
 
 This can later be killed with
