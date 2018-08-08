@@ -21,6 +21,7 @@ app.listen(port, () => {
   console.log(`express is running on port ${port}`);
 });
 
+console.log(process.env);
 const mongoHost = process.env.MONGO_HOST || 'localhost';
 const mongoPort = process.env.MONGO_PORT || '27017';
 const options = {
