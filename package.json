@@ -11,11 +11,11 @@
   "author": "",
   "license": "",
   "dependencies": {
-    "body-parser": "1.15.2",
-    "express": "4.14.0",
-    "mongoose": "5.1.0",
+    "body-parser": "^1.18.3",
+    "ethereumjs-util": "5.2.0",
+    "express": "^4.16.3",
     "jsonwebtoken": "8.3.0",
-    "ethereumjs-util": "5.2.0"
+    "mongoose": "5.1.0"
   },
   "devDependencies": {
     "eslint": "^4.19.1",
