@@ -21,12 +21,14 @@ app.listen(port, () => {
   console.log(`express is running on port ${port}`);
 });
 
+const mongoHost = process.env.MONGO_HOST || 'localhost';
+const mongoPort = process.env.MONGO_PORT || '27017';
 const options = {
-	user: 'test',
-	pass: 'test',
-	useMongoClient: true
-}
-mongoose.connect('mongodb://localhost:27017/crowdsale-api?authSource=admin', options)
+  user: process.env.MONGO_USERNAME || 'test',
+  pass: process.env.MONGO_PASSWORD || 'test',
+  useMongoClient: true,
+};
+mongoose.connect('mongodb://' + mongoHost + ':' + mongoPort + '/crowdsale-api?authSource=admin', options);
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
 db.on('error', console.error);

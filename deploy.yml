@@ -59,9 +59,9 @@ spec:
             imagePullSecrets:
                 - name: registry-secret
                   env:
-                  - name: MONGO_INITDB_ROOT_USERNAME
+                  - name: MONGO_USERNAME
                     value: test
-                  - name: MONGO_INITDB_ROOT_PASSWORD
+                  - name: MONGO_PASSWORD
                     value: test
                   - name: MONGO_URI
                     value: tokenadmin-mongo:27017
