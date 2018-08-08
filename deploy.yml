@@ -56,17 +56,17 @@ spec:
                   image: registry.tokenadmin.work/jpw/tokenadmin-api:${BUILD_NUMBER}
                   ports:
                       - containerPort: 8080
+                  env:
+                  - name: MONGO_USERNAME
+                    value: test
+                  - name: MONGO_PASSWORD
+                    value: test
+                  - name: MONGO_HOST
+                    value: tokenadmin-mongo
+                  - name: MONGO_PORT
+                    value: 27017
             imagePullSecrets:
                 - name: registry-secret
-            env:
-            - name: MONGO_USERNAME
-              value: test
-            - name: MONGO_PASSWORD
-              value: test
-            - name: MONGO_HOST
-              value: tokenadmin-mongo
-            - name: MONGO_PORT
-              value: 27017
 
 ---
 apiVersion: v1
