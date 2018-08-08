@@ -1,4 +1,5 @@
 const ethUtil = require('ethereumjs-util');
+const jwt = require('jsonwebtoken');
 const User = require('../../../models/user');
 
 exports.post = (req, res) => {
@@ -8,6 +9,8 @@ exports.post = (req, res) => {
       .status(400)
       .json({ message: 'Request should have signature and publicAddress' });
   }
+
+  const secret = 'secret';
 
   return (
     User.findOneByPublicAddress(publicAddress)
@@ -44,6 +47,42 @@ exports.post = (req, res) => {
             .status(401)
             .send({ error: 'Signature verification failed' });
         }
+      })
+      /// /////////////////////////////////////////////////
+      // Step 3: Generate a new nonce for the user
+      /// /////////////////////////////////////////////////
+      .then(user => {
+        user.nonce = Math.floor(Math.random() * 10000);
+        return user.save();
+      })
+      /// /////////////////////////////////////////////////
+      // Step 4: Create JWT
+      /// /////////////////////////////////////////////////
+      .then(
+        user =>
+          new Promise((resolve, reject) =>
+            jwt.sign(
+              {
+                payload: {
+                  id: user.id,
+                  publicAddress,
+                },
+              },
+              secret,
+              null,
+              (err, token) => {
+                if (err) {
+                  return reject(err);
+                }
+                return resolve(token);
+              }
+            )
+          )
+      )
+      .then(accessToken => res.json({ accessToken }))
+      .catch(err => {
+        console.log(err);
+        res.status(500).json({ message: 'internal error' });
       })
   );
 };
