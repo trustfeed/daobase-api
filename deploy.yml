@@ -81,4 +81,4 @@ spec:
     targetPort: 3000
   selector:
     name: tokenadmin-api
-  type: ClusterIP
+  type: NodePort
