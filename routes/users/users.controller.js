@@ -26,12 +26,12 @@ export const post = (req, res) => {
     res.status(400).send({ message: 'publicAddress required' });
   }
 
-  User.findOneByPublicAddress(req.query.publicAddress)
+  User.findOneByPublicAddress(publicAddress)
     .then(user => {
       if (user) {
         throw new te.TypedError(409, 'publicAddress already registered');
       } else {
-        return User.create(req.query.publicAddress);
+        return User.create(publicAddress);
       }
     })
     .then(user => {
