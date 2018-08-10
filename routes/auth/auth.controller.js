@@ -69,7 +69,7 @@ export function post (req, res) {
           )
         )
     )
-    .then(accessToken => res.json({ accessToken }))
+    .then(accessToken => res.status(201).send({ accessToken }))
     .catch(err => {
       te.handleError(err, res);
     });

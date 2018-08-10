@@ -14,15 +14,22 @@ app.use(cors());
 app.use((err, req, res, next) => {
   if (err.name === 'UnauthorizedError') {
     res.status(401).send({ 'message': 'unautherised' });
+  } else if (err.statusCode) {
+    res.status(err.statusCode);
+    if (err.expose) {
+      res.send({ message: err.message });
+    } else {
+      res.send({ message: 'error' });
+    }
   } else {
     console.log(err);
-    res.send({ message: 'internal error' });
+    res.status(500).send({ message: 'internal error' });
   }
 });
 
 // The standard google health check
 app.get('/healthz', (req, res) => {
-  res.send('ok');
+  res.status(200).send('ok');
 });
 
 // The apis we provide
