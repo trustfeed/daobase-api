@@ -59,7 +59,7 @@ export function post (req, res) {
               },
             },
             config.secret,
-            null,
+            { expiresIn: '1d' },
             (err, token) => {
               if (err) {
                 return reject(err);
