@@ -1,13 +1,13 @@
 import AWS from 'aws-sdk';
 import config from './config';
 
-const s3 = new AWS.S3({
-  accessKeyId: config.awsAccessKeyId,
-  secretAccessKey: config.awsSecretAccessKey,
-  region: config.awsRegion,
-});
-
 export const signUpload = (campaignId, prefix) => {
+  AWS.config.update({
+    accessKeyId: config.accessKeyId.trim(),
+    secretAccessKey: config.secretAccessKey.trim(),
+    region: config.region.trim(),
+  });
+  const s3 = new AWS.S3();
   let rand = (+new Date()).toString(36);
   const params = {
     Bucket: 'tokenadmin.work',
