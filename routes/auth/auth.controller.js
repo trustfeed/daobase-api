@@ -19,7 +19,7 @@ export function post (req, res) {
         throw new te.TypedError(404, 'public address not found');
       } else {
         const msg = `I am signing my one-time nonce: ${user.nonce}`;
-
+        
         // We now are in possession of msg, publicAddress and signature. We
         // can perform an elliptic curve signature verification with ecrecover
         const msgBuffer = ethUtil.toBuffer(msg);
@@ -34,7 +34,7 @@ export function post (req, res) {
         );
         const addressBuffer = ethUtil.publicToAddress(publicKey);
         const address = ethUtil.bufferToHex(addressBuffer);
-
+        
         // The signature verification is successful if the address found with
         // ecrecover matches the initial publicAddress
         if (address.toLowerCase() === publicAddress.toLowerCase()) {
@@ -53,10 +53,8 @@ export function post (req, res) {
         new Promise((resolve, reject) =>
           jwt.sign(
             {
-              payload: {
-                id: user.id,
-                publicAddress,
-              },
+              id: user.id,
+              publicAddress,
             },
             config.secret,
             { expiresIn: '1d' },

@@ -38,7 +38,11 @@ app.use('/', routes);
 // accept requests
 app.listen(config.port, () => {
   console.log(`express is running on port ${config.port}`);
-});
+})
+  .on('error', (err) => {
+    console.log(err);
+    process.exit(1);
+  });
 
 const options = {
   user: config.mongoUser,
@@ -46,7 +50,6 @@ const options = {
 };
 
 const uri = `mongodb://${config.mongoHost}:${config.mongoPort}/crowdAdmin?authSource=admin`;
-console.log(uri);
 mongoose.connect(uri, options);
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;

@@ -11,6 +11,7 @@ export const get = (req, res) => {
       if (!user) {
         res.status(404).send({ message: 'public address not found' });
       } else {
+        console.log(user);
         res.status(200).json({ nonce: user.nonce });
       }
     })
