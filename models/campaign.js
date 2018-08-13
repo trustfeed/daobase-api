@@ -45,6 +45,9 @@ const Campaign = new Schema({
   hardCap: {
     type: Number,
   },
+  totalSupply: {
+    type: Number,
+  },
   campaignStatus: {
     type: String,
     enum: ['DRAFT'],
