@@ -85,8 +85,18 @@ export const put = (req, res) => {
       } else if (!campaign.owner.equals(req.decoded.id)) {
         throw new te.TypedError(401, 'unauthorised');
       } else {
-        newCamp.updatedAt = Date.now();
-        campaign.set(newCamp);
+        campaign.set({
+          updatedAt: Date.now(),
+          network: newCamp.network,
+          softCap: newCamp.softCap,
+          hardCap: newCamp.hardCap,
+          tokenName: newCamp.tokenName,
+          tokenSymbol: newCamp.tokenSymbol,
+          numberOfDecimals: newCamp.numberOfDecimals,
+          startingTime: new Date(newCamp.startingTime),
+          duration: newCamp.duration,
+          totalSupply: newCamp.totalSupply,
+        });
         return campaign.save();
       }
     })

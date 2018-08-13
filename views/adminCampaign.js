@@ -1,8 +1,8 @@
 export default (c) => {
   let out = {};
   out.id = c._id;
-  out.createdAt = c.createdAt.getTime();
-  out.updatedAt = c.updatedAt.getTime();
+  out.createdAt = Math.round(c.createdAt.getTime() / 1000);
+  out.updatedAt = Math.round(c.updatedAt.getTime() / 1000);
   if (c.startingTime) {
     out.startingTime = c.startingTime.getTime();
   }
@@ -16,6 +16,7 @@ export default (c) => {
     'tokenSymbol',
     'numberOfDecimals',
     'duration',
+    'totalSupply',
     'imageURL',
     'whitepaperURL',
   ];
