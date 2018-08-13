@@ -51,6 +51,20 @@ const Campaign = new Schema({
     required: true,
     default: ['DRAFT'],
   },
+  imageURL: {
+    type: String,
+  },
+  oldImages: {
+    type: [String],
+    default: [],
+  },
+  whitepaperURL: {
+    type: String,
+  },
+  oldWhitepapers: {
+    type: [String],
+    default: [],
+  },
 });
 
 Campaign.statics.findByOwner = function (owner) {

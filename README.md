@@ -61,3 +61,17 @@ Success should return 201. The fields that can be edited are
 | duration | Number | The number of days the campaign will run. Must be greater than 1. |
 | softCap | Number | The minimum to be raised. Must be greater than 0. |
 | hardCap | Number | The maximum that can be raised. Must be greater than the softCap. |
+
+### Upload an image for a Campaign
+```bash
+curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/campaigns/${ID}/image
+```
+
+On success you should get 201 and `{"url" : "https://tokenadmin.work.s3/fdsafd" }`
+
+### Upload a whitepaper for a Campaign
+```bash
+curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/campaigns/${ID}/whitepaper
+```
+
+On success you should get 201 and `{"url" : "https://tokenadmin.work.s3/fdsafd" }`

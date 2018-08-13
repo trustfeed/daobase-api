@@ -16,6 +16,8 @@ export default (c) => {
     'tokenSymbol',
     'numberOfDecimals',
     'duration',
+    'imageURL',
+    'whitepaperURL',
   ];
 
   toOutput.map(field => {
