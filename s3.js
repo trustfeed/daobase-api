@@ -1,6 +1,11 @@
 import AWS from 'aws-sdk';
+import config from './config';
 
-const s3 = new AWS.S3();
+const s3 = new AWS.S3({
+  accessKeyId: config.awsAccessKeyId,
+  secretAccessKey: config.awsSecretAccessKey,
+  region: config.awsRegion,
+});
 
 export const signUpload = (campaignId, prefix) => {
   let rand = (+new Date()).toString(36);

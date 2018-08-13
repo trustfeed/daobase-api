@@ -3,7 +3,7 @@ FROM node:10.8.0-alpine
 WORKDIR /usr/src/app
 
 COPY package*.json ./
-#COPY yarn.lock ./
+RUN npm install aws-sdk
 RUN npm install
 COPY . .
 

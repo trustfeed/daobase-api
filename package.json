@@ -12,14 +12,14 @@
     "lint": "semistandard --env node"
   },
   "dependencies": {
+    "aws-sdk": "^2.291.0",
+    "body-parser": "^1.18.3",
+    "cors": "2.8.4",
     "ethereumjs-util": "5.2.0",
     "express": "^4.16.3",
     "express-jwt": "^5.3.1",
-    "body-parser": "^1.18.3",
-    "cors": "2.8.4",
     "jsonwebtoken": "8.3.0",
-    "mongoose": "5.1.0",
-    "aws-sdk": "2.291.0"
+    "mongoose": "5.1.0"
   },
   "devDependencies": {
     "eslint": "^4.19.1",
