@@ -65,6 +65,21 @@ spec:
                         value: tokenadmin-mongo
                       - name: MONGO_PORT
                         value: 27017
+                      - name: AWS_ACCESS_KEY_ID
+                        valueFrom:
+                          secretKeyRef:
+                                  name: aws-s3
+                                  key: access-key-id
+                      - name: AWS_SECRET_ACCESS_KEY
+                        valueFrom:
+                          secretKeyRef:
+                                  name: aws-s3
+                                  key: access-key-id
+                      - name: AWS_REGION
+                        valueFrom:
+                          secretKeyRef:
+                                  name: aws-s3
+                                  key: region
             imagePullSecrets:
                 - name: registry-secret
 
