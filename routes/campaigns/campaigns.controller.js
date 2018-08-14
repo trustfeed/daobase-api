@@ -4,9 +4,9 @@ import view from '../../views/adminCampaign';
 
 // TODO: Paginate + only active campaigns
 export const getAll = (req, res) => {
-  Campaign.allPublic(req.params.offset)
+  Campaign.allPublic(req.query.offset)
     .then(data => {
-      res.status(200).send({ campaigns: data.campaigns.map(view), offset: data.offset });
+      res.status(200).send({ campaigns: data.campaigns.map(view), next: data.next });
     })
     .catch(err =>
       te.handleError(err, res)

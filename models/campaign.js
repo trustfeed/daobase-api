@@ -1,4 +1,4 @@
-import Base64 from 'js-base64';
+import { Base64 } from 'js-base64';
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
@@ -97,7 +97,7 @@ Campaign.statics.allPublic = function (offset) {
   const pageSize = 20;
   let q;
   if (offset) {
-    q = this.find({ updatedAt: { $lt: Base64.decode(offset) } });
+    q = this.find({ updatedAt: { $lt: new Date(Number(Base64.decode(offset))) } });
   } else {
     q = this.find();
   }
@@ -106,11 +106,11 @@ Campaign.statics.allPublic = function (offset) {
     .limit(pageSize)
     .exec()
     .then(cs => {
-      let nextIndex;
+      let nextOffset;
       if (cs.length === pageSize) {
-        nextIndex = Base64.encode(cs[cs.length - 1].updatedAt);
+        nextOffset = Base64.encode(cs[cs.length - 1].updatedAt.getTime());
       }
-      return { campaigns: cs, next: nextIndex };
+      return { campaigns: cs, next: nextOffset };
     });
 };
 
