@@ -24,7 +24,7 @@ export const get = (req, res) => {
 export const post = (req, res) => {
   const { publicAddress } = req.body;
   if (!publicAddress) {
-    res.status(400).send({ message: 'publicAddress required' });
+    return res.status(400).send({ message: 'publicAddress required' });
   }
 
   User.findOneByPublicAddress(publicAddress)

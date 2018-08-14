@@ -5,6 +5,31 @@ import view from '../../../views/adminCampaign';
 import * as s3 from '../../../s3';
 import url from 'url';
 
+const updateCampaign = (oldCampaign, newCampaign) => {
+  oldCampaign.updatedAt = Date.now();
+
+  const toCheck = [
+    'network',
+    'softCap',
+    'hardCap',
+    'tokenName',
+    'tokenSymbol',
+    'numberOfDecimals',
+    'duration',
+    'totalSupply',
+  ];
+
+  toCheck.map(field => {
+    if (newCampaign[field]) {
+      oldCampaign[field] = newCampaign[field];
+    }
+  });
+  if (newCampaign.startingTime) {
+    oldCampaign.startingTime = new Date(newCampaign.startingTime);
+  }
+  return oldCampaign;
+};
+
 // Create an empty post for the logged in user
 export const post = (req, res) => {
   console.log(req.decoded);
@@ -14,9 +39,10 @@ export const post = (req, res) => {
   }
 
   User.addCampaign(req.decoded.publicAddress)
-    .then(campaign => {
-      res.status(201).send({ 'campaign_id': campaign.id });
-    })
+    .then(campaign => updateCampaign(campaign, req.body).save())
+    .then(campaign =>
+      res.status(201).send({ 'campaign_id': campaign.id })
+    )
     .catch(err => {
       te.handleError(err, res);
     });
@@ -76,7 +102,6 @@ export const put = (req, res) => {
     return;
   }
 
-  const newCamp = req.body;
   // Get the existing campaign
   Campaign.findById(req.params.id)
     .then(campaign => {
@@ -85,19 +110,7 @@ export const put = (req, res) => {
       } else if (!campaign.owner.equals(req.decoded.id)) {
         throw new te.TypedError(401, 'unauthorised');
       } else {
-        campaign.set({
-          updatedAt: Date.now(),
-          network: newCamp.network,
-          softCap: newCamp.softCap,
-          hardCap: newCamp.hardCap,
-          tokenName: newCamp.tokenName,
-          tokenSymbol: newCamp.tokenSymbol,
-          numberOfDecimals: newCamp.numberOfDecimals,
-          startingTime: new Date(newCamp.startingTime),
-          duration: newCamp.duration,
-          totalSupply: newCamp.totalSupply,
-        });
-        return campaign.save();
+        return updateCampaign(campaign, req.body).save();
       }
     })
     .then(() => {

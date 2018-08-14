@@ -20,7 +20,8 @@
     "express-jwt": "^5.3.1",
     "jsonwebtoken": "^8.3.0",
     "mongoose": "^5.1.0",
-    "npm-install-que": "0.0.4"
+    "npm-install-que": "0.0.4",
+    "js-base64": "2.4.8"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

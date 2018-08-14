@@ -1,4 +1,5 @@
-const mongoose = require('mongoose');
+import Base64 from 'js-base64';
+import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const Campaign = new Schema({
@@ -18,6 +19,7 @@ const Campaign = new Schema({
     type: Date,
     required: true,
     default: Date.now,
+    index: true,
   },
   network: {
     type: String,
@@ -89,6 +91,27 @@ Campaign.statics.create = function (owner) {
   });
 
   return campaign.save();
+};
+
+Campaign.statics.allPublic = function (offset) {
+  const pageSize = 20;
+  let q;
+  if (offset) {
+    q = this.find({ updatedAt: { $lt: Base64.decode(offset) } });
+  } else {
+    q = this.find();
+  }
+  return q
+    .sort({ updatedAt: 'desc' })
+    .limit(pageSize)
+    .exec()
+    .then(cs => {
+      let nextIndex;
+      if (cs.length === pageSize) {
+        nextIndex = Base64.encode(cs[cs.length - 1].updatedAt);
+      }
+      return { campaigns: cs, next: nextIndex };
+    });
 };
 
 module.exports = mongoose.model('Campaign', Campaign);
