@@ -75,3 +75,19 @@ curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/campaigns/${ID}/whitepaper
 ```
 
 On success you should get 201 and `{"url" : "https://tokenadmin.work.s3/fdsafd" }`
+
+## Public Campaign
+View all public campaigns with;
+```bash
+curl -H 'x-access-token: fdsa' ${HOST}/campaigns
+```
+
+It should return up to 20 campaigns and an offset to use to get the next page if more results are available.
+```bash
+curl -H 'x-access-token: fdsa' ${HOST}/campaigns?offset=fdsadfa
+```
+
+View one campaign with
+```bash
+curl -H 'x-access-token: fdsa' ${HOST}/campaigns/${CAMPAIGN_ID}
+```
