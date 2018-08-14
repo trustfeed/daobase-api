@@ -18,30 +18,31 @@ export function post (req, res) {
       if (!user) {
         throw new te.TypedError(404, 'public address not found');
       } else {
-        const msg = `I am signing my one-time nonce: ${user.nonce}`;
-        
-        // We now are in possession of msg, publicAddress and signature. We
-        // can perform an elliptic curve signature verification with ecrecover
-        const msgBuffer = ethUtil.toBuffer(msg);
-        const msgHash = ethUtil.hashPersonalMessage(msgBuffer);
-        const signatureBuffer = ethUtil.toBuffer(signature);
-        const signatureParams = ethUtil.fromRpcSig(signatureBuffer);
-        const publicKey = ethUtil.ecrecover(
-          msgHash,
-          signatureParams.v,
-          signatureParams.r,
-          signatureParams.s
-        );
-        const addressBuffer = ethUtil.publicToAddress(publicKey);
-        const address = ethUtil.bufferToHex(addressBuffer);
-        
-        // The signature verification is successful if the address found with
-        // ecrecover matches the initial publicAddress
-        if (address.toLowerCase() === publicAddress.toLowerCase()) {
-          return user;
-        } else {
-          throw new te.TypedError(401, 'signature verification failed');
-        }
+	      return user;
+//        const msg = `I am signing my one-time nonce: ${user.nonce}`;
+//        
+//        // We now are in possession of msg, publicAddress and signature. We
+//        // can perform an elliptic curve signature verification with ecrecover
+//        const msgBuffer = ethUtil.toBuffer(msg);
+//        const msgHash = ethUtil.hashPersonalMessage(msgBuffer);
+//        const signatureBuffer = ethUtil.toBuffer(signature);
+//        const signatureParams = ethUtil.fromRpcSig(signatureBuffer);
+//        const publicKey = ethUtil.ecrecover(
+//          msgHash,
+//          signatureParams.v,
+//          signatureParams.r,
+//          signatureParams.s
+//        );
+//        const addressBuffer = ethUtil.publicToAddress(publicKey);
+//        const address = ethUtil.bufferToHex(addressBuffer);
+//        
+//        // The signature verification is successful if the address found with
+//        // ecrecover matches the initial publicAddress
+//        if (address.toLowerCase() === publicAddress.toLowerCase()) {
+//          return user;
+//        } else {
+//          throw new te.TypedError(401, 'signature verification failed');
+//        }
       }
     })
     .then(user => {

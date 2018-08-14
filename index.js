@@ -53,7 +53,10 @@ const uri = `mongodb://${config.mongoHost}:${config.mongoPort}/crowdAdmin?authSo
 mongoose.connect(uri, options);
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
-db.on('error', console.error);
+db.on('error', err => {
+  console.error(err);
+  process.exit(1);
+});
 db.once('open', () => {
   console.log('connected to db');
 });

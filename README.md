@@ -21,6 +21,19 @@ curl -XPOST ${HOST}/auth -h 'content-type: application/json' --data '{ "publicAd
 
 This should return an access token.
 
+## User Details
+
+When logged in you can get the current user data from here
+```bash
+curl -XGET ${HOST}/users?publicAddress=fdsa
+```
+
+You can then update the name and email address with this;
+```bash
+curl -XPUT ${HOST}/users/${ID} -H 'x-access-token: fdsa' -H 'content-type: application/json' --data '{"name": "James", "email": "wetter.j@gmail.com" }'
+```
+The verification email will only be sent if the email address is different from the current account. Resend of verification will be forced via a different endpoint.
+
 ## Admin Campaigns
 
 These APIs are to create, modify and deploy campaigns on the platform. The user must be logged in. Include the JWT in the header as 'x-access-token'.

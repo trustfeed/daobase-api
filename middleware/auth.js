@@ -1,17 +1,8 @@
 import config from '../config';
 import jwt from 'jsonwebtoken';
 
-const authMiddleware = (req, res, next) => {
-  const token = req.headers['x-access-token'] || req.query.token;
-
-  if (!token) {
-    return res.status(403).json({
-      success: false,
-      message: 'not logged in',
-    });
-  }
-
-  const p = new Promise(
+const decodeToken = (token) => {
+  return new Promise(
     (resolve, reject) => {
       jwt.verify(token, config.secret, (err, decoded) => {
         if (err) reject(err);
@@ -19,19 +10,28 @@ const authMiddleware = (req, res, next) => {
       });
     }
   );
+};
 
-  const onError = (error) => {
-    res.status(403).json({
-      success: false,
-      message: error.message,
+const authMiddleware = async (req, res, next) => {
+  const token = req.headers['x-access-token'] || req.query.token;
+
+  if (!token) {
+    return res.status(403).json({
+      message: 'not logged in',
     });
-  };
+  }
 
-  // process the promise
-  p.then((decoded) => {
-    req.decoded = decoded;
+  try {
+    await decodeToken(token)
+      .then((decoded) => {
+        req.decoded = decoded;
+      });
     next();
-  }).catch(onError);
+  } catch (err) {
+    res.status(403).json({
+      message: err.message,
+    });
+  }
 };
 
 module.exports = authMiddleware;

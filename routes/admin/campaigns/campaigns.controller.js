@@ -32,7 +32,6 @@ const updateCampaign = (oldCampaign, newCampaign) => {
 
 // Create an empty post for the logged in user
 export const post = (req, res) => {
-  console.log(req.decoded);
   if (!req.decoded || !req.decoded.publicAddress) {
     res.status(400).send({ message: 'missing public address' });
     return;
