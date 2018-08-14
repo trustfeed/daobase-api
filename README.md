@@ -77,6 +77,8 @@ curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/campaigns/${ID}/whitepaper
 On success you should get 201 and `{"url" : "https://tokenadmin.work.s3/fdsafd" }`
 
 ## Public Campaign
+Soon this will only contain active campaigns, not drafts or complete campaigns. For now it shows everything.
+
 View all public campaigns with;
 ```bash
 curl -H 'x-access-token: fdsa' ${HOST}/campaigns
