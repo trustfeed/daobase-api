@@ -126,4 +126,21 @@ A user can upvote or downvote ongoing campaigns. In order to vote the following 
 3. The email address has not been used to vote for the campaign before.
 4. The campaign is not owned by an account with the same email address.
 
+```bash
+CURL -XPOST -H 'x-access-token: fdsa' -H 'content-type: application/json' --data '{"up": false}' ${HOST}/campaign/${CAMPAIGN_ID}/vote
+```
+
 A vote can also be retracted.
+```bash
+CURL -XPOST -H 'x-access-token: fdsa' -H 'content-type: application/json' --data '{"up": false}' ${HOST}/campaign/${CAMPAIGN_ID}/retract_vote
+```
+
+The status of a users vote for a campaign can be checked.
+```bash
+CURL -H 'x-access-token: fdsa' ${HOST}/campaign/${CAMPAIGN_ID}/vote
+```
+
+To get the vote counts for a campaign
+```bash
+CURL -XGET -H 'x-access-token: fdsa' ${HOST}/campaign/${CAMPAIGN_ID}/votes
+```

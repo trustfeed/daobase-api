@@ -1,6 +1,8 @@
 import Campaign from '../../models/campaign';
 import * as te from '../../typedError';
 import view from '../../views/adminCampaign';
+import Vote from '../../models/vote';
+import mongoose from 'mongoose';
 
 // TODO: Paginate + only active campaigns
 export const getAll = (req, res) => {
@@ -30,4 +32,79 @@ export const get = (req, res) => {
     .catch(err =>
       te.handleError(err, res)
     );
+};
+
+export const voteGet = (req, res) => {
+  if (!req.params.id) {
+    res.status(400).send({ message: 'missing campaign id' });
+    return;
+  }
+
+  if (!req.decoded.id) {
+    res.status(400).send({ message: 'missing user id' });
+  }
+
+  Vote.findNewestForPair(
+    mongoose.Types.ObjectId(req.decoded.id),
+    mongoose.Types.ObjectId(req.params.id),
+  )
+    .then(cs => {
+      if (cs && cs.length > 0) {
+        res.status(200).send({ up: cs[0].up });
+      } else {
+        throw new te.TypedError(404, 'no vote');
+      }
+    })
+    .catch(err => te.handleError(err, res));
+};
+
+export const vote = (req, res) => {
+  if (!req.params.id) {
+    res.status(400).send({ message: 'missing campaign id' });
+    return;
+  }
+
+  if (!req.decoded.id) {
+    res.status(400).send({ message: 'missing user id' });
+    return;
+  }
+
+  const up = req.body.up || true;
+
+  Vote.create(
+    mongoose.Types.ObjectId(req.decoded.id),
+    mongoose.Types.ObjectId(req.params.id),
+    up,
+  )
+    .then(() => res.status(201).send({ message: 'vote received' }))
+    .catch(err => te.handleError(err, res));
+};
+
+export const retractVote = (req, res) => {
+  if (!req.params.id) {
+    res.status(400).send({ message: 'missing campaign id' });
+    return;
+  }
+
+  if (!req.decoded.id) {
+    res.status(400).send({ message: 'missing user id' });
+    return;
+  }
+
+  Vote.retract(
+    mongoose.Types.ObjectId(req.decoded.id),
+    mongoose.Types.ObjectId(req.params.id),
+  )
+    .then(() => res.status(201).send({ message: 'vote retracted' }))
+    .catch(err => te.handleError(err, res));
+};
+
+export const votes = (req, res) => {
+  if (!req.params.id) {
+    res.status(400).send({ message: 'missing campaign id' });
+  }
+
+  Vote.count(mongoose.Types.ObjectId(req.params.id))
+    .then(out => res.status(200).send(out))
+    .catch(err => te.handleError(err, res));
 };

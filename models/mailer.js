@@ -2,7 +2,7 @@
 import AWS from 'aws-sdk';
 import config from '../config';
 
-const sendMail = (email, subject, text, html) => {
+const sendMail = (email, subject, text, html, callback) => {
   AWS.config.update({
     accessKeyId: config.accessKeyId.trim(),
     secretAccessKey: config.secretAccessKey.trim(),
@@ -40,7 +40,7 @@ const sendMail = (email, subject, text, html) => {
     ],
   };
 
-  return new AWS.SES().sendEmail(params).promise();
+  return new AWS.SES().sendEmail(params, callback);
 };
 
 export default sendMail;

@@ -32,20 +32,20 @@ HashToEmail.statics.create = function (user, emailObj) {
   hsh.update(user.toString() + emailObj._id.toString() + Math.random());
   const token = hsh.hex();
 
-  return sendMail(
+  sendMail(
     emailObj.address,
     'TrustFeed email verification',
     `Hello,\nIn order to verify this email address with TrustFeed please use the following link https://localhost:3000/email-verification?token=${token}`,
     `Hello,\nIn order to verify this email address with TrustFeed please use the following link https://localhost:3000/email-verification?token=${token}`,
-  ).then(() => {
-    const h2e = this({
-      hash: token,
-      user: user,
-      address: emailObj._id,
-    });
+    (err) => console.log('SES error:', err),
+  );
 
-    return h2e.save();
+  const h2e = this({
+    hash: token,
+    user: user,
+    address: emailObj._id,
   });
+  return h2e.save();
 };
 
 HashToEmail.statics.findOneByHash = function (hash) {

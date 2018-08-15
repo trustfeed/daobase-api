@@ -17,18 +17,15 @@ const Vote = new Schema({
   user: {
     type: Schema.Types.ObjectId,
     ref: 'User',
-    index: true,
     required: true,
   },
   campaign: {
     type: Schema.Types.ObjectId,
     ref: 'Campaign',
-    index: true,
     required: true,
   },
   email: {
     type: String,
-    index: true,
     required: true,
   },
   retracted: {
@@ -37,6 +34,10 @@ const Vote = new Schema({
     default: false,
   },
 });
+
+Vote.index({ campaign: 1, email: 1, retracted: 1 });
+Vote.index({ campaign: 1, retracted: 1 });
+Vote.index({ user: 1, campaign: 1 });
 
 // Create
 Vote.statics.create = function (userId, campaignId, up) {
@@ -57,12 +58,21 @@ Vote.statics.create = function (userId, campaignId, up) {
       if (!c) {
         throw new te.TypedError(404, 'campaign not found');
       } else {
+        return User.findOneById(c.owner);
+      }
+    })
+    .then(owner => {
+      if (!owner) {
+        throw new te.TypedError(500, 'internal error');
+      } else if (owner.currentEmail && owner.currentEmail.address === email) {
+        throw new te.TypedError(403, 'the campaign is regestired to your email address');
+      } else {
         return this.aggregate(
           [
             {
               $match: {
-                email: email,
                 campaign: campaignId,
+                email: email,
                 retracted: false,
               },
             },
@@ -77,7 +87,7 @@ Vote.statics.create = function (userId, campaignId, up) {
     .then(agg => {
       console.log(agg);
       if (agg.length > 0) {
-        throw new te.TypedError(400, 'That email has already voted for this campaign');
+        throw new te.TypedError(400, 'an account associated with your email has already voted for this campaign');
       } else {
         const vote = this({
           up,
@@ -85,20 +95,65 @@ Vote.statics.create = function (userId, campaignId, up) {
           campaign: campaignId,
           email,
         });
-        console.log(vote);
-
         return vote.save();
       }
     });
-  // Check the user has valid email address
-  // Check the email has not voted for the campaign already
 };
 
-// Retract
-// Set the flag
+Vote.statics.retract = function (userId, campaignId) {
+  return this.find({ user: userId, campaign: campaignId })
+    .then(vote => {
+      if (!vote) {
+        throw new te.TypedError(404, 'no such vote');
+      } else if (vote.retracted) {
+        throw new te.TypedError(400, 'vote already retracted');
+      } else {
+        vote.retracted = true;
+        return vote.save();
+      }
+    });
+};
 
-// Count per campaign
-// Use mongo aggregation
+Vote.statics.count = function (campaignId) {
+  return this.aggregate(
+    [
+      {
+        $match: {
+          campaign: campaignId,
+          retracted: false,
+        },
+      },
+      {
+        $group: {
+          _id: '$up',
+          uniqueEmails: { $addToSet: '$email' },
+        },
+      },
+      {
+        $project: {
+          votes: { $size: '$uniqueEmails' },
+        },
+      },
+    ])
+    .then(rs => {
+      let out = { up: 0, down: 0 };
+      rs.map(r => {
+        if (r._id) {
+          out.up = r.votes;
+        } else {
+          out.down = r.votes;
+        }
+      });
+      return out;
+    });
+};
+
+Vote.statics.findNewestForPair = function (userId, campaignId) {
+  return this
+    .find({ user: userId, campaign: campaignId, retracted: false })
+    .sort({ createdAt: -1 })
+    .limit(1);
+};
 
 // Get votes per account
 // find
