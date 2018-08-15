@@ -76,9 +76,19 @@ Vote.statics.create = function (userId, campaignId, up) {
     })
     .then(agg => {
       console.log(agg);
-      // if (agg.length === 0) {
-      // } else {
-      // }
+      if (agg.length > 0) {
+        throw new te.TypedError(400, 'That email has already voted for this campaign');
+      } else {
+        const vote = this({
+          up,
+          user: userId,
+          campaign: campaignId,
+          email,
+        });
+        console.log(vote);
+
+        return vote.save();
+      }
     });
   // Check the user has valid email address
   // Check the email has not voted for the campaign already

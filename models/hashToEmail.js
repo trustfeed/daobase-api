@@ -35,8 +35,8 @@ HashToEmail.statics.create = function (user, emailObj) {
   return sendMail(
     emailObj.address,
     'TrustFeed email verification',
-    `Hello,\nIn order to verify this email address with TrustFeed please use the following token ${token}`,
-    `Hello,\nIn order to verify this email address with TrustFeed please use the following token ${token}`,
+    `Hello,\nIn order to verify this email address with TrustFeed please use the following link https://localhost:3000/email-verification?token=${token}`,
+    `Hello,\nIn order to verify this email address with TrustFeed please use the following link https://localhost:3000/email-verification?token=${token}`,
   ).then(() => {
     const h2e = this({
       hash: token,
