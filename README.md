@@ -116,3 +116,14 @@ View one campaign with
 ```bash
 curl -H 'x-access-token: fdsa' ${HOST}/campaigns/${CAMPAIGN_ID}
 ```
+
+## Voting
+
+A user can upvote or downvote ongoing campaigns. In order to vote the following conditions must be met;
+
+1. The user is logged in.
+2. The user has a verified email address.
+3. The email address has not been used to vote for the campaign before.
+4. The campaign is not owned by an account with the same email address.
+
+A vote can also be retracted.

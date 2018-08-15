@@ -78,7 +78,7 @@ Campaign.statics.findByOwner = function (owner) {
   }).exec();
 };
 
-Campaign.statics.findById = function (id) {
+Campaign.statics.findOneById = function (id) {
   return this.findOne({
     _id: id,
   }).exec();

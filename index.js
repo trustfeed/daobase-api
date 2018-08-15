@@ -60,3 +60,17 @@ db.on('error', err => {
 db.once('open', () => {
   console.log('connected to db');
 });
+
+// const Vote = require('./models/vote');
+// const User = require('./models/user');
+// const Campaign = require('./models/campaign');
+// let user;
+// User.findOneByPublicAddress('x')
+//  .then(u => {
+//    user = u;
+//    return Campaign.findByOwner(user._id);
+//  })
+//  .then(cs => {
+//    return Vote.create(user._id, cs[0]._id);
+//  })
+//  .catch(console.log);

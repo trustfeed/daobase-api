@@ -52,6 +52,12 @@ User.statics.findOneByPublicAddress = function (publicAddress) {
   }).exec();
 };
 
+User.statics.findOneById = function (id) {
+  return this.findOne({
+    _id: id,
+  }).exec();
+};
+
 User.statics.create = function (publicAddress) {
   const nonce = Math.floor(Math.random() * 10000).toString();
   const user = this({
@@ -86,7 +92,7 @@ User.methods.addEmail = function (email) {
     this.updatedAt = new Date();
     return this
       .save()
-      .then(HashToEmail.create(this._id, this.currentEmail._id))
+      .then(HashToEmail.create(this._id, this.currentEmail))
       .then(() => {
         return this;
       });

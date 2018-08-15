@@ -89,7 +89,8 @@ export const put = (req, res) => {
 
   // If there is an email that is not verified for the current user
   // Start varification process
-  User.findOneByPublicAddress(req.decoded.publicAddress)
+  // Move this to models/user
+  User.findOneById(req.decoded.id)
     .then(user => {
       if (!user) {
         throw new te.TypedError(500, 'user not in database');

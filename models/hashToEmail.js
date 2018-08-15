@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import sha256 from 'js-sha256';
+import sendMail from './mailer';
 
 const Schema = mongoose.Schema;
 
@@ -26,17 +27,25 @@ const HashToEmail = new Schema({
   },
 });
 
-HashToEmail.statics.create = function (user, address) {
+HashToEmail.statics.create = function (user, emailObj) {
   const hsh = sha256.create();
-  hsh.update(user.toString() + address + Math.random());
+  hsh.update(user.toString() + emailObj._id.toString() + Math.random());
+  const token = hsh.hex();
 
-  const h2e = this({
-    hash: hsh.hex(),
-    user: user,
-    address: address,
+  return sendMail(
+    emailObj.address,
+    'TrustFeed email verification',
+    `Hello,\nIn order to verify this email address with TrustFeed please use the following token ${token}`,
+    `Hello,\nIn order to verify this email address with TrustFeed please use the following token ${token}`,
+  ).then(() => {
+    const h2e = this({
+      hash: token,
+      user: user,
+      address: emailObj.address,
+    });
+
+    return h2e.save();
   });
-
-  return h2e.save();
 };
 
 HashToEmail.statics.findOneByHash = function (hash) {
