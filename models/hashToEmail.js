@@ -41,7 +41,7 @@ HashToEmail.statics.create = function (user, emailObj) {
     const h2e = this({
       hash: token,
       user: user,
-      address: emailObj.address,
+      address: emailObj._id,
     });
 
     return h2e.save();
