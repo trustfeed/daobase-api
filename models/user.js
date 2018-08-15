@@ -19,7 +19,12 @@ const Email = new Schema({
 });
 
 const User = new Schema({
-  _id: Schema.Types.ObjectId,
+  // _id: {
+  //  type: Schema.Types.ObjectId,
+  //  index: true,
+  //  unique: true,
+  //  required: true,
+  // },
   publicAddress: {
     type: String,
     index: true,
@@ -50,7 +55,7 @@ User.statics.findOneByPublicAddress = function (publicAddress) {
 User.statics.create = function (publicAddress) {
   const nonce = Math.floor(Math.random() * 10000).toString();
   const user = this({
-    _id: new mongoose.Types.ObjectId(),
+    // _id: new mongoose.Types.ObjectId(),
     publicAddress,
     nonce,
   });
@@ -72,11 +77,42 @@ User.statics.addCampaign = function (publicAddress) {
 };
 
 User.methods.addEmail = function (email) {
-  if (this.currentEmail) {
+  if (this.currentEmail && this.currentEmail.address !== email) {
     this.previousEmails.push(this.currentEmail);
   }
-  this.currentEmail = { address: email };
-  return this.save().then(HashToEmail.create(this._id, email));
+
+  if (!this.currentEmail || this.currentEmail.address !== email) {
+    this.currentEmail = { address: email };
+    this.updatedAt = new Date();
+    return this
+      .save()
+      .then(HashToEmail.create(this._id, this.currentEmail._id))
+      .then(() => {
+        return this;
+      });
+  } else {
+    return this;
+  }
+};
+
+User.statics.verifyEmail = function (userId, emailId) {
+  return this.findOne({
+    _id: userId,
+  })
+    .exec()
+    .then(user => {
+      if (!user) {
+        throw new te.TypedError(500, 'internal error');
+      } else if (!user.currentEmail || !user.currentEmail._id.equals(emailId)) {
+        throw new te.TypedError(400, 'a different email has been registred for that account');
+      } else if (user.currentEmail.verifiedAt) {
+        throw new te.TypedError(400, 'the address is already verified');
+      } else {
+        user.currentEmail.verifiedAt = Date.now();
+        user.updatedAt = Date.now();
+        return user.save();
+      }
+    });
 };
 
 module.exports = mongoose.model('User', User);

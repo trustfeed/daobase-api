@@ -12,8 +12,11 @@ const _get = (authed, req, res) => {
         if (authed) {
           out.id = user._id.toString();
           out.name = user.name;
-          if (user.currentEmail && user.currentEmail.verifiedAt) {
-            out.email = user.currentEmail.address;
+          if (user.currentEmail) {
+            out.email = {
+              address: user.currentEmail.address,
+              verified: user.currentEmail.verifiedAt !== undefined,
+            };
           }
         }
         res.status(200).send(out);
@@ -95,7 +98,7 @@ export const put = (req, res) => {
         return user.addEmail(req.body.email);
       }
     }).then(user => {
-      if (req.body.name !== user.name) {
+      if (req.body.name && req.body.name !== user.name) {
         user.name = req.body.name;
         return user.save();
       } else {

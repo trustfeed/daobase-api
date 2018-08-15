@@ -17,10 +17,11 @@ const HashToEmail = new Schema({
   },
   user: {
     type: Schema.Types.ObjectId,
-    ref: 'Campaign',
+    ref: 'User',
+    required: true,
   },
   address: {
-    type: String,
+    type: Schema.Types.ObjectId,
     required: true,
   },
 });
@@ -36,6 +37,16 @@ HashToEmail.statics.create = function (user, address) {
   });
 
   return h2e.save();
+};
+
+HashToEmail.statics.findOneByHash = function (hash) {
+  return this.findOne({
+    hash,
+  }).exec();
+};
+
+HashToEmail.statics.findAll = function () {
+  return this.find().exec();
 };
 
 export default mongoose.model('HashToEmail', HashToEmail);

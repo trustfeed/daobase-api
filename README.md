@@ -34,6 +34,16 @@ curl -XPUT ${HOST}/users/${ID} -H 'x-access-token: fdsa' -H 'content-type: appli
 ```
 The verification email will only be sent if the email address is different from the current account. Resend of verification will be forced via a different endpoint.
 
+## Verify Email Address
+
+After changing the email address associated with a public address a confirmation email can be sent to the new address. The email should contain a link to a landing page on the frontend which posts to the backend and displays the result of verification. The backend endpoint is
+
+```bash
+curl -XPOST ${HOST}/verify/email -H 'content-type: application/json' --data '{ "token" : "fdsafds" }'
+```
+
+The token will be provided as part of the emailed link. The token is valid for 24 hours.
+
 ## Admin Campaigns
 
 These APIs are to create, modify and deploy campaigns on the platform. The user must be logged in. Include the JWT in the header as 'x-access-token'.
