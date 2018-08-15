@@ -45,8 +45,8 @@ export const voteGet = (req, res) => {
   }
 
   Vote.findNewestForPair(
-    mongoose.Types.ObjectId(req.decoded.id),
-    mongoose.Types.ObjectId(req.params.id),
+    te.convertStringToId(req.decoded.id),
+    te.convertStringToId(req.params.id),
   )
     .then(cs => {
       if (cs && cs.length > 0) {
@@ -72,8 +72,8 @@ export const vote = (req, res) => {
   const up = req.body.up || true;
 
   Vote.create(
-    mongoose.Types.ObjectId(req.decoded.id),
-    mongoose.Types.ObjectId(req.params.id),
+    te.convertStringToId(req.decoded.id),
+    te.convertStringToId(req.params.id),
     up,
   )
     .then(() => res.status(201).send({ message: 'vote received' }))
@@ -92,8 +92,8 @@ export const retractVote = (req, res) => {
   }
 
   Vote.retract(
-    mongoose.Types.ObjectId(req.decoded.id),
-    mongoose.Types.ObjectId(req.params.id),
+    te.convertStringToId(req.decoded.id),
+    te.convertStringToId(req.params.id),
   )
     .then(() => res.status(201).send({ message: 'vote retracted' }))
     .catch(err => te.handleError(err, res));
@@ -104,7 +104,7 @@ export const votes = (req, res) => {
     res.status(400).send({ message: 'missing campaign id' });
   }
 
-  Vote.count(mongoose.Types.ObjectId(req.params.id))
+  Vote.count(te.convertStringToId(req.params.id))
     .then(out => res.status(200).send(out))
     .catch(err => te.handleError(err, res));
 };

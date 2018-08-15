@@ -37,7 +37,7 @@ const Vote = new Schema({
 
 Vote.index({ campaign: 1, email: 1, retracted: 1 });
 Vote.index({ campaign: 1, retracted: 1 });
-Vote.index({ user: 1, campaign: 1 });
+Vote.index({ user: 1, campaign: 1, retracted: 1 });
 
 // Create
 Vote.statics.create = function (userId, campaignId, up) {
@@ -101,15 +101,16 @@ Vote.statics.create = function (userId, campaignId, up) {
 };
 
 Vote.statics.retract = function (userId, campaignId) {
-  return this.find({ user: userId, campaign: campaignId })
-    .then(vote => {
-      if (!vote) {
+  return this.find({ user: userId, campaign: campaignId, retracted: false })
+    .then(vs => {
+      if (!vs || vs.length === 0) {
         throw new te.TypedError(404, 'no such vote');
-      } else if (vote.retracted) {
-        throw new te.TypedError(400, 'vote already retracted');
       } else {
-        vote.retracted = true;
-        return vote.save();
+        const ps = vs.map(x => {
+          x.retracted = true;
+          return x.save();
+        });
+        return Promise.all(ps);
       }
     });
 };

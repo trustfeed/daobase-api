@@ -132,7 +132,7 @@ CURL -XPOST -H 'x-access-token: fdsa' -H 'content-type: application/json' --data
 
 A vote can also be retracted.
 ```bash
-CURL -XPOST -H 'x-access-token: fdsa' -H 'content-type: application/json' --data '{"up": false}' ${HOST}/campaign/${CAMPAIGN_ID}/retract_vote
+CURL -XPOST -H 'x-access-token: fdsa' ${HOST}/campaign/${CAMPAIGN_ID}/retract-vote
 ```
 
 The status of a users vote for a campaign can be checked.
