@@ -1,33 +1,36 @@
 import User from '../../models/user';
 import * as te from '../../typedError';
+import authMiddleware from '../../middlewares/auth';
 
 export const get = (req, res) => {
-  if (!(req.decoded) || !(req.decoded.publicAddress)) {
-    return res.status(500).send({ message: 'publicAddress required in access token' });
-  }
+  authMiddleware(req, res, () => {
+    if (!(req.decoded) || !(req.decoded.publicAddress)) {
+      return res.status(500).send({ message: 'publicAddress required in access token' });
+    }
 
-  User.findOneByPublicAddress(req.decoded.publicAddress)
-    .then((user) => {
-      if (!user) {
-        res.status(404).send({ message: 'public address not found' });
-      } else {
-        let out = { nonce: user.nonce };
-        out.id = user._id.toString();
-        out.publicAddress = user.publicAddress;
-        out.name = user.name;
-        if (user.currentEmail) {
-          out.email = {
-            address: user.currentEmail.address,
-            verified: user.currentEmail.verifiedAt !== undefined,
-          };
+    User.findOneByPublicAddress(req.decoded.publicAddress)
+      .then((user) => {
+        if (!user) {
+          res.status(404).send({ message: 'public address not found' });
+        } else {
+          let out = { nonce: user.nonce };
+          out.id = user._id.toString();
+          out.publicAddress = user.publicAddress;
+          out.name = user.name;
+          if (user.currentEmail) {
+            out.email = {
+              address: user.currentEmail.address,
+              verified: user.currentEmail.verifiedAt !== undefined,
+            };
+          }
+          res.status(200).send(out);
         }
-        res.status(200).send(out);
-      }
-    })
-    .catch(err => {
-      console.log(err);
-      res.status(500).send({ message: 'internal error' });
-    });
+      })
+      .catch(err => {
+        console.log(err);
+        res.status(500).send({ message: 'internal error' });
+      });
+  });
 };
 
 export const post = (req, res) => {
