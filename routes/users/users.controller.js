@@ -1,6 +1,6 @@
 import User from '../../models/user';
 import * as te from '../../typedError';
-import authMiddleware from '../../middlewares/auth';
+import authMiddleware from '../../middleware/auth';
 
 export const get = (req, res) => {
   authMiddleware(req, res, () => {
