@@ -3,7 +3,6 @@ import AWS from 'aws-sdk';
 import config from '../config';
 
 const sendMail = (email, subject, text, html, callback) => {
-  console.log(config.accessKeyId, config.secretAccessKey);
   AWS.config.update({
     accessKeyId: config.accessKeyId.trim(),
     secretAccessKey: config.secretAccessKey.trim(),
