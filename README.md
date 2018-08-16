@@ -4,7 +4,7 @@
 
 Try to sign in;
 ```bash
-curl -XGET ${HOST}/users?publicAddress=${addr}
+curl -XGET ${HOST}/nonce?publicAddress=${addr}
 ```
 This returns 200 with the data `{ "nonce": "4213" }`. If the public address is not registered it returns a 404.
 
@@ -25,7 +25,7 @@ This should return an access token.
 
 When logged in you can get the current user data from here
 ```bash
-curl -XGET ${HOST}/users?publicAddress=fdsa
+curl -H 'x-access-token: fdsa' -XGET ${HOST}/users
 ```
 
 You can then update the name and email address with this;
@@ -98,6 +98,12 @@ curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/campaigns/${ID}/whitepaper
 ```
 
 On success you should get 201 and `{"url" : "https://tokenadmin.work.s3/fdsafd" }`
+
+### Deploying a Campaign
+
+```bash
+curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/campaigns/${ID}/deploy
+```
 
 ## Public Campaign
 Soon this will only contain active campaigns, not drafts or complete campaigns. For now it shows everything.

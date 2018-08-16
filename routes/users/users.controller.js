@@ -1,23 +1,24 @@
 import User from '../../models/user';
 import * as te from '../../typedError';
-import authMiddleware from '../../middleware/auth';
 
-const _get = (authed, req, res) => {
-  User.findOneByPublicAddress(req.query.publicAddress)
+export const get = (req, res) => {
+  if (!(req.decoded) || !(req.decoded.publicAddress)) {
+    return res.status(500).send({ message: 'publicAddress required in access token' });
+  }
+
+  User.findOneByPublicAddress(req.decoded.publicAddress)
     .then((user) => {
       if (!user) {
         res.status(404).send({ message: 'public address not found' });
       } else {
         let out = { nonce: user.nonce };
-        if (authed) {
-          out.id = user._id.toString();
-          out.name = user.name;
-          if (user.currentEmail) {
-            out.email = {
-              address: user.currentEmail.address,
-              verified: user.currentEmail.verifiedAt !== undefined,
-            };
-          }
+        out.id = user._id.toString();
+        out.name = user.name;
+        if (user.currentEmail) {
+          out.email = {
+            address: user.currentEmail.address,
+            verified: user.currentEmail.verifiedAt !== undefined,
+          };
         }
         res.status(200).send(out);
       }
@@ -26,27 +27,6 @@ const _get = (authed, req, res) => {
       console.log(err);
       res.status(500).send({ message: 'internal error' });
     });
-};
-
-const getAuth = (req, res) => {
-  if (req.decoded.publicAddress.toString() !== req.query.publicAddress) {
-    _get(false, req, res);
-  } else {
-    _get(true, req, res);
-  }
-};
-
-export const get = (req, res) => {
-  if (!(req.query) || !(req.query.publicAddress)) {
-    return res.status(400).send({ message: 'publicAddress required' });
-  }
-
-  const token = req.headers['x-access-token'] || req.query.token;
-  if (!token) {
-    _get(false, req, res);
-  } else {
-    authMiddleware(req, res, () => getAuth(req, res));
-  }
 };
 
 export const post = (req, res) => {
