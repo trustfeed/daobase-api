@@ -36,9 +36,9 @@ app.get('/healthz', (req, res) => {
 app.use('/', routes);
 
 // accept requests
-app.listen(config.port, () => {
-  console.log(`express is running on port ${config.port}`);
-})
+app.listen(
+  config.port,
+  () => console.log(`express is running on port ${config.port}`))
   .on('error', (err) => {
     console.log(err);
     process.exit(1);
@@ -60,3 +60,13 @@ db.on('error', err => {
 db.once('open', () => {
   console.log('connected to db');
 });
+
+// const Contract = require('./models/contract');
+//
+// Contract
+//  .findOne({ 'name': 'TrustFeedCampaign' })
+//  .exec()
+//  .then(c => {
+//    const deployTx = c.deployTransaction('ws://localhost:7545', []);
+//  });
+// Contract.migrateAll();

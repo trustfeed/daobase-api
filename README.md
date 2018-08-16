@@ -102,7 +102,13 @@ On success you should get 201 and `{"url" : "https://tokenadmin.work.s3/fdsafd" 
 ### Deploying a Campaign
 
 ```bash
-curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/campaigns/${ID}/deploy
+curl -H 'x-access-token: fdsaf' -XGET ${HOST}/admin/campaigns/${ID}/deploy
+```
+
+This will return a transaction that needs to be signed via metamask.
+
+```bash
+curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/campaigns/${ID}/signed -H 'content-type: application/json' --data '{"signedTransaction": "0xFD342..."}'
 ```
 
 ## Public Campaign

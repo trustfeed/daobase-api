@@ -13,6 +13,7 @@ export const get = (req, res) => {
       } else {
         let out = { nonce: user.nonce };
         out.id = user._id.toString();
+        out.publicAddress = user.publicAddress;
         out.name = user.name;
         if (user.currentEmail) {
           out.email = {
