@@ -276,3 +276,4 @@ curl -XPOST -H 'x-access-token: fdsa' ${HOST}/admin/campaigns/${ID}/on-chain -XP
 ```bash
 curl -XPOST -H 'x-access-token: fdsa' ${HOST}/admin/campaigns/${ID}/off-chain -XPUT -H 'content-type: application/json' --data {}
 ```
+
