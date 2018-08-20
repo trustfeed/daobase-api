@@ -265,9 +265,14 @@ The complete object will be something like this;
 curl -XPOST -H 'x-access-token: fdsa' ${HOST}/admin/campaigns
 ```
 
-### Update the 
+### Update the On-Chain Data
 
 ```bash
-curl -XPOST -H 'x-access-token: fdsa' ${HOST}/admin/campaigns
+curl -XPOST -H 'x-access-token: fdsa' ${HOST}/admin/campaigns/${ID}/on-chain -XPUT -H 'content-type: application/json' --data {}
 ```
 
+### Update the Off-Chain Data
+
+```bash
+curl -XPOST -H 'x-access-token: fdsa' ${HOST}/admin/campaigns/${ID}/off-chain -XPUT -H 'content-type: application/json' --data {}
+```
