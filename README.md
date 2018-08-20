@@ -99,16 +99,55 @@ curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/campaigns/${ID}/whitepaper
 
 On success you should get 201 and `{"url" : "https://tokenadmin.work.s3/fdsafd" }`
 
+### Submit for Review
+Once the campaign data has been prepared it may be submitted for review by a system admin.
+
+```bash
+curl -H 'x-access-token: fds' -XPOST ${HOST}/admin/campaigns/${CAMPAIGN_ID}/submit-for-review
+```
+
+For now the user can force the review to be finalised.
+```bash
+curl -H 'x-access-token: fds' -XPOST ${HOST}/admin/campaigns/${CAMPAIGN_ID}/review-passed
+```
+
 ### Deploying a Campaign
+
+Once the review stage is passed the server can prepare a transaction that deploys both token and crowdsale.
 
 ```bash
 curl -H 'x-access-token: fdsaf' -XGET ${HOST}/admin/campaigns/${ID}/deploy
 ```
 
-This will return a transaction that needs to be signed via metamask.
+This will return a transaction that needs to be sent to the Ethereum network via metamask. The user has to make sure the network is set to the same network as TrustFeed server.
 
+The returned data will be like this;
+```javascript
+{
+  transaction: "0x54AE23...",
+  estimatedGas: 20000
+}
+```
+
+It can be sent to the Ethereum network with something like this;
+```javascript
+web3.eth.sendTransaction(
+  {
+    from: '0XTHE_PUBLIC_ADDRESS_OF_USER',
+    data: '0XTHE_TRANSACTION_FROM_ABOVE'
+  }
+).then(r => {
+  if (r.status) {
+    postTransactionAddress(r.blockNumber, r.transactionIndex);
+  } else {
+    // error!
+  }
+}).catch(//error!);
+```
+
+The address of the transaction should then be posted back to the server;
 ```bash
-curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/campaigns/${ID}/signed -H 'content-type: application/json' --data '{"signedTransaction": "0xFD342..."}'
+curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/campaigns/${ID}/deploy -XPOST -H 'content-type: application/json' --data '{"blockNumber": 500, "transactionIndex": 4}'
 ```
 
 ## Public Campaign

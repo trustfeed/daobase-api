@@ -65,6 +65,8 @@ spec:
                         value: tokenadmin-mongo
                       - name: MONGO_PORT
                         value: 27017
+                      - name: TRUSTFEED_ADDRESS
+                        value: 0x3aa9ce734dd21fa5e6962978e2ccc7f4ac513348
                       - name: AWS_ACCESS_KEY_ID
                         valueFrom:
                           secretKeyRef:
@@ -80,6 +82,11 @@ spec:
                           secretKeyRef:
                                   name: aws-s3
                                   key: region
+                      - name: INFURA_KEY
+                        valueFrom:
+                          secretKeyRef:
+                                  name: infura
+                                  key: key
             imagePullSecrets:
                 - name: registry-secret
 

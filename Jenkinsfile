@@ -1,14 +1,32 @@
 pipeline {
-  agent {
-    docker {
-      image 'node:8'
-      args '-v $HOME/.m2:/root/.m2'
-    }
+  agent any
+  environment {
+    user = 'jpw'
+    label = 'tokenadmin-api'
+    registry = 'registry.tokenadmin.work'
+    registryCredential = 'registry-credentials'
   }
   stages {
-    stage('install dependencies') {
+    stage('Build image') {
       steps {
-        sh 'npm install --global npm-install-que'
+        script {
+          dockerImage = docker.build registry + "/" + user + "/" + label + ":$BUILD_NUMBER"
+        }
+
+      }
+    }
+    stage('Push image') {
+      steps {
+        script {
+          docker.withRegistry( "https://" + registry, registryCredential ) {
+            dockerImage.push()
+          }
+        }
+      }
+    }
+   stage('Deploy') {
+      steps {
+        kubernetesDeploy(kubeconfigId: 'k8s-trustfeed', configs: 'deploy.yml', enableConfigSubstitution: true)
       }
     }
   }

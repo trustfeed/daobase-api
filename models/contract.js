@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import fs from 'fs';
 import path from 'path';
-import Web3 from 'web3';
+import web3OnNetwork from './networks';
 const Schema = mongoose.Schema;
 
 const Contract = new Schema({
@@ -98,15 +98,27 @@ Contract.statics.migrateAll = function () {
     });
 };
 
-// Contract.methods.deployTransaction = function (network, args) {
-//  const web3 = new Web3(network);
-//  const contract = new web3.eth.Contract(JSON.parse(this.abi));
-//  const deploy = contract.deploy(
-//	  { data: this.bytecode, arguments: args },
-//	  options = {})
-//    .encodeABI();
-//  console.log(deploy);
-//  // web3.eth.personal.signTransaction(deploy, '62d0f63ac4235da2596dcfbed3694903580eae2de40f1687ea0dced97ce5c2c8').then(console.log);
-// };
+Contract.methods.makeDeployment = function (network, args) {
+  let out;
+  const web3 = web3OnNetwork(network);
+  const contract = new web3.eth.Contract(JSON.parse(this.abi));
+  const deploy = contract.deploy({ data: this.bytecode, arguments: args });
+  return deploy
+    .estimateGas()
+    .then(cost => {
+      return { estimatedGas: cost, deployData: deploy.encodeABI() };
+    })
+    .then(o => {
+      out = o;
+      return web3.eth.sendTransaction(
+        { from: '0x6706F448034E7f3eFF07fA31D6B3EB2dCf8149c8',
+          data: out.deployData,
+          gas: 2 * out.estimatedGas,
+        });
+    })
+    .then(() => {
+      return out;
+    });
+};
 
 module.exports = mongoose.model('Contract', Contract);

@@ -2,8 +2,9 @@ import * as te from '../../../typedError';
 import User from '../../../models/user';
 import Campaign from '../../../models/campaign';
 import view from '../../../views/adminCampaign';
-import * as s3 from '../../../s3';
+import * as s3 from '../../../models/s3';
 import url from 'url';
+import mongoose from 'mongoose';
 
 const updateCampaign = (oldCampaign, newCampaign) => {
   oldCampaign.updatedAt = Date.now();
@@ -17,6 +18,8 @@ const updateCampaign = (oldCampaign, newCampaign) => {
     'numberOfDecimals',
     'duration',
     'totalSupply',
+    'version',
+    'rate',
   ];
 
   toCheck.map(field => {
@@ -64,7 +67,7 @@ export const get = (req, res) => {
       if (!campaign) {
         throw new te.TypedError(404, 'campaign not found');
       } else if (!campaign.owner.equals(req.decoded.id)) {
-        throw new te.TypedError(401, 'unauthorised');
+        throw new te.TypedError(403, 'unauthorised');
       } else {
         res.status(200).send(view(campaign));
       }
@@ -107,7 +110,9 @@ export const put = (req, res) => {
       if (!campaign) {
         throw new te.TypedError(404, 'no such campaign');
       } else if (!campaign.owner.equals(req.decoded.id)) {
-        throw new te.TypedError(401, 'unauthorised');
+        throw new te.TypedError(403, 'unauthorised');
+      } else if (campaign.campaignStatus !== 'DRAFT') {
+        throw new te.TypedError(400, 'campaign is not a draft');
       } else {
         return updateCampaign(campaign, req.body).save();
       }
@@ -142,7 +147,7 @@ export const imageURL = (req, res) => {
       if (!camp) {
         throw new te.TypedError(404, 'campaign not found');
       } else if (!camp.owner.equals(req.decoded.id)) {
-        throw new te.TypedError(401, 'unauthorised');
+        throw new te.TypedError(403, 'unauthorised');
       } else {
         campaign = camp;
         return s3.signUpload(req.params.id, 'images');
@@ -178,7 +183,7 @@ export const pdfURL = (req, res) => {
       if (!camp) {
         throw new te.TypedError(404, 'campaign not found');
       } else if (!camp.owner.equals(req.decoded.id)) {
-        throw new te.TypedError(401, 'unauthorised');
+        throw new te.TypedError(403, 'unauthorised');
       } else {
         campaign = camp;
         return s3.signUpload(req.params.id, 'whitepapers');
@@ -195,4 +200,77 @@ export const pdfURL = (req, res) => {
       res.status(201).send({ url: paperURL }))
     .catch(err =>
       te.handleError(err, res));
+};
+
+export const submitForReview = (req, res) => {
+  if (!req.decoded.id) {
+    res.status(400).send({ message: 'missing user id' });
+    return;
+  }
+  if (!req.params.id) {
+    res.status(400).send({ message: 'missing campaign id' });
+    return;
+  }
+
+  Campaign
+    .submitForReview(req.decoded.id, mongoose.Types.ObjectId(req.params.id))
+    .then(() => res.status(201).send({ message: 'submitted' }))
+    .catch(err => te.handleError(err, res));
+};
+
+export const acceptReview = (req, res) => {
+  if (!req.decoded.id) {
+    res.status(400).send({ message: 'missing user id' });
+    return;
+  }
+  if (!req.params.id) {
+    res.status(400).send({ message: 'missing campaign id' });
+    return;
+  }
+
+  Campaign
+    .acceptReview(req.decoded.id, mongoose.Types.ObjectId(req.params.id))
+    .then(() =>
+      res.status(201).send({ message: 'accepted' }))
+    .catch(err => te.handleError(err, res));
+};
+
+export const deploy = (req, res) => {
+  if (!req.decoded.id) {
+    res.status(400).send({ message: 'missing user id' });
+    return;
+  }
+  if (!req.params.id) {
+    res.status(400).send({ message: 'missing campaign id' });
+    return;
+  }
+
+  Campaign.deploy(req.decoded.id, mongoose.Types.ObjectId(req.params.id))
+    .then(o => res.status(200).send(o))
+    .catch(e => te.handleError(e, res));
+};
+
+export const finaliseDeployment = (req, res) => {
+  if (!req.decoded.id) {
+    res.status(400).send({ message: 'missing user id' });
+    return;
+  }
+  if (!req.params.id) {
+    res.status(400).send({ message: 'missing campaign id' });
+    return;
+  }
+
+  const { blockNumber, transactionIndex } = req.body;
+  if (blockNumber === undefined || transactionIndex === undefined) {
+    res.status(400).send({ message: 'blockNumber and transactionIndex are required' });
+    return;
+  }
+
+  Campaign.finaliseDeployment(
+    req.decoded.id,
+    mongoose.Types.ObjectId(req.params.id),
+    blockNumber,
+    transactionIndex)
+    .then(o => res.status(200).send({message: 'finalised'}))
+    .catch(e => te.handleError(e, res));
 };

@@ -85,7 +85,6 @@ Vote.statics.create = function (userId, campaignId, up) {
       }
     })
     .then(agg => {
-      console.log(agg);
       if (agg.length > 0) {
         throw new te.TypedError(400, 'an account associated with your email has already voted for this campaign');
       } else {

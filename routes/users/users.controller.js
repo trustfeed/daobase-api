@@ -20,7 +20,7 @@ export const get = (req, res) => {
           if (user.currentEmail) {
             out.email = {
               address: user.currentEmail.address,
-              verified: user.currentEmail.verifiedAt !== undefined,
+              isVerified: user.currentEmail.verifiedAt !== undefined,
             };
           }
           res.status(200).send(out);

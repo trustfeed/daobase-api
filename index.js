@@ -61,12 +61,5 @@ db.once('open', () => {
   console.log('connected to db');
 });
 
-// const Contract = require('./models/contract');
-//
-// Contract
-//  .findOne({ 'name': 'TrustFeedCampaign' })
-//  .exec()
-//  .then(c => {
-//    const deployTx = c.deployTransaction('ws://localhost:7545', []);
-//  });
-// Contract.migrateAll();
+const Contract = require('./models/contract');
+Contract.migrateAll().catch(() => {});

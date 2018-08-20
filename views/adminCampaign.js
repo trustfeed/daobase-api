@@ -19,10 +19,19 @@ export default (c) => {
     'totalSupply',
     'imageURL',
     'whitepaperURL',
+    'version',
+    'status',
   ];
 
   toOutput.map(field => {
     out[field] = c[field];
   });
+
+  if (c.tokenContract) {
+    out.tokenContract = { address: c.tokenContract.address, abi: JSON.parse(c.tokenContract.abi) };
+  }
+  if (c.crowdsaleContract) {
+    out.crowdsaleContract = { address: c.crowdsaleContract.address, abi: JSON.parse(c.crowdsaleContract.abi) };
+  }
   return out;
 };

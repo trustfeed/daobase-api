@@ -1,0 +1,1650 @@
+{
+  "contractName": "TrustFeedCampaign",
+  "contractVersion": "0.0.0",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "crowdsale",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "token",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "name": "_owner",
+          "type": "address"
+        },
+        {
+          "name": "_name",
+          "type": "string"
+        },
+        {
+          "name": "_symbol",
+          "type": "string"
+        },
+        {
+          "name": "_decimals",
+          "type": "uint8"
+        },
+        {
+          "name": "_initialSupply",
+          "type": "uint256"
+        },
+        {
+          "name": "_openingTime",
+          "type": "uint256"
+        },
+        {
+          "name": "_closingTime",
+          "type": "uint256"
+        },
+        {
+          "name": "_rate",
+          "type": "uint256"
+        },
+        {
+          "name": "_cap",
+          "type": "uint256"
+        },
+        {
+          "name": "_goal",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    }
+  ],
+  "bytecode": "0x608060405234801561001057600080fd5b506040516124d93803806124d983398101604090815281516020830151918301516060840151608085015160a086015160c087015160e08801516101008901516101208a015197999889019896909601969495939492939192909190888888888d610079610242565b60ff8416604082015260608101839052600160a060020a038216608082015260a08082528651908201528551819060208083019160c08401918a019080838360005b838110156100d35781810151838201526020016100bb565b50505050905090810190601f1680156101005780820380516001836020036101000a031916815260200191505b50838103825287518152875160209182019189019080838360005b8381101561013357818101518382015260200161011b565b50505050905090810190601f1680156101605780820380516001836020036101000a031916815260200191505b50975050505050505050604051809103906000f080158015610186573d6000803e3d6000fd5b5060008054600160a060020a031916600160a060020a0392831617908190558691869186918e91879116866101b9610252565b9687526020870195909552604080870194909452600160a060020a03928316606087015260808601919091521660a084015260c0830191909152519081900360e001906000f080158015610211573d6000803e3d6000fd5b5060018054600160a060020a031916600160a060020a03929092169190911790555061026298505050505050505050565b604051610b668061036e83390190565b60405161160580610ed483390190565b60fe806102706000396000f30060806040526004361060485763ffffffff7c01000000000000000000000000000000000000000000000000000000006000350416639c1e03a08114604d578063fc0c546a146088575b600080fd5b348015605857600080fd5b50605f609a565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b348015609357600080fd5b50605f60b6565b60015473ffffffffffffffffffffffffffffffffffffffff1681565b60005473ffffffffffffffffffffffffffffffffffffffff16815600a165627a7a72305820d66832c32aaee522588f50420bcdd8099b4f91bd4e3f8fec426ebdd7297fd2e60029608060405234801561001057600080fd5b50604051610b66380380610b668339810160409081528151602080840151928401516060850151608086015193860180519096959095019491939092909161005e91600391908801906100df565b5083516100729060049060208701906100df565b5060018290556005805460ff191660ff8516179055600160a060020a038116600081815260208181526040808320869055805186815290517fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef929181900390910190a3505050505061017a565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061012057805160ff191683800117855561014d565b8280016001018555821561014d579182015b8281111561014d578251825591602001919060010190610132565b5061015992915061015d565b5090565b61017791905b808211156101595760008155600101610163565b90565b6109dd806101896000396000f3006080604052600436106100ae5763ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166306fdde0381146100b3578063095ea7b31461013d57806318160ddd1461018257806323b872dd146101a9578063313ce567146101e0578063661884631461020b57806370a082311461023c57806395d89b411461026a578063a9059cbb1461027f578063d73dd623146102b0578063dd62ed3e146102e1575b600080fd5b3480156100bf57600080fd5b506100c8610315565b6040805160208082528351818301528351919283929083019185019080838360005b838110156101025781810151838201526020016100ea565b50505050905090810190601f16801561012f5780820380516001836020036101000a031916815260200191505b509250505060405180910390f35b34801561014957600080fd5b5061016e73ffffffffffffffffffffffffffffffffffffffff600435166024356103a3565b604080519115158252519081900360200190f35b34801561018e57600080fd5b50610197610416565b60408051918252519081900360200190f35b3480156101b557600080fd5b5061016e73ffffffffffffffffffffffffffffffffffffffff6004358116906024351660443561041c565b3480156101ec57600080fd5b506101f56105ec565b6040805160ff9092168252519081900360200190f35b34801561021757600080fd5b5061016e73ffffffffffffffffffffffffffffffffffffffff600435166024356105f5565b34801561024857600080fd5b5061019773ffffffffffffffffffffffffffffffffffffffff60043516610718565b34801561027657600080fd5b506100c8610740565b34801561028b57600080fd5b5061016e73ffffffffffffffffffffffffffffffffffffffff6004351660243561079b565b3480156102bc57600080fd5b5061016e73ffffffffffffffffffffffffffffffffffffffff600435166024356108a1565b3480156102ed57600080fd5b5061019773ffffffffffffffffffffffffffffffffffffffff60043581169060243516610954565b6003805460408051602060026001851615610100026000190190941693909304601f8101849004840282018401909252818152929183018282801561039b5780601f106103705761010080835404028352916020019161039b565b820191906000526020600020905b81548152906001019060200180831161037e57829003601f168201915b505050505081565b33600081815260026020908152604080832073ffffffffffffffffffffffffffffffffffffffff8716808552908352818420869055815186815291519394909390927f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925928290030190a350600192915050565b60015490565b73ffffffffffffffffffffffffffffffffffffffff831660009081526020819052604081205482111561044e57600080fd5b73ffffffffffffffffffffffffffffffffffffffff8416600090815260026020908152604080832033845290915290205482111561048b57600080fd5b73ffffffffffffffffffffffffffffffffffffffff831615156104ad57600080fd5b73ffffffffffffffffffffffffffffffffffffffff84166000908152602081905260409020546104e3908363ffffffff61098c16565b73ffffffffffffffffffffffffffffffffffffffff8086166000908152602081905260408082209390935590851681522054610525908363ffffffff61099e16565b73ffffffffffffffffffffffffffffffffffffffff808516600090815260208181526040808320949094559187168152600282528281203382529091522054610574908363ffffffff61098c16565b73ffffffffffffffffffffffffffffffffffffffff808616600081815260026020908152604080832033845282529182902094909455805186815290519287169391927fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef929181900390910190a35060019392505050565b60055460ff1681565b33600090815260026020908152604080832073ffffffffffffffffffffffffffffffffffffffff861684529091528120548083106106635733600090815260026020908152604080832073ffffffffffffffffffffffffffffffffffffffff881684529091528120556106a5565b610673818463ffffffff61098c16565b33600090815260026020908152604080832073ffffffffffffffffffffffffffffffffffffffff891684529091529020555b33600081815260026020908152604080832073ffffffffffffffffffffffffffffffffffffffff89168085529083529281902054815190815290519293927f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925929181900390910190a35060019392505050565b73ffffffffffffffffffffffffffffffffffffffff1660009081526020819052604090205490565b6004805460408051602060026001851615610100026000190190941693909304601f8101849004840282018401909252818152929183018282801561039b5780601f106103705761010080835404028352916020019161039b565b336000908152602081905260408120548211156107b757600080fd5b73ffffffffffffffffffffffffffffffffffffffff831615156107d957600080fd5b336000908152602081905260409020546107f9908363ffffffff61098c16565b336000908152602081905260408082209290925573ffffffffffffffffffffffffffffffffffffffff851681522054610838908363ffffffff61099e16565b73ffffffffffffffffffffffffffffffffffffffff8416600081815260208181526040918290209390935580518581529051919233927fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef9281900390910190a350600192915050565b33600090815260026020908152604080832073ffffffffffffffffffffffffffffffffffffffff861684529091528120546108e2908363ffffffff61099e16565b33600081815260026020908152604080832073ffffffffffffffffffffffffffffffffffffffff89168085529083529281902085905580519485525191937f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925929081900390910190a350600192915050565b73ffffffffffffffffffffffffffffffffffffffff918216600090815260026020908152604080832093909416825291909152205490565b60008282111561099857fe5b50900390565b818101828110156109ab57fe5b929150505600a165627a7a723058201e225fdce031a1871f100e995e1c6d3ae67d9f36ec9575eabf0f6430119aa9a3002960806040526008805460ff1916905534801561001a57600080fd5b5060405160e08061160583398101604090815281516020830151918301516060840151608085015160a086015160c09096015160008054600160a060020a0319163317815594969394929391928190849089908990899089908890831161008057600080fd5b600160a060020a038216151561009557600080fd5b600160a060020a03811615156100aa57600080fd5b60039290925560028054600160a060020a03928316600160a060020a03199182161790915560018054929093169116179055428210156100e957600080fd5b818110156100f657600080fd5b6005919091556006556000811161010c57600080fd5b6007556000811161011c57600080fd5b600254600160a060020a031661013061019a565b600160a060020a03909116815260405190819003602001906000f08015801561015d573d6000803e3d6000fd5b50600a8054600160a060020a031916600160a060020a03929092169190911790556009558281111561018e57600080fd5b505050505050506101aa565b6040516108b280610d5383390190565b610b9a806101b96000396000f3006080604052600436106100fb5763ffffffff7c01000000000000000000000000000000000000000000000000000000006000350416631515bc2b81146101065780632c4e722e1461012f578063355274ea14610156578063401938831461016b5780634042b66f146101805780634b6753bc146101955780634bb278f3146101aa5780634f935945146101bf578063521eb273146101d4578063715018a6146102125780637d3d6522146102275780638d4e40831461023c5780638da5cb5b14610251578063b5545a3c14610266578063b7a8807c1461027b578063ec8ac4d814610290578063f2fde38b146102b1578063fc0c546a146102df575b610104336102f4565b005b34801561011257600080fd5b5061011b6103a3565b604080519115158252519081900360200190f35b34801561013b57600080fd5b506101446103ab565b60408051918252519081900360200190f35b34801561016257600080fd5b506101446103b1565b34801561017757600080fd5b506101446103b7565b34801561018c57600080fd5b506101446103bd565b3480156101a157600080fd5b506101446103c3565b3480156101b657600080fd5b506101046103c9565b3480156101cb57600080fd5b5061011b61046e565b3480156101e057600080fd5b506101e9610479565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b34801561021e57600080fd5b50610104610495565b34801561023357600080fd5b5061011b610526565b34801561024857600080fd5b5061011b610531565b34801561025d57600080fd5b506101e961053a565b34801561027257600080fd5b50610104610556565b34801561028757600080fd5b50610144610605565b61010473ffffffffffffffffffffffffffffffffffffffff600435166102f4565b3480156102bd57600080fd5b5061010473ffffffffffffffffffffffffffffffffffffffff6004351661060b565b3480156102eb57600080fd5b506101e961063b565b3460006103018383610657565b61030a82610686565b600454909150610320908363ffffffff6106a316565b60045561032d83826106b0565b6040805183815260208101839052815173ffffffffffffffffffffffffffffffffffffffff86169233927f623b3804fa71d67900d064613da8f94b9617215ee90799290593e1745087ad18929081900390910190a361038c8383610682565b6103946106ba565b61039e8383610682565b505050565b600654421190565b60035481565b60075481565b60095481565b60045481565b60065481565b60005473ffffffffffffffffffffffffffffffffffffffff1633146103ed57600080fd5b60085460ff16156103fd57600080fd5b6104056103a3565b151561041057600080fd5b610418610748565b6040517f6823b073d48d6e3a7d385eeb601452d680e74bb46afe3255a7d778f3a9b1768190600090a1600880547fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff00166001179055565b600754600454101590565b60025473ffffffffffffffffffffffffffffffffffffffff1681565b60005473ffffffffffffffffffffffffffffffffffffffff1633146104b957600080fd5b6000805460405173ffffffffffffffffffffffffffffffffffffffff909116917ff8df31144d9c2f0f6b59d69b8b98abd5459d07f2742c4df920b25aae33c6482091a2600080547fffffffffffffffffffffffff0000000000000000000000000000000000000000169055565b600954600454101590565b60085460ff1681565b60005473ffffffffffffffffffffffffffffffffffffffff1681565b60085460ff16151561056757600080fd5b61056f610526565b1561057957600080fd5b600a54604080517f51cff8d9000000000000000000000000000000000000000000000000000000008152336004820152905173ffffffffffffffffffffffffffffffffffffffff909216916351cff8d99160248082019260009290919082900301818387803b1580156105eb57600080fd5b505af11580156105ff573d6000803e3d6000fd5b50505050565b60055481565b60005473ffffffffffffffffffffffffffffffffffffffff16331461062f57600080fd5b6106388161093b565b50565b60015473ffffffffffffffffffffffffffffffffffffffff1681565b61066182826109ea565b600754600454610677908363ffffffff6106a316565b111561068257600080fd5b5050565b600061069d60035483610a1390919063ffffffff16565b92915050565b8181018281101561069d57fe5b6106828282610a3c565b600a54604080517ff340fa01000000000000000000000000000000000000000000000000000000008152336004820152905173ffffffffffffffffffffffffffffffffffffffff9092169163f340fa01913491602480830192600092919082900301818588803b15801561072d57600080fd5b505af1158015610741573d6000803e3d6000fd5b5050505050565b610750610526565b1561089657600a60009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff166343d726d66040518163ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401600060405180830381600087803b1580156107db57600080fd5b505af11580156107ef573d6000803e3d6000fd5b50505050600a60009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16639af6549a6040518163ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401600060405180830381600087803b15801561087957600080fd5b505af115801561088d573d6000803e3d6000fd5b50505050610935565b600a60009054906101000a900473ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16638c52dc416040518163ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401600060405180830381600087803b15801561091c57600080fd5b505af1158015610930573d6000803e3d6000fd5b505050505b6109395b565b73ffffffffffffffffffffffffffffffffffffffff8116151561095d57600080fd5b6000805460405173ffffffffffffffffffffffffffffffffffffffff808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080547fffffffffffffffffffffffff00000000000000000000000000000000000000001673ffffffffffffffffffffffffffffffffffffffff92909216919091179055565b60055442101580156109fe57506006544211155b1515610a0957600080fd5b6106828282610a66565b6000821515610a245750600061069d565b50818102818382811515610a3457fe5b041461069d57fe5b6001546106829073ffffffffffffffffffffffffffffffffffffffff16838363ffffffff610a9416565b73ffffffffffffffffffffffffffffffffffffffff82161515610a8857600080fd5b80151561068257600080fd5b8273ffffffffffffffffffffffffffffffffffffffff1663a9059cbb83836040518363ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401808373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200182815260200192505050602060405180830381600087803b158015610b3757600080fd5b505af1158015610b4b573d6000803e3d6000fd5b505050506040513d6020811015610b6157600080fd5b5051151561039e57600080fd00a165627a7a723058204d6f9fc86c612b91dee5451442db3a51f33d990b02a6c7191c0c19fd231941da0029608060405234801561001057600080fd5b506040516020806108b2833981016040525160008054600160a060020a03191633179055600160a060020a038116151561004957600080fd5b6002805460ff19600160a060020a03939093166101000261010060a860020a03199091161791909116905561082f806100836000396000f3006080604052600436106100b95763ffffffff7c010000000000000000000000000000000000000000000000000000000060003504166338af3eed81146100be57806343d726d6146100fc57806351cff8d914610113578063685ca19414610141578063715018a6146101835780638c52dc41146101985780638da5cb5b146101ad5780639af6549a146101c2578063c19d93fb146101d7578063e3a9db1a14610210578063f2fde38b14610250578063f340fa011461027e575b600080fd5b3480156100ca57600080fd5b506100d361029f565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b34801561010857600080fd5b506101116102c0565b005b34801561011f57600080fd5b5061011173ffffffffffffffffffffffffffffffffffffffff60043516610338565b34801561014d57600080fd5b5061016f73ffffffffffffffffffffffffffffffffffffffff60043516610358565b604080519115158252519081900360200190f35b34801561018f57600080fd5b50610111610374565b3480156101a457600080fd5b50610111610405565b3480156101b957600080fd5b506100d361047e565b3480156101ce57600080fd5b5061011161049a565b3480156101e357600080fd5b506101ec610503565b604051808260028111156101fc57fe5b60ff16815260200191505060405180910390f35b34801561021c57600080fd5b5061023e73ffffffffffffffffffffffffffffffffffffffff6004351661050c565b60408051918252519081900360200190f35b34801561025c57600080fd5b5061011173ffffffffffffffffffffffffffffffffffffffff60043516610534565b61011173ffffffffffffffffffffffffffffffffffffffff60043516610561565b600254610100900473ffffffffffffffffffffffffffffffffffffffff1681565b60005473ffffffffffffffffffffffffffffffffffffffff1633146102e457600080fd5b60006002805460ff16908111156102f757fe5b1461030157600080fd5b6002805460ff1916811790556040517f1cdde67b72a90f19919ac732a437ac2f7a10fc128d28c2a6e525d89ce5cd9d3a90600090a1565b61034181610358565b151561034c57600080fd5b61035581610587565b50565b600060016002805460ff169081111561036d57fe5b1492915050565b60005473ffffffffffffffffffffffffffffffffffffffff16331461039857600080fd5b6000805460405173ffffffffffffffffffffffffffffffffffffffff909116917ff8df31144d9c2f0f6b59d69b8b98abd5459d07f2742c4df920b25aae33c6482091a2600080547fffffffffffffffffffffffff0000000000000000000000000000000000000000169055565b60005473ffffffffffffffffffffffffffffffffffffffff16331461042957600080fd5b60006002805460ff169081111561043c57fe5b1461044657600080fd5b6002805460ff191660011790556040517f599d8e5a83cffb867d051598c4d70e805d59802d8081c1c7d6dffc5b6aca2b8990600090a1565b60005473ffffffffffffffffffffffffffffffffffffffff1681565b6002805460ff16818111156104ab57fe5b146104b557600080fd5b60025460405173ffffffffffffffffffffffffffffffffffffffff6101009092049190911690303180156108fc02916000818181858888f19350505050158015610355573d6000803e3d6000fd5b60025460ff1681565b73ffffffffffffffffffffffffffffffffffffffff1660009081526001602052604090205490565b60005473ffffffffffffffffffffffffffffffffffffffff16331461055857600080fd5b61035581610680565b60006002805460ff169081111561057457fe5b1461057e57600080fd5b6103558161072f565b6000805473ffffffffffffffffffffffffffffffffffffffff1633146105ac57600080fd5b5073ffffffffffffffffffffffffffffffffffffffff811660009081526001602052604090205430318111156105de57fe5b73ffffffffffffffffffffffffffffffffffffffff82166000818152600160205260408082208290555183156108fc0291849190818181858888f1935050505015801561062f573d6000803e3d6000fd5b5060408051828152905173ffffffffffffffffffffffffffffffffffffffff8416917f7084f5476618d8e60b11ef0d7d3f06914655adb8793e28ff7f018d4c76d505d5919081900360200190a25050565b73ffffffffffffffffffffffffffffffffffffffff811615156106a257600080fd5b6000805460405173ffffffffffffffffffffffffffffffffffffffff808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080547fffffffffffffffffffffffff00000000000000000000000000000000000000001673ffffffffffffffffffffffffffffffffffffffff92909216919091179055565b6000805473ffffffffffffffffffffffffffffffffffffffff16331461075457600080fd5b5073ffffffffffffffffffffffffffffffffffffffff8116600090815260016020526040902054349061078d908263ffffffff6107f016565b73ffffffffffffffffffffffffffffffffffffffff8316600081815260016020908152604091829020939093558051848152905191927f2da466a7b24304f47e87fa2e1e5a81b9831ce54fec19055ce277ca2f39ba42c492918290030190a25050565b818101828110156107fd57fe5b929150505600a165627a7a72305820865737643a3b4678d6b2eb8bedc478d5bc763057c504b8ae369f65d7256c9ca30029",
+  "deployedBytecode": "0x60806040526004361060485763ffffffff7c01000000000000000000000000000000000000000000000000000000006000350416639c1e03a08114604d578063fc0c546a146088575b600080fd5b348015605857600080fd5b50605f609a565b6040805173ffffffffffffffffffffffffffffffffffffffff9092168252519081900360200190f35b348015609357600080fd5b50605f60b6565b60015473ffffffffffffffffffffffffffffffffffffffff1681565b60005473ffffffffffffffffffffffffffffffffffffffff16815600a165627a7a72305820d66832c32aaee522588f50420bcdd8099b4f91bd4e3f8fec426ebdd7297fd2e60029",
+  "sourceMap": "162:985:3:-;;;264:881;8:9:-1;5:2;;;30:1;27;20:12;5:2;264:881:3;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;866:100;;:::i;:::-;;;;;;;;;;;;;;-1:-1:-1;;;;;866:100:3;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;8:100;33:3;30:1;27:10;8:100;;;90:11;;;84:18;71:11;;;64:39;52:2;45:10;8:100;;;12:14;866:100:3;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;866:100:3;;;;;;;;;;;;;;;;;;;;;;23:1:-1;8:100;33:3;30:1;27:10;8:100;;;90:11;;;84:18;71:11;;;64:39;52:2;45:10;8:100;;;12:14;866:100:3;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;-1:-1;858:5:3;:108;;-1:-1:-1;;;;;;858:108:3;-1:-1:-1;;;;;858:108:3;;;;;;;;1042:12;;1062;;1082:5;;1095:6;;1109:4;;1121:5;1134;1012:128;;:::i;:::-;;;;;;;;;;;;;;;;;;;-1:-1:-1;;;;;1012:128:3;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;1012:128:3;;;8:9:-1;5:2;;;45:16;42:1;39;24:38;77:16;74:1;67:27;5:2;-1:-1;1000:9:3;:140;;-1:-1:-1;;;;;;1000:140:3;-1:-1:-1;;;;;1000:140:3;;;;;;;;;;-1:-1:-1;162:985:3;;-1:-1:-1;;;;;;;;;162:985:3;;;;;;;;;;;:::o;:::-;;;;;;;;;;:::o;:::-;;;;;;;",
+  "deployedSourceMap": "162:985:3:-;;;;;;;;;;;;;;;;;;;;;;;;;;;;224:35;;8:9:-1;5:2;;;30:1;27;20:12;5:2;224:35:3;;;;;;;;;;;;;;;;;;;;;;;193:27;;8:9:-1;5:2;;;30:1;27;20:12;5:2;193:27:3;;;;224:35;;;;;;:::o;193:27::-;;;;;;:::o",
+  "source": "pragma solidity ^0.4.18;\n\nimport './TrustFeedToken.sol';\nimport './TrustFeedCrowdsale.sol';\n\n// This is a 'wrapper'. It constructs the token, then the crowdsale.\ncontract TrustFeedCampaign {\n  TrustFeedToken public token;\n  TrustFeedCrowdsale public crowdsale;\n\n  constructor(\n    // The owner of the token\n    address _owner,\n    //// Owner address for crowdsale - can be different?\n    //address _wallet,\n    // Token name\n    string _name,\n    // Token symbol\n    string _symbol,\n    // The decimals for token\n    uint8 _decimals,\n    // The initial supply for the token\n    uint256 _initialSupply,\n    // Start time of crowdsale\n    uint256 _openingTime,\n    // End of crowdsale\n    uint256 _closingTime,\n    // Price\n    uint256 _rate,\n    // The hard cap\n    uint256 _cap,\n    // The soft cap\n    uint256 _goal\n  ) public {\n    // Create the token\n    token = new TrustFeedToken(\n      _name,\n      _symbol,\n      _decimals,\n      _initialSupply,\n      _owner);\n    // Create the crowdsale\n    crowdsale = new TrustFeedCrowdsale(\n      _openingTime,\n      _closingTime,\n      _rate,\n      _owner,\n      _cap,\n      token,\n      _goal);\n  }\n}\n",
+  "sourcePath": "/home/wetterj/truffle/contracts/TrustFeedCampaign.sol",
+  "ast": {
+    "absolutePath": "/home/wetterj/truffle/contracts/TrustFeedCampaign.sol",
+    "exportedSymbols": {
+      "TrustFeedCampaign": [
+        182
+      ]
+    },
+    "id": 183,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 127,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".18"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:3"
+      },
+      {
+        "absolutePath": "/home/wetterj/truffle/contracts/TrustFeedToken.sol",
+        "file": "./TrustFeedToken.sol",
+        "id": 128,
+        "nodeType": "ImportDirective",
+        "scope": 183,
+        "sourceUnit": 290,
+        "src": "26:30:3",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/wetterj/truffle/contracts/TrustFeedCrowdsale.sol",
+        "file": "./TrustFeedCrowdsale.sol",
+        "id": 129,
+        "nodeType": "ImportDirective",
+        "scope": 183,
+        "sourceUnit": 236,
+        "src": "57:34:3",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [
+          235,
+          289
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 182,
+        "linearizedBaseContracts": [
+          182
+        ],
+        "name": "TrustFeedCampaign",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "id": 131,
+            "name": "token",
+            "nodeType": "VariableDeclaration",
+            "scope": 182,
+            "src": "193:27:3",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_TrustFeedToken_$289",
+              "typeString": "contract TrustFeedToken"
+            },
+            "typeName": {
+              "contractScope": null,
+              "id": 130,
+              "name": "TrustFeedToken",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 289,
+              "src": "193:14:3",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_TrustFeedToken_$289",
+                "typeString": "contract TrustFeedToken"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 133,
+            "name": "crowdsale",
+            "nodeType": "VariableDeclaration",
+            "scope": 182,
+            "src": "224:35:3",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_TrustFeedCrowdsale_$235",
+              "typeString": "contract TrustFeedCrowdsale"
+            },
+            "typeName": {
+              "contractScope": null,
+              "id": 132,
+              "name": "TrustFeedCrowdsale",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 235,
+              "src": "224:18:3",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_TrustFeedCrowdsale_$235",
+                "typeString": "contract TrustFeedCrowdsale"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 180,
+              "nodeType": "Block",
+              "src": "828:317:3",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 165,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 156,
+                      "name": "token",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 131,
+                      "src": "858:5:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_TrustFeedToken_$289",
+                        "typeString": "contract TrustFeedToken"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "arguments": [
+                        {
+                          "argumentTypes": null,
+                          "id": 159,
+                          "name": "_name",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 137,
+                          "src": "892:5:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_string_memory_ptr",
+                            "typeString": "string memory"
+                          }
+                        },
+                        {
+                          "argumentTypes": null,
+                          "id": 160,
+                          "name": "_symbol",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 139,
+                          "src": "905:7:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_string_memory_ptr",
+                            "typeString": "string memory"
+                          }
+                        },
+                        {
+                          "argumentTypes": null,
+                          "id": 161,
+                          "name": "_decimals",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 141,
+                          "src": "920:9:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint8",
+                            "typeString": "uint8"
+                          }
+                        },
+                        {
+                          "argumentTypes": null,
+                          "id": 162,
+                          "name": "_initialSupply",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 143,
+                          "src": "937:14:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        {
+                          "argumentTypes": null,
+                          "id": 163,
+                          "name": "_owner",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 135,
+                          "src": "959:6:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_string_memory_ptr",
+                            "typeString": "string memory"
+                          },
+                          {
+                            "typeIdentifier": "t_string_memory_ptr",
+                            "typeString": "string memory"
+                          },
+                          {
+                            "typeIdentifier": "t_uint8",
+                            "typeString": "uint8"
+                          },
+                          {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          },
+                          {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        ],
+                        "id": 158,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "nodeType": "NewExpression",
+                        "src": "866:18:3",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_function_creation_nonpayable$_t_string_memory_ptr_$_t_string_memory_ptr_$_t_uint8_$_t_uint256_$_t_address_$returns$_t_contract$_TrustFeedToken_$289_$",
+                          "typeString": "function (string memory,string memory,uint8,uint256,address) returns (contract TrustFeedToken)"
+                        },
+                        "typeName": {
+                          "contractScope": null,
+                          "id": 157,
+                          "name": "TrustFeedToken",
+                          "nodeType": "UserDefinedTypeName",
+                          "referencedDeclaration": 289,
+                          "src": "870:14:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_contract$_TrustFeedToken_$289",
+                            "typeString": "contract TrustFeedToken"
+                          }
+                        }
+                      },
+                      "id": 164,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "functionCall",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "866:100:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_TrustFeedToken_$289",
+                        "typeString": "contract TrustFeedToken"
+                      }
+                    },
+                    "src": "858:108:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_TrustFeedToken_$289",
+                      "typeString": "contract TrustFeedToken"
+                    }
+                  },
+                  "id": 166,
+                  "nodeType": "ExpressionStatement",
+                  "src": "858:108:3"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 178,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 167,
+                      "name": "crowdsale",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 133,
+                      "src": "1000:9:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_TrustFeedCrowdsale_$235",
+                        "typeString": "contract TrustFeedCrowdsale"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "arguments": [
+                        {
+                          "argumentTypes": null,
+                          "id": 170,
+                          "name": "_openingTime",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 145,
+                          "src": "1042:12:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        {
+                          "argumentTypes": null,
+                          "id": 171,
+                          "name": "_closingTime",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 147,
+                          "src": "1062:12:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        {
+                          "argumentTypes": null,
+                          "id": 172,
+                          "name": "_rate",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 149,
+                          "src": "1082:5:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        {
+                          "argumentTypes": null,
+                          "id": 173,
+                          "name": "_owner",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 135,
+                          "src": "1095:6:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        {
+                          "argumentTypes": null,
+                          "id": 174,
+                          "name": "_cap",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 151,
+                          "src": "1109:4:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        {
+                          "argumentTypes": null,
+                          "id": 175,
+                          "name": "token",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 131,
+                          "src": "1121:5:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_contract$_TrustFeedToken_$289",
+                            "typeString": "contract TrustFeedToken"
+                          }
+                        },
+                        {
+                          "argumentTypes": null,
+                          "id": 176,
+                          "name": "_goal",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 153,
+                          "src": "1134:5:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          },
+                          {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          },
+                          {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          },
+                          {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          },
+                          {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          },
+                          {
+                            "typeIdentifier": "t_contract$_TrustFeedToken_$289",
+                            "typeString": "contract TrustFeedToken"
+                          },
+                          {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        ],
+                        "id": 169,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "nodeType": "NewExpression",
+                        "src": "1012:22:3",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_function_creation_nonpayable$_t_uint256_$_t_uint256_$_t_uint256_$_t_address_$_t_uint256_$_t_contract$_TrustFeedToken_$289_$_t_uint256_$returns$_t_contract$_TrustFeedCrowdsale_$235_$",
+                          "typeString": "function (uint256,uint256,uint256,address,uint256,contract TrustFeedToken,uint256) returns (contract TrustFeedCrowdsale)"
+                        },
+                        "typeName": {
+                          "contractScope": null,
+                          "id": 168,
+                          "name": "TrustFeedCrowdsale",
+                          "nodeType": "UserDefinedTypeName",
+                          "referencedDeclaration": 235,
+                          "src": "1016:18:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_contract$_TrustFeedCrowdsale_$235",
+                            "typeString": "contract TrustFeedCrowdsale"
+                          }
+                        }
+                      },
+                      "id": 177,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "functionCall",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "1012:128:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_TrustFeedCrowdsale_$235",
+                        "typeString": "contract TrustFeedCrowdsale"
+                      }
+                    },
+                    "src": "1000:140:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_TrustFeedCrowdsale_$235",
+                      "typeString": "contract TrustFeedCrowdsale"
+                    }
+                  },
+                  "id": 179,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1000:140:3"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 181,
+            "implemented": true,
+            "isConstructor": true,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 154,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 135,
+                  "name": "_owner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 181,
+                  "src": "311:14:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 134,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "311:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 137,
+                  "name": "_name",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 181,
+                  "src": "429:12:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 136,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "429:6:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 139,
+                  "name": "_symbol",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 181,
+                  "src": "467:14:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 138,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "467:6:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 141,
+                  "name": "_decimals",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 181,
+                  "src": "517:15:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint8",
+                    "typeString": "uint8"
+                  },
+                  "typeName": {
+                    "id": 140,
+                    "name": "uint8",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "517:5:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint8",
+                      "typeString": "uint8"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 143,
+                  "name": "_initialSupply",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 181,
+                  "src": "578:22:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 142,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "578:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 145,
+                  "name": "_openingTime",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 181,
+                  "src": "637:20:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 144,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "637:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 147,
+                  "name": "_closingTime",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 181,
+                  "src": "687:20:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 146,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "687:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 149,
+                  "name": "_rate",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 181,
+                  "src": "726:13:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 148,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "726:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 151,
+                  "name": "_cap",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 181,
+                  "src": "765:12:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 150,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "765:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 153,
+                  "name": "_goal",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 181,
+                  "src": "803:13:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 152,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "803:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "275:545:3"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 155,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "828:0:3"
+            },
+            "scope": 182,
+            "src": "264:881:3",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 183,
+        "src": "162:985:3"
+      }
+    ],
+    "src": "0:1148:3"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/wetterj/truffle/contracts/TrustFeedCampaign.sol",
+    "exportedSymbols": {
+      "TrustFeedCampaign": [
+        182
+      ]
+    },
+    "id": 183,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 127,
+        "literals": [
+          "solidity",
+          "^",
+          "0.4",
+          ".18"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:24:3"
+      },
+      {
+        "absolutePath": "/home/wetterj/truffle/contracts/TrustFeedToken.sol",
+        "file": "./TrustFeedToken.sol",
+        "id": 128,
+        "nodeType": "ImportDirective",
+        "scope": 183,
+        "sourceUnit": 290,
+        "src": "26:30:3",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/wetterj/truffle/contracts/TrustFeedCrowdsale.sol",
+        "file": "./TrustFeedCrowdsale.sol",
+        "id": 129,
+        "nodeType": "ImportDirective",
+        "scope": 183,
+        "sourceUnit": 236,
+        "src": "57:34:3",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [
+          235,
+          289
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 182,
+        "linearizedBaseContracts": [
+          182
+        ],
+        "name": "TrustFeedCampaign",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "id": 131,
+            "name": "token",
+            "nodeType": "VariableDeclaration",
+            "scope": 182,
+            "src": "193:27:3",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_TrustFeedToken_$289",
+              "typeString": "contract TrustFeedToken"
+            },
+            "typeName": {
+              "contractScope": null,
+              "id": 130,
+              "name": "TrustFeedToken",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 289,
+              "src": "193:14:3",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_TrustFeedToken_$289",
+                "typeString": "contract TrustFeedToken"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 133,
+            "name": "crowdsale",
+            "nodeType": "VariableDeclaration",
+            "scope": 182,
+            "src": "224:35:3",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_TrustFeedCrowdsale_$235",
+              "typeString": "contract TrustFeedCrowdsale"
+            },
+            "typeName": {
+              "contractScope": null,
+              "id": 132,
+              "name": "TrustFeedCrowdsale",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 235,
+              "src": "224:18:3",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_TrustFeedCrowdsale_$235",
+                "typeString": "contract TrustFeedCrowdsale"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 180,
+              "nodeType": "Block",
+              "src": "828:317:3",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 165,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 156,
+                      "name": "token",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 131,
+                      "src": "858:5:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_TrustFeedToken_$289",
+                        "typeString": "contract TrustFeedToken"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "arguments": [
+                        {
+                          "argumentTypes": null,
+                          "id": 159,
+                          "name": "_name",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 137,
+                          "src": "892:5:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_string_memory_ptr",
+                            "typeString": "string memory"
+                          }
+                        },
+                        {
+                          "argumentTypes": null,
+                          "id": 160,
+                          "name": "_symbol",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 139,
+                          "src": "905:7:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_string_memory_ptr",
+                            "typeString": "string memory"
+                          }
+                        },
+                        {
+                          "argumentTypes": null,
+                          "id": 161,
+                          "name": "_decimals",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 141,
+                          "src": "920:9:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint8",
+                            "typeString": "uint8"
+                          }
+                        },
+                        {
+                          "argumentTypes": null,
+                          "id": 162,
+                          "name": "_initialSupply",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 143,
+                          "src": "937:14:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        {
+                          "argumentTypes": null,
+                          "id": 163,
+                          "name": "_owner",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 135,
+                          "src": "959:6:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_string_memory_ptr",
+                            "typeString": "string memory"
+                          },
+                          {
+                            "typeIdentifier": "t_string_memory_ptr",
+                            "typeString": "string memory"
+                          },
+                          {
+                            "typeIdentifier": "t_uint8",
+                            "typeString": "uint8"
+                          },
+                          {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          },
+                          {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        ],
+                        "id": 158,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "nodeType": "NewExpression",
+                        "src": "866:18:3",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_function_creation_nonpayable$_t_string_memory_ptr_$_t_string_memory_ptr_$_t_uint8_$_t_uint256_$_t_address_$returns$_t_contract$_TrustFeedToken_$289_$",
+                          "typeString": "function (string memory,string memory,uint8,uint256,address) returns (contract TrustFeedToken)"
+                        },
+                        "typeName": {
+                          "contractScope": null,
+                          "id": 157,
+                          "name": "TrustFeedToken",
+                          "nodeType": "UserDefinedTypeName",
+                          "referencedDeclaration": 289,
+                          "src": "870:14:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_contract$_TrustFeedToken_$289",
+                            "typeString": "contract TrustFeedToken"
+                          }
+                        }
+                      },
+                      "id": 164,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "functionCall",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "866:100:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_TrustFeedToken_$289",
+                        "typeString": "contract TrustFeedToken"
+                      }
+                    },
+                    "src": "858:108:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_TrustFeedToken_$289",
+                      "typeString": "contract TrustFeedToken"
+                    }
+                  },
+                  "id": 166,
+                  "nodeType": "ExpressionStatement",
+                  "src": "858:108:3"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "id": 178,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "argumentTypes": null,
+                      "id": 167,
+                      "name": "crowdsale",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 133,
+                      "src": "1000:9:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_TrustFeedCrowdsale_$235",
+                        "typeString": "contract TrustFeedCrowdsale"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "argumentTypes": null,
+                      "arguments": [
+                        {
+                          "argumentTypes": null,
+                          "id": 170,
+                          "name": "_openingTime",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 145,
+                          "src": "1042:12:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        {
+                          "argumentTypes": null,
+                          "id": 171,
+                          "name": "_closingTime",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 147,
+                          "src": "1062:12:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        {
+                          "argumentTypes": null,
+                          "id": 172,
+                          "name": "_rate",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 149,
+                          "src": "1082:5:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        {
+                          "argumentTypes": null,
+                          "id": 173,
+                          "name": "_owner",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 135,
+                          "src": "1095:6:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          }
+                        },
+                        {
+                          "argumentTypes": null,
+                          "id": 174,
+                          "name": "_cap",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 151,
+                          "src": "1109:4:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        },
+                        {
+                          "argumentTypes": null,
+                          "id": 175,
+                          "name": "token",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 131,
+                          "src": "1121:5:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_contract$_TrustFeedToken_$289",
+                            "typeString": "contract TrustFeedToken"
+                          }
+                        },
+                        {
+                          "argumentTypes": null,
+                          "id": 176,
+                          "name": "_goal",
+                          "nodeType": "Identifier",
+                          "overloadedDeclarations": [],
+                          "referencedDeclaration": 153,
+                          "src": "1134:5:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": [
+                          {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          },
+                          {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          },
+                          {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          },
+                          {
+                            "typeIdentifier": "t_address",
+                            "typeString": "address"
+                          },
+                          {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          },
+                          {
+                            "typeIdentifier": "t_contract$_TrustFeedToken_$289",
+                            "typeString": "contract TrustFeedToken"
+                          },
+                          {
+                            "typeIdentifier": "t_uint256",
+                            "typeString": "uint256"
+                          }
+                        ],
+                        "id": 169,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": false,
+                        "lValueRequested": false,
+                        "nodeType": "NewExpression",
+                        "src": "1012:22:3",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_function_creation_nonpayable$_t_uint256_$_t_uint256_$_t_uint256_$_t_address_$_t_uint256_$_t_contract$_TrustFeedToken_$289_$_t_uint256_$returns$_t_contract$_TrustFeedCrowdsale_$235_$",
+                          "typeString": "function (uint256,uint256,uint256,address,uint256,contract TrustFeedToken,uint256) returns (contract TrustFeedCrowdsale)"
+                        },
+                        "typeName": {
+                          "contractScope": null,
+                          "id": 168,
+                          "name": "TrustFeedCrowdsale",
+                          "nodeType": "UserDefinedTypeName",
+                          "referencedDeclaration": 235,
+                          "src": "1016:18:3",
+                          "typeDescriptions": {
+                            "typeIdentifier": "t_contract$_TrustFeedCrowdsale_$235",
+                            "typeString": "contract TrustFeedCrowdsale"
+                          }
+                        }
+                      },
+                      "id": 177,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "kind": "functionCall",
+                      "lValueRequested": false,
+                      "names": [],
+                      "nodeType": "FunctionCall",
+                      "src": "1012:128:3",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_TrustFeedCrowdsale_$235",
+                        "typeString": "contract TrustFeedCrowdsale"
+                      }
+                    },
+                    "src": "1000:140:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_TrustFeedCrowdsale_$235",
+                      "typeString": "contract TrustFeedCrowdsale"
+                    }
+                  },
+                  "id": 179,
+                  "nodeType": "ExpressionStatement",
+                  "src": "1000:140:3"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 181,
+            "implemented": true,
+            "isConstructor": true,
+            "isDeclaredConst": false,
+            "modifiers": [],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 154,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 135,
+                  "name": "_owner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 181,
+                  "src": "311:14:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 134,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "311:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 137,
+                  "name": "_name",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 181,
+                  "src": "429:12:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 136,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "429:6:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 139,
+                  "name": "_symbol",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 181,
+                  "src": "467:14:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_string_memory_ptr",
+                    "typeString": "string"
+                  },
+                  "typeName": {
+                    "id": 138,
+                    "name": "string",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "467:6:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_string_storage_ptr",
+                      "typeString": "string"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 141,
+                  "name": "_decimals",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 181,
+                  "src": "517:15:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint8",
+                    "typeString": "uint8"
+                  },
+                  "typeName": {
+                    "id": 140,
+                    "name": "uint8",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "517:5:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint8",
+                      "typeString": "uint8"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 143,
+                  "name": "_initialSupply",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 181,
+                  "src": "578:22:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 142,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "578:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 145,
+                  "name": "_openingTime",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 181,
+                  "src": "637:20:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 144,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "637:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 147,
+                  "name": "_closingTime",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 181,
+                  "src": "687:20:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 146,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "687:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 149,
+                  "name": "_rate",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 181,
+                  "src": "726:13:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 148,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "726:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 151,
+                  "name": "_cap",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 181,
+                  "src": "765:12:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 150,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "765:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 153,
+                  "name": "_goal",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 181,
+                  "src": "803:13:3",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 152,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "803:7:3",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "275:545:3"
+            },
+            "payable": false,
+            "returnParameters": {
+              "id": 155,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "828:0:3"
+            },
+            "scope": 182,
+            "src": "264:881:3",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 183,
+        "src": "162:985:3"
+      }
+    ],
+    "src": "0:1148:3"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.4.24+commit.e67f0147.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "2.0.1",
+  "updatedAt": "2018-08-20T06:48:19.457Z"
+}
