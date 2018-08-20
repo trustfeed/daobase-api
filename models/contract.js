@@ -106,7 +106,7 @@ Contract.methods.makeDeployment = function (network, args) {
   return deploy
     .estimateGas()
     .then(cost => {
-      return { estimatedGas: cost, deployData: deploy.encodeABI() };
+      return { estimatedGas: cost, transaction: deploy.encodeABI() };
     })
     .then(o => {
       out = o;
