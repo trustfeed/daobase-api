@@ -56,42 +56,34 @@ export const post = (req, res) => {
 };
 
 export const put = (req, res) => {
-  if (!req.decoded.id) {
-    res.status(400).send({ message: 'missing user id' });
-    return;
-  }
+  authMiddleware(req, res, () => {
+    if (!req.decoded.id) {
+      res.status(400).send({ message: 'missing user id' });
+      return;
+    }
 
-  if (!req.params.id) {
-    res.status(400).send({ message: 'missing user id' });
-    return;
-  }
-
-  if (req.decoded.id.toString() !== req.params.id) {
-    res.status(401).send({ message: 'not autherised' });
-    return;
-  }
-
-  // If there is an email that is not verified for the current user
-  // Start varification process
-  // Move this to models/user
-  User.findOneById(req.decoded.id)
-    .then(user => {
-      if (!user) {
-        throw new te.TypedError(500, 'user not in database');
-      }
-      if (req.body.email && (!user.email || req.body.email !== user.email.address)) {
-        return user.addEmail(req.body.email);
-      }
-    }).then(user => {
-      if (req.body.name && req.body.name !== user.name) {
-        user.name = req.body.name;
-        return user.save();
-      } else {
-        return user;
-      }
-    })
-    .then(user =>
-      res.status(201).send({ message: 'updated' })
-    )
-    .catch(err => te.handleError(err, res));
+    // If there is an email that is not verified for the current user
+    // Start varification process
+    // Move this to models/user
+    User.findOneById(req.decoded.id)
+      .then(user => {
+        if (!user) {
+          throw new te.TypedError(500, 'user not in database');
+        }
+        if (req.body.email && (!user.email || req.body.email !== user.email.address)) {
+          return user.addEmail(req.body.email);
+        }
+      }).then(user => {
+        if (req.body.name && req.body.name !== user.name) {
+          user.name = req.body.name;
+          return user.save();
+        } else {
+          return user;
+        }
+      })
+      .then(user =>
+        res.status(201).send({ message: 'updated' })
+      )
+      .catch(err => te.handleError(err, res));
+  });
 };
