@@ -11,7 +11,7 @@ export const signUpload = (campaignId, prefix) => {
   let rand = (+new Date()).toString(36);
   const params = {
     Bucket: 'tokenadmin.work',
-    Key: prefix + '/' + campaignId + '-' + rand,
+    Key: prefix + '/' + campaignId + '-' + rand + '.pdf',
     Expires: 60,
     ContentType: 'application/pdf',
   };
