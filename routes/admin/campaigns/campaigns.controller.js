@@ -157,35 +157,11 @@ export const imageURL = (req, res) => {
       req.decoded.id,
       mongoose.Types.ObjectId(req.params.id))
     .then(camp => {
-<<<<<<< HEAD
       return s3.signUpload(req.params.id, 'images', extension, contentType);
     })
     .then(url => {
       res.status(201).send({ url });
     })
-=======
-      if (!camp) {
-        throw new te.TypedError(404, 'campaign not found');
-      } else if (!camp.owner.equals(req.decoded.id)) {
-        throw new te.TypedError(403, 'unauthorised');
-      } else {
-        campaign = camp;
-        return s3.signUpload(req.params.id, 'images', 'jpg', 'image/jpeg');
-      }
-    })
-    .then(u => {
-      imageURL = u;
-      if (campaign.imageURL) {
-	if (campaign.oldWhitepaper === undefined) {
-		campaign.oldWhitepaper = [];
-	}
-        campaign.oldImages.push(campaign.imageURL);
-      }
-      campaign.set({ imageURL: removeQuery(u) });
-      return campaign.save();
-    }).then(() =>
-      res.status(201).send({ url: imageURL }))
->>>>>>> refs/remotes/origin/master
     .catch(err =>
       te.handleError(err, res));
 };
@@ -206,35 +182,11 @@ export const pdfURL = (req, res) => {
 
   Campaign.findById(req.params.id)
     .then(camp => {
-<<<<<<< HEAD
       return s3.signUpload(req.params.id, 'whitepapers', extension, contentType);
     })
     .then(url => {
       res.status(201).send({ url });
     })
-=======
-      if (!camp) {
-        throw new te.TypedError(404, 'campaign not found');
-      } else if (!camp.owner.equals(req.decoded.id)) {
-        throw new te.TypedError(403, 'unauthorised');
-      } else {
-        campaign = camp;
-        return s3.signUpload(req.params.id, 'whitepapers', 'pdf', 'application/pdf');
-      }
-    })
-    .then(u => {
-      paperURL = u;
-      if (campaign.whitepaperURL) {
-	if (campaign.oldWhitepaper === undefined) {
-		campaign.oldWhitepaper = [];
-	}
-        campaign.oldWhitepaper.push(campaign.whitepaperURL);
-      }
-      campaign.set({ whitepaperURL: removeQuery(u) });
-      return campaign.save();
-    }).then(() =>
-      res.status(201).send({ url: paperURL }))
->>>>>>> refs/remotes/origin/master
     .catch(err =>
       te.handleError(err, res));
 };
