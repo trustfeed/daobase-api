@@ -41,10 +41,10 @@ export const post = (req, res) => {
 
   User.addCampaign(req.decoded.publicAddress)
     .then(campaign => Campaign.putOnChainData(req.decoded.publicAddress, campaign._id, req.body).save())
-    .then(campaign =>
+    .then(campaign => {
       console.log(campaign);
       res.status(201).send({ 'campaign_id': campaign.id })
-    )
+    })
     .catch(err => {
       te.handleError(err, res);
     });
