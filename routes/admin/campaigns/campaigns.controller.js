@@ -127,7 +127,7 @@ export const put = (req, res) => {
 
 const removeQuery = (u) => {
   const x = url.parse(u);
-  return x.protocol + '://' + x.host + x.pathname;
+  return x.protocol + '//' + x.host + x.pathname;
 };
 
 // This returns a presigned URL to upload an image
