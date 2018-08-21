@@ -16,7 +16,7 @@ export const signUpload = (campaignId, prefix, extension, type) => {
     ContentType: 'application/pdf',
   };
   return new Promise((resolve, reject) => {
-    s3.getSignedUrl('postObject', params, (err, url) => {
+    s3.getSignedUrl('putObject', params, (err, url) => {
       if (!err) {
         resolve(url);
       } else {
