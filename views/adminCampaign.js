@@ -59,8 +59,9 @@ const viewHosted = (c) => {
 export default (c) => {
   return {
     id: c._id,
+    type: "hostedCampaign",
     createdAt: Math.round(c.createdAt.getTime() / 1000),
     updatedAt: Math.round(c.updatedAt.getTime() / 1000),
-    hostedCampaign: viewHosted(c.hostedCampaign),
+    campaign: viewHosted(c.hostedCampaign),
   };
 };
