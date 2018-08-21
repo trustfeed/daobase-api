@@ -14,7 +14,6 @@ export const signUpload = (campaignId, prefix) => {
     Key: prefix + '/' + campaignId + '-' + rand,
     Expires: 60,
     ContentType: 'application/pdf',
-    Region: config.region.trim(),
   };
   return new Promise((resolve, reject) => {
     s3.getSignedUrl('putObject', params, (err, url) => {
