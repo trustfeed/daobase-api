@@ -86,7 +86,6 @@ Success should return 201. The fields that can be edited are
 | hardCap | Number | The maximum that can be raised. Must be greater than the softCap. |
 | rate | Number | The price of the token. |
 | network | String | The name of the network. Only rinkeby is supported now. |
-| version | String | The version of the campaign to use. Currently only 0.0.0 is supported. |
 
 ### Update a Campaigns Off-Chain Data
 ```bash

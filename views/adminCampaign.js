@@ -23,7 +23,6 @@ const viewOnChainData = (d) => {
       numberOfDecimals: d.numberOfDecimals,
       startingTime: startingTime,
       duration: d.duration,
-      version: d.version,
       rate: d.rate,
     };
   }
