@@ -3,35 +3,34 @@ import User from '../../../models/user';
 import Campaign from '../../../models/campaign';
 import view from '../../../views/adminCampaign';
 import * as s3 from '../../../models/s3';
-import url from 'url';
 import mongoose from 'mongoose';
 
-const updateCampaign = (oldCampaign, newCampaign) => {
-  oldCampaign.updatedAt = Date.now();
-
-  const toCheck = [
-    'network',
-    'softCap',
-    'hardCap',
-    'tokenName',
-    'tokenSymbol',
-    'numberOfDecimals',
-    'duration',
-    'totalSupply',
-    'version',
-    'rate',
-  ];
-
-  toCheck.map(field => {
-    if (newCampaign[field]) {
-      oldCampaign[field] = newCampaign[field];
-    }
-  });
-  if (newCampaign.startingTime) {
-    oldCampaign.startingTime = new Date(newCampaign.startingTime);
-  }
-  return oldCampaign;
-};
+// const updateCampaign = (oldCampaign, newCampaign) => {
+//  oldCampaign.updatedAt = Date.now();
+//
+//  const toCheck = [
+//    'network',
+//    'softCap',
+//    'hardCap',
+//    'tokenName',
+//    'tokenSymbol',
+//    'numberOfDecimals',
+//    'duration',
+//    'totalSupply',
+//    'version',
+//    'rate',
+//  ];
+//
+//  toCheck.map(field => {
+//    if (newCampaign[field]) {
+//      oldCampaign[field] = newCampaign[field];
+//    }
+//  });
+//  if (newCampaign.startingTime) {
+//    oldCampaign.startingTime = new Date(newCampaign.startingTime);
+//  }
+//  return oldCampaign;
+// };
 
 // Create an empty post for the logged in user
 export const post = (req, res) => {
@@ -41,8 +40,9 @@ export const post = (req, res) => {
   }
 
   User.addCampaign(req.decoded.publicAddress)
-    .then(campaign => updateCampaign(campaign, req.body).save())
+    .then(campaign => Campaign.putOnChainData(req.decoded.publicAddress, campaign._id, req.body).save())
     .then(campaign =>
+      console.log(campaign);
       res.status(201).send({ 'campaign_id': campaign.id })
     )
     .catch(err => {
