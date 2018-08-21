@@ -364,7 +364,8 @@ Campaign.statics.allPublic = function (offset) {
   if (offset) {
     q.updatedAt = { $lt: new Date(Number(Base64.decode(offset))) };
   }
-  return q
+  return this
+    .find(q)
     .sort({ updatedAt: 'desc' })
     .limit(pageSize)
     .exec()
@@ -381,7 +382,7 @@ Campaign.statics.publicById = function (campaignId) {
   return this.findOne({
     _id: campaignId,
     'hostedCampaign.campaignStatus': 'DEPLOYED',
-  });
+  }).exec();
 };
 
 module.exports = mongoose.model('Campaign', Campaign);
