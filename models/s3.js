@@ -13,6 +13,7 @@ export const signUpload = (campaignId, prefix) => {
     Bucket: 'tokenadmin.work',
     Key: prefix + '/' + campaignId + '-' + rand,
     Expires: 60,
+    ContentType: 'application/pdf',
   };
   return new Promise((resolve, reject) => {
     s3.getSignedUrl('putObject', params, (err, url) => {
