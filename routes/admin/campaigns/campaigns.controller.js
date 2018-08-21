@@ -156,6 +156,9 @@ export const imageURL = (req, res) => {
     .then(u => {
       imageURL = u;
       if (campaign.imageURL) {
+	if (campaign.oldWhitepaper === undefined) {
+		campaign.oldWhitepaper = [];
+	}
         campaign.oldImages.push(campaign.imageURL);
       }
       campaign.set({ imageURL: removeQuery(u) });
@@ -192,6 +195,9 @@ export const pdfURL = (req, res) => {
     .then(u => {
       paperURL = u;
       if (campaign.whitepaperURL) {
+	if (campaign.oldWhitepaper === undefined) {
+		campaign.oldWhitepaper = [];
+	}
         campaign.oldWhitepaper.push(campaign.whitepaperURL);
       }
       campaign.set({ whitepaperURL: removeQuery(u) });
