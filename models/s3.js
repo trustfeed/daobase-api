@@ -12,7 +12,7 @@ export const signUpload = (campaignId, prefix, extension, contentType) => {
   const params = {
     Bucket: 'tokenadmin.work',
     Key: prefix + '/' + campaignId + '-' + rand + '.' + extension,
-    Expires: 60 * 5,
+    Expires: 60,
     ContentType: contentType,
   };
   return new Promise((resolve, reject) => {
