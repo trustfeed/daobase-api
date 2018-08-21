@@ -1,7 +1,7 @@
 import AWS from 'aws-sdk';
 import config from '../config';
 
-export const signUpload = (campaignId, prefix) => {
+export const signUpload = (campaignId, prefix, extension, type) => {
   AWS.config.update({
     accessKeyId: config.accessKeyId.trim(),
     secretAccessKey: config.secretAccessKey.trim(),
@@ -11,12 +11,12 @@ export const signUpload = (campaignId, prefix) => {
   let rand = (+new Date()).toString(36);
   const params = {
     Bucket: 'tokenadmin.work',
-    Key: prefix + '/' + campaignId + '-' + rand + '.pdf',
+    Key: prefix + '/' + campaignId + '-' + rand + '.' + extension,
     Expires: 60,
-    ContentType: 'application/pdf',
+    ContentType: type,
   };
   return new Promise((resolve, reject) => {
-    s3.getSignedUrl('putObject', params, (err, url) => {
+    s3.getSignedUrl('postObject', params, (err, url) => {
       if (!err) {
         resolve(url);
       } else {
