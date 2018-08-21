@@ -77,7 +77,7 @@ User.statics.addCampaign = function (publicAddress) {
       if (!user) {
         throw new te.TypedError(404, 'unknown publicAddress');
       } else {
-        return Campaign.create(user._id);
+        return Campaign.createHostedDomain(user._id);
       }
     });
 };

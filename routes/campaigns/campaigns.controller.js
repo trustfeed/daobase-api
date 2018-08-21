@@ -4,7 +4,6 @@ import view from '../../views/adminCampaign';
 import Vote from '../../models/vote';
 import mongoose from 'mongoose';
 
-// TODO: Paginate + only active campaigns
 export const getAll = (req, res) => {
   Campaign.allPublic(req.query.offset)
     .then(data => {
@@ -21,7 +20,7 @@ export const get = (req, res) => {
     return;
   }
 
-  Campaign.findById(req.params.id)
+  Campaign.publicById(mongoose.Types.ObjectId(req.params.id))
     .then(campaign => {
       if (!campaign) {
         throw new te.TypedError(404, 'campaign not found');

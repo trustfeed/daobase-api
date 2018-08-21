@@ -62,15 +62,9 @@ export const get = (req, res) => {
     return;
   }
 
-  Campaign.findById(req.params.id)
+  Campaign.fetchHostedCampaign(req.decoded.id, mongoose.Types.ObjectId(req.params.id))
     .then(campaign => {
-      if (!campaign) {
-        throw new te.TypedError(404, 'campaign not found');
-      } else if (!campaign.owner.equals(req.decoded.id)) {
-        throw new te.TypedError(403, 'unauthorised');
-      } else {
-        res.status(200).send(view(campaign));
-      }
+      res.status(200).send(view(campaign));
     })
     .catch(err =>
       te.handleError(err, res)
@@ -84,16 +78,17 @@ export const getAll = (req, res) => {
     return;
   }
 
-  Campaign.findByOwner(req.decoded.id)
+  Campaign.findByOwner(req.decoded.id, req.query.offset)
     .then(cs => {
-      res.status(200).send({ campaigns: cs.map(view) });
+      cs.campaigns = cs.campaigns.map(view);
+      res.status(200).send(cs);
     })
     .catch(err =>
       te.handleError(err, res)
     );
 };
 
-export const put = (req, res) => {
+export const putOnChainData = (req, res) => {
   if (!req.decoded.id) {
     res.status(400).send({ message: 'missing user id' });
     return;
@@ -104,30 +99,43 @@ export const put = (req, res) => {
     return;
   }
 
-  // Get the existing campaign
-  Campaign.findById(req.params.id)
-    .then(campaign => {
-      if (!campaign) {
-        throw new te.TypedError(404, 'no such campaign');
-      } else if (!campaign.owner.equals(req.decoded.id)) {
-        throw new te.TypedError(403, 'unauthorised');
-      } else if (campaign.campaignStatus !== 'DRAFT') {
-        throw new te.TypedError(400, 'campaign is not a draft');
-      } else {
-        return updateCampaign(campaign, req.body).save();
-      }
-    })
-    .then(() => {
-      res.status(201).send({ message: 'updated' });
-    })
-    .catch(err =>
-      te.handleError(err, res)
-    );
+  if (req.body &&
+  req.body.startingTime &&
+  typeof req.body.startingTime == 'number') {
+    req.body.startingTime = new Date(req.body.startingTime * 1000);
+  }
+
+  Campaign.putOnChainData(
+    req.decoded.id,
+    mongoose.Types.ObjectId(req.params.id),
+    req.body,
+  ).then(() => {
+    res.status(201).send({ message: 'updated' });
+  }).catch(err =>
+    te.handleError(err, res)
+  );
 };
 
-const removeQuery = (u) => {
-  const x = url.parse(u);
-  return x.protocol + '://' + x.host + x.pathname;
+export const putOffChainData = (req, res) => {
+  if (!req.decoded.id) {
+    res.status(400).send({ message: 'missing user id' });
+    return;
+  }
+
+  if (!req.params.id) {
+    res.status(400).send({ message: 'missing campaign id' });
+    return;
+  }
+
+  Campaign.putOffChainData(
+    req.decoded.id,
+    mongoose.Types.ObjectId(req.params.id),
+    req.body,
+  ).then(() => {
+    res.status(201).send({ message: 'updated' });
+  }).catch(err =>
+    te.handleError(err, res)
+  );
 };
 
 // This returns a presigned URL to upload an image
@@ -141,27 +149,19 @@ export const imageURL = (req, res) => {
     return;
   }
 
-  let campaign, imageURL;
-  Campaign.findById(req.params.id)
+  const extension = req.body.extension || 'jpg';
+  const contentType = req.body.contentType || 'image/jpeg';
+
+  Campaign
+    .fetchHostedCampaign(
+      req.decoded.id,
+      mongoose.Types.ObjectId(req.params.id))
     .then(camp => {
-      if (!camp) {
-        throw new te.TypedError(404, 'campaign not found');
-      } else if (!camp.owner.equals(req.decoded.id)) {
-        throw new te.TypedError(403, 'unauthorised');
-      } else {
-        campaign = camp;
-        return s3.signUpload(req.params.id, 'images');
-      }
+      return s3.signUpload(req.params.id, 'images', extension, contentType);
     })
-    .then(u => {
-      imageURL = u;
-      if (campaign.imageURL) {
-        campaign.oldImages.push(campaign.imageURL);
-      }
-      campaign.set({ imageURL: removeQuery(u) });
-      return campaign.save();
-    }).then(() =>
-      res.status(201).send({ url: imageURL }))
+    .then(url => {
+      res.status(201).send({ url });
+    })
     .catch(err =>
       te.handleError(err, res));
 };
@@ -177,27 +177,16 @@ export const pdfURL = (req, res) => {
     return;
   }
 
-  let campaign, paperURL;
+  const extension = req.body.extension || 'pdf';
+  const contentType = req.body.contentType || 'application/pdf';
+
   Campaign.findById(req.params.id)
     .then(camp => {
-      if (!camp) {
-        throw new te.TypedError(404, 'campaign not found');
-      } else if (!camp.owner.equals(req.decoded.id)) {
-        throw new te.TypedError(403, 'unauthorised');
-      } else {
-        campaign = camp;
-        return s3.signUpload(req.params.id, 'whitepapers');
-      }
+      return s3.signUpload(req.params.id, 'whitepapers', extension, contentType);
     })
-    .then(u => {
-      paperURL = u;
-      if (campaign.whitepaperURL) {
-        campaign.oldWhitepaper.push(campaign.whitepaperURL);
-      }
-      campaign.set({ whitepaperURL: removeQuery(u) });
-      return campaign.save();
-    }).then(() =>
-      res.status(201).send({ url: paperURL }))
+    .then(url => {
+      res.status(201).send({ url });
+    })
     .catch(err =>
       te.handleError(err, res));
 };
@@ -245,7 +234,10 @@ export const deploy = (req, res) => {
     return;
   }
 
-  Campaign.deploy(req.decoded.id, mongoose.Types.ObjectId(req.params.id))
+  Campaign.deploy(
+    req.decoded.id,
+    mongoose.Types.ObjectId(req.params.id),
+  )
     .then(o => res.status(200).send(o))
     .catch(e => te.handleError(e, res));
 };
@@ -271,6 +263,6 @@ export const finaliseDeployment = (req, res) => {
     mongoose.Types.ObjectId(req.params.id),
     blockNumber,
     transactionIndex)
-    .then(o => res.status(200).send({message: 'finalised'}))
+    .then(o => res.status(200).send({ message: 'finalised' }))
     .catch(e => te.handleError(e, res));
 };

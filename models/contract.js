@@ -99,7 +99,6 @@ Contract.statics.migrateAll = function () {
 };
 
 Contract.methods.makeDeployment = function (network, args) {
-  let out;
   const web3 = web3OnNetwork(network);
   const contract = new web3.eth.Contract(JSON.parse(this.abi));
   const deploy = contract.deploy({ data: this.bytecode, arguments: args });
@@ -107,17 +106,6 @@ Contract.methods.makeDeployment = function (network, args) {
     .estimateGas()
     .then(cost => {
       return { estimatedGas: cost, transaction: deploy.encodeABI() };
-    })
-    .then(o => {
-      out = o;
-      return web3.eth.sendTransaction(
-        { from: '0x6706F448034E7f3eFF07fA31D6B3EB2dCf8149c8',
-          data: out.deployData,
-          gas: 2 * out.estimatedGas,
-        });
-    })
-    .then(() => {
-      return out;
     });
 };
 

@@ -17,7 +17,9 @@ export function post (req, res) {
     .then(user => {
       if (!user) {
         throw new te.TypedError(404, 'public address not found');
-      } else {
+      }
+   
+      try {
         const msg = `I am signing my one-time nonce: ${user.nonce}`;
         
         // We now are in possession of msg, publicAddress and signature. We
@@ -42,6 +44,8 @@ export function post (req, res) {
         } else {
           throw new te.TypedError(401, 'signature verification failed');
         }
+      } catch (err) {
+        throw new te.TypedError(401, 'signature verification failed');
       }
     })
     .then(user => {

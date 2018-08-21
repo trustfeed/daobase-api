@@ -1,37 +1,66 @@
+const viewDeployedContract = (c) => {
+  if (!c) {
+    return undefined;
+  } else {
+    return { address: c.address, abi: JSON.parse(c.abi) };
+  }
+};
+
+const viewOnChainData = (d) => {
+  if (!d) {
+    return undefined;
+  } else {
+    let startingTime;
+    if (d.startingTime) {
+      startingTime = Math.round(d.startingTime.getTime() / 1000);
+    }
+    return {
+      network: d.network,
+      softCap: d.softCap,
+      hardCap: d.hardCap,
+      tokenName: d.tokenName,
+      tokenSymbol: d.tokenSymbol,
+      numberOfDecimals: d.numberOfDecimals,
+      startingTime: startingTime,
+      duration: d.duration,
+      version: d.version,
+      rate: d.rate,
+    };
+  }
+};
+
+const viewOffChainData = (d) => {
+  if (!d) {
+    return undefined;
+  } else {
+    return {
+      imageURL: d.imageURL,
+      whitepaperURL: d.whitepaperURL,
+      description: d.description,
+      keywords: d.keywords,
+    };
+  }
+};
+
+const viewHosted = (c) => {
+  if (!c) {
+    return undefined;
+  } else {
+    return {
+      campaignStatus: c.campaignStatus,
+      tokenContract: viewDeployedContract(c.tokenContract),
+      crowdsaleContract: viewDeployedContract(c.crowdsaleContract),
+      onChainData: viewOnChainData(c.onChainData),
+      offChainData: viewOffChainData(c.offChainData),
+    };
+  }
+};
+
 export default (c) => {
-  let out = {};
-  out.id = c._id;
-  out.createdAt = Math.round(c.createdAt.getTime() / 1000);
-  out.updatedAt = Math.round(c.updatedAt.getTime() / 1000);
-  if (c.startingTime) {
-    out.startingTime = c.startingTime.getTime();
-  }
-
-  const toOutput = [
-    'network',
-    'campaignStatus',
-    'softCap',
-    'hardCap',
-    'tokenName',
-    'tokenSymbol',
-    'numberOfDecimals',
-    'duration',
-    'totalSupply',
-    'imageURL',
-    'whitepaperURL',
-    'version',
-    'status',
-  ];
-
-  toOutput.map(field => {
-    out[field] = c[field];
-  });
-
-  if (c.tokenContract) {
-    out.tokenContract = { address: c.tokenContract.address, abi: JSON.parse(c.tokenContract.abi) };
-  }
-  if (c.crowdsaleContract) {
-    out.crowdsaleContract = { address: c.crowdsaleContract.address, abi: JSON.parse(c.crowdsaleContract.abi) };
-  }
-  return out;
+  return {
+    id: c._id,
+    createdAt: Math.round(c.createdAt.getTime() / 1000),
+    updatedAt: Math.round(c.updatedAt.getTime() / 1000),
+    hostedCampaign: viewHosted(c.hostedCampaign),
+  };
 };

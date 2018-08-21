@@ -68,9 +68,9 @@ On success it should return 200 and `{"campaigns": [CAMPAIGN_OBJECTS]}`.
 curl -H 'x-access-token: fdsafds' -XGET ${HOST}/admin/campaigns/${ID}
 ```
 
-### Update a Campaing
+### Update a Campaigns On-Chain Data
 ```bash
-curl -H 'x-access-token: fdsaf' -XPUT ${HOST}/admin/campaigns/${ID} -H 'content-type: application/json' --data '{ "tokenSymbol" : "TFT" }'
+curl -H 'x-access-token: fdsaf' -XPUT ${HOST}/admin/campaigns/${ID}/on-chain-data -H 'content-type: application/json' --data '{ "tokenSymbol" : "TFT" }'
 ```
 
 Success should return 201. The fields that can be edited are
@@ -84,18 +84,39 @@ Success should return 201. The fields that can be edited are
 | duration | Number | The number of days the campaign will run. Must be greater than 1. |
 | softCap | Number | The minimum to be raised. Must be greater than 0. |
 | hardCap | Number | The maximum that can be raised. Must be greater than the softCap. |
+| rate | Number | The price of the token. |
+| network | String | The name of the network. Only rinkeby is supported now. |
+| version | String | The version of the campaign to use. Currently only 0.0.0 is supported. |
+
+### Update a Campaigns Off-Chain Data
+```bash
+curl -H 'x-access-token: fdsaf' -XPUT ${HOST}/admin/campaigns/${ID}/off-chain-data -H 'content-type: application/json' --data '{ "description" : "My amazing crowdsale" }'
+```
+
+Success should return 201. The fields that can be edited are
+
+| Field | Type | Description |
+| --- | --- | --- |
+| imageURL | String | The url for the cover image. |
+| whitePaperUrl | String | The url for the white paper. |
+| description | String | A short description of the campaign. |
+| keywords | [String] | A list of keywords for the campaign. |
 
 ### Upload an image for a Campaign
 ```bash
-curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/campaigns/${ID}/image
+curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/campaigns/${ID}/image -H 'content-type: application/json' --data '{"extension": "png", "contentType": "image/png" }'
 ```
+
+The extension and contentType is optional. Defaults to jpg and image/jpeg.
 
 On success you should get 201 and `{"url" : "https://tokenadmin.work.s3/fdsafd" }`
 
-### Upload a whitepaper for a Campaign
+### Upload a Whitepaper for a Campaign
 ```bash
-curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/campaigns/${ID}/whitepaper
+curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/campaigns/${ID}/whitepaper -H 'content-type: application/json' --data '{"extension": "pdf", "contentType": "application/pdf" }'
 ```
+
+The extension and contentType is optional. Defaults to pdf and application/pdf.
 
 On success you should get 201 and `{"url" : "https://tokenadmin.work.s3/fdsafd" }`
 
@@ -194,86 +215,5 @@ CURL -H 'x-access-token: fdsa' ${HOST}/campaign/${CAMPAIGN_ID}/vote
 To get the vote counts for a campaign
 ```bash
 CURL -XGET -H 'x-access-token: fdsa' ${HOST}/campaign/${CAMPAIGN_ID}/votes
-```
-
-# Split the campaign APIs
-
-The smart contract and off-chain data will be seperated. As this data needs to be able to refer to the same object it will be implemented as inner objects in mongoose.
-
-## Creating a new campaign
-
-Post to `admin/campaigns/` to create an empty campaign.
-
-## Smart Contract Data
-
-Just the stuff that will go onto the blockchain. This can be edited during the 'draft' stage, but cannot be changed once the contract is deployed. For example;
-
-```json
-{
-  "network": "rinkeby",
-  "tokenName": "Some amazing token",
-  "tokenSymbol": "AZT",
-  "numberOfDecimals": 18,
-  "startingTime": 1232142,
-  "duration": 20,
-  "rate": 1,
-  "softCap": 10,
-  "hardCap": 100
-}
-```
-
-## Off-chain Data
-
-The off-chain data is stored in a different object. This can be edited after the draft stage, but the changes must be reviewed by an admin. Example of data;
-
-```json
-{
-  "imageUrl": "fdsfad.s3",
-  "whitePaperUrl": "fdsfad.s3",
-  "description": "This crowdsale is amazing",
-  "keywords": ["amazing", "crowdsale"]
-}
-```
-
-## Putting it all Together
-
-The complete object will be something like this;
-
-```json
-{
-  "status": "DRAFT",
-  "createdAt": 1232141,
-  "updatedAt": 1332141,
-  "onChainData": {},
-  "offChainData": {},
-  "tokenContract": {
-    "address": "0xFD43..."
-    "abi": {}
-  }
-  "crowdsaleContract": {
-    "address": "0xFD43..."
-    "abi": {}
-  }
-}
-```
-
-## APIs
-
-### Create a new one
-
-```bash
-curl -XPOST -H 'x-access-token: fdsa' ${HOST}/admin/campaigns
-```
-
-### Update the On-Chain Data
-
-```bash
-curl -XPOST -H 'x-access-token: fdsa' ${HOST}/admin/campaigns/${ID}/on-chain -XPUT -H 'content-type: application/json' --data {}
-```
-
-### Update the Off-Chain Data
-
-```bash
-curl -XPOST -H 'x-access-token: fdsa' ${HOST}/admin/campaigns/${ID}/off-chain -XPUT -H 'content-type: application/json' --data {}
 ```
 
