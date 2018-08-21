@@ -150,7 +150,7 @@ export const imageURL = (req, res) => {
         throw new te.TypedError(403, 'unauthorised');
       } else {
         campaign = camp;
-        return s3.signUpload(req.params.id, 'images');
+        return s3.signUpload(req.params.id, 'images', 'jpg', 'image/jpeg');
       }
     })
     .then(u => {
@@ -189,7 +189,7 @@ export const pdfURL = (req, res) => {
         throw new te.TypedError(403, 'unauthorised');
       } else {
         campaign = camp;
-        return s3.signUpload(req.params.id, 'whitepapers');
+        return s3.signUpload(req.params.id, 'whitepapers', 'pdf', 'application/pdf');
       }
     })
     .then(u => {
