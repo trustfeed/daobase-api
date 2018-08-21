@@ -11,9 +11,9 @@ export const signUpload = (campaignId, prefix, extension, type) => {
   let rand = (+new Date()).toString(36);
   const params = {
     Bucket: 'tokenadmin.work',
-    Key: prefix + '/' + campaignId + '-' + rand + '.' + 'pdf',
+    Key: prefix + '/' + campaignId + '-' + rand + '.' + extension,
     Expires: 60,
-    ContentType: 'application/pdf',
+    ContentType: type,
   };
   return new Promise((resolve, reject) => {
     s3.getSignedUrl('putObject', params, (err, url) => {
