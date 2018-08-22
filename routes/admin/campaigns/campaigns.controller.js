@@ -5,33 +5,6 @@ import view from '../../../views/adminCampaign';
 import * as s3 from '../../../models/s3';
 import mongoose from 'mongoose';
 
-// const updateCampaign = (oldCampaign, newCampaign) => {
-//  oldCampaign.updatedAt = Date.now();
-//
-//  const toCheck = [
-//    'network',
-//    'softCap',
-//    'hardCap',
-//    'tokenName',
-//    'tokenSymbol',
-//    'numberOfDecimals',
-//    'duration',
-//    'totalSupply',
-//    'version',
-//    'rate',
-//  ];
-//
-//  toCheck.map(field => {
-//    if (newCampaign[field]) {
-//      oldCampaign[field] = newCampaign[field];
-//    }
-//  });
-//  if (newCampaign.startingTime) {
-//    oldCampaign.startingTime = new Date(newCampaign.startingTime);
-//  }
-//  return oldCampaign;
-// };
-
 // Create an empty post for the logged in user
 export const post = (req, res) => {
   if (!req.decoded || !req.decoded.publicAddress) {
@@ -205,6 +178,12 @@ export const submitForReview = (req, res) => {
     res.status(400).send({ message: 'missing campaign id' });
     return;
   }
+
+  const userId = req.decoded.id;
+  const campaignId = mongoose.Types.ObjectId(req.params.id);
+  setTimeout(() => {
+    Campaign.acceptReview(userId, campaignId);
+  }, 60 * 1000);
 
   Campaign
     .submitForReview(req.decoded.id, mongoose.Types.ObjectId(req.params.id))

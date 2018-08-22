@@ -102,7 +102,7 @@ const HostedCampaign = new Schema({
   },
   walletContract: {
     type: DeployedContract,
-    required: true,
+    required: false,
   },
   onChainData: {
     type: OnChainData,
