@@ -161,7 +161,9 @@ export const imageURL = (req, res) => {
       return s3.signUpload(req.params.id, 'images', extension, contentType);
     })
     .then(url => {
-      res.status(201).send({ url });
+      const uploadUrl = url;
+      const viewUrl = uploadUrl.split(/[?#]/)[0];
+      res.status(201).send({ uploadUrl, viewUrl });
     })
     .catch(err =>
       te.handleError(err, res));
@@ -186,7 +188,9 @@ export const pdfURL = (req, res) => {
       return s3.signUpload(req.params.id, 'whitepapers', extension, contentType);
     })
     .then(url => {
-      res.status(201).send({ url });
+      const uploadUrl = url;
+      const viewUrl = uploadUrl.split(/[?#]/)[0];
+      res.status(201).send({ uploadUrl, viewUrl });
     })
     .catch(err =>
       te.handleError(err, res));
