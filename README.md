@@ -44,6 +44,8 @@ curl -XPOST ${HOST}/verify/email -H 'content-type: application/json' --data '{ "
 
 The token will be provided as part of the emailed link. The token is valid for 24 hours.
 
+The response will include a field type which will be one of; `SUCCESS`, `INVALID_TOKEN`, `EXPIRED_TOKEN` or `VERIFIED_TOKEN`.
+
 ## Admin Campaigns
 
 These APIs are to create, modify and deploy campaigns on the platform. The user must be logged in. Include the JWT in the header as 'x-access-token'.
