@@ -44,7 +44,6 @@ export const post = (req, res) => {
       return Campaign.putOnChainData(req.decoded.id, campaign._id, req.body);
     })
     .then(campaign => {
-      console.log(campaign);
       res.status(201).send({ 'campaign_id': campaign.id });
     })
     .catch(err => {

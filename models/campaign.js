@@ -26,6 +26,7 @@ const OnChainData = new Schema({
   },
   network: {
     type: String,
+    enum: ['local', 'rinkeby'],
     required: true,
     default: ['rinkeby'],
   },
@@ -243,7 +244,6 @@ Campaign.methods.makeDeployment = function () {
       if (!contract) {
         throw new te.TypedError(500, 'error finding contract');
       }
-      console.log(this);
       const startTime = this.hostedCampaign.onChainData.startingTime.getTime();
       return contract.makeDeployment(
         this.hostedCampaign.onChainData.network,
@@ -280,15 +280,13 @@ Campaign.statics.deploy = function (userId, campaignId) {
     });
 };
 
-// Refactor this mess. Maybe Async await syntax will help.
-Campaign.statics.finaliseDeployment = function (userId, campaignId, blockNumber, transactionIndex) {
-  let campaign, campaignContract, web3;
-  let token = {};
-  let crowdsale = {};
-
+Campaign.statics.finaliseDeployment = async function (userId, campaignId, blockNumber, transactionIndex) {
   const validateTransaction = (deployment) => {
-    const expectedInput = deployment.deployData;
+    const expectedInput = deployment.transaction;
     return web3.eth.getTransactionFromBlock(blockNumber, transactionIndex)
+      .catch(() => {
+        throw new te.TypedError(400, 'cannot look up that block number and transaction index');
+      })
       .then(transaction => {
         if (!transaction) {
           throw new te.TypedError(400, 'no such transaction');
@@ -310,52 +308,41 @@ Campaign.statics.finaliseDeployment = function (userId, campaignId, blockNumber,
   const getCampaignContract = (receipt) => {
     return Contract.findOne({
       name: 'TrustFeedCampaign',
-      version: this.hostedCampaign.onChainData.version,
+      version: campaign.hostedCampaign.onChainData.version,
     }).exec()
       .then(c => {
-        campaignContract = new web3.eth.Contract(JSON.parse(c.abi), receipt.contractAddress);
+        return new web3.eth.Contract(JSON.parse(c.abi), receipt.contractAddress);
       });
   };
 
-  const getInnerContract = (name, out) => {
+  const getInnerContract = (innerName) => {
+    let out = {};
     return campaignContract.methods.token().call({})
       .then(res => {
         out.address = res;
-        return Contract.findOne({ name: name, version: campaign.hostedCampaign.onChainData.version });
+        return Contract.findOne({
+          name: innerName,
+          version: campaign.hostedCampaign.onChainData.version,
+        });
       })
       .then(c => {
         if (!c) {
           throw new te.TypedError(500, 'error finding contract');
         } else {
           out.abi = c.abi;
+          return out;
         }
       });
   };
 
-  return this.fetchHostedCampaign(userId, campaignId)
-    .then(c => {
-      campaign = c;
-      web3 = web3OnNetwork(campaign.hostedCampaign.onChainData.network);
-      return campaign.makeDeployment();
-    })
-    .then(deployment => {
-      return validateTransaction(deployment);
-    })
-    .then(receipt => {
-      return getCampaignContract(receipt);
-    })
-    .then(() => {
-      return getInnerContract('TrustFeedToken', token);
-    })
-    .then(() => {
-      return getInnerContract('TrustFeedCrowdsale', crowdsale);
-    })
-    .then(() => {
-      campaign.hostedCampaign.tokenContract = token;
-      campaign.hostedCampaign.crowdsaleContract = crowdsale;
-      campaign.hostedCampaign.campaignStatus = 'DEPLOYED';
-      return campaign.save();
-    });
+  let campaign = await this.fetchHostedCampaign(userId, campaignId);
+  let web3 = web3OnNetwork(campaign.hostedCampaign.onChainData.network);
+  let campaignContract = await (campaign.makeDeployment()
+    .then(validateTransaction)
+    .then(getCampaignContract));
+  campaign.hostedCampaign.tokenContract = await getInnerContract('TrustFeedToken');
+  campaign.hostedCampaign.crowdsaleContract = await getInnerContract('TrustFeedCrowdsale');
+  return campaign.save();
 };
 
 Campaign.statics.allPublic = function (offset) {
