@@ -53,7 +53,7 @@ spec:
         spec:
             containers:
                 - name: tokenadmin-api
-                  image: registry.tokenadmin.work/jpw/tokenadmin-api:${BUILD_NUMBER}
+                  image: registry.trustfeed.io/jpw/tokenadmin-api:${BUILD_NUMBER}
                   ports:
                       - containerPort: 8080
                   env:
