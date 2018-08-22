@@ -3,7 +3,7 @@ pipeline {
   environment {
     user = 'jpw'
     label = 'tokenadmin-api'
-    registry = 'registry.tokenadmin.work'
+    registry = 'registry.trustfeed.io'
     registryCredential = 'registry-credentials'
   }
   stages {
