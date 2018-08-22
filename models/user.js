@@ -110,9 +110,9 @@ User.statics.verifyEmail = function (userId, emailId) {
       if (!user) {
         throw new te.TypedError(500, 'internal error');
       } else if (!user.currentEmail || !user.currentEmail._id.equals(emailId)) {
-        throw new te.TypedError(400, 'a different email has been registred for that account');
+        throw new te.TypedError(400, 'a different email has been registred for that account', 'EXPIRED_TOKEN');
       } else if (user.currentEmail.verifiedAt) {
-        throw new te.TypedError(400, 'the address is already verified');
+        throw new te.TypedError(400, 'the address is already verified', 'VERIFIED_TOKEN');
       } else {
         user.currentEmail.verifiedAt = Date.now();
         user.updatedAt = Date.now();
