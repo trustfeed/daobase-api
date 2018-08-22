@@ -354,6 +354,7 @@ Campaign.statics.finaliseDeployment = async function (userId, userAddress, campa
   campaign.hostedCampaign.walletContract = await getInnerContract(
     'TrustFeedWallet',
     campaignContract.methods.wallet());
+  campaign.hostedCampaign.campaignStatus = 'DEPLOYED';
   return campaign.save();
 };
 
