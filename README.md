@@ -108,16 +108,16 @@ curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/campaigns/${ID}/image -H 'c
 
 The extension and contentType is optional. Defaults to jpg and image/jpeg.
 
-On success you should get 201 and `{"url" : "https://tokenadmin.work.s3/fdsafd" }`
+On success you should get 201 and `{"uploadUrl" : "https://tokenadmin.work.s3/fdsafd", "viewUrl": "fdsa" }`
 
-### Upload a Whitepaper for a Campaign
+### Upload a White Paper for a Campaign
 ```bash
-curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/campaigns/${ID}/whitepaper -H 'content-type: application/json' --data '{"extension": "pdf", "contentType": "application/pdf" }'
+curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/campaigns/${ID}/white-paper -H 'content-type: application/json' --data '{"extension": "pdf", "contentType": "application/pdf" }'
 ```
 
 The extension and contentType is optional. Defaults to pdf and application/pdf.
 
-On success you should get 201 and `{"url" : "https://tokenadmin.work.s3/fdsafd" }`
+On success you should get 201 and `{"uploadUrl" : "https://tokenadmin.work.s3/fdsafd", "viewUrl": "fdsa" }`
 
 ### Submit for Review
 Once the campaign data has been prepared it may be submitted for review by a system admin.

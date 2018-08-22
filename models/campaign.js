@@ -67,7 +67,7 @@ const OffChainData = new Schema({
   imageURL: {
     type: String,
   },
-  whitepaperURL: {
+  whitePaperURL: {
     type: String,
   },
   description: {

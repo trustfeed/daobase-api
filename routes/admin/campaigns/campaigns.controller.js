@@ -185,7 +185,7 @@ export const pdfURL = (req, res) => {
 
   Campaign.findById(req.params.id)
     .then(camp => {
-      return s3.signUpload(req.params.id, 'whitepapers', extension, contentType);
+      return s3.signUpload(req.params.id, 'white-papers', extension, contentType);
     })
     .then(url => {
       const uploadUrl = url;
