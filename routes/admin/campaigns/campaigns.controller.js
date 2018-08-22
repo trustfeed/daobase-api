@@ -241,6 +241,7 @@ export const deploy = (req, res) => {
 
   Campaign.deploy(
     req.decoded.id,
+    req.decoded.publicAddress,
     mongoose.Types.ObjectId(req.params.id),
   )
     .then(o => res.status(200).send(o))
@@ -265,6 +266,7 @@ export const finaliseDeployment = (req, res) => {
 
   Campaign.finaliseDeployment(
     req.decoded.id,
+    req.decoded.publicAddress,
     mongoose.Types.ObjectId(req.params.id),
     blockNumber,
     transactionIndex)

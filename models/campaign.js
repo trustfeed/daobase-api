@@ -235,7 +235,7 @@ Campaign.statics.putOffChainData = function (userId, campaignId, data) {
     });
 };
 
-Campaign.methods.makeDeployment = function () {
+Campaign.methods.makeDeployment = function (userAddress) {
   return Contract.findOne({
     name: 'TrustFeedCampaign',
     version: this.hostedCampaign.onChainData.version,
@@ -248,7 +248,7 @@ Campaign.methods.makeDeployment = function () {
       return contract.makeDeployment(
         this.hostedCampaign.onChainData.network,
         [
-          config.trustfeedAddress,
+          [config.trustfeedAddress, userAddress],
           this.hostedCampaign.onChainData.tokenName,
           this.hostedCampaign.onChainData.tokenSymbol,
           this.hostedCampaign.onChainData.numberOfDecimals,
@@ -262,13 +262,13 @@ Campaign.methods.makeDeployment = function () {
     });
 };
 
-Campaign.statics.deploy = function (userId, campaignId) {
+Campaign.statics.deploy = function (userId, userAddress, campaignId) {
   let campaign, out;
 
   return this.fetchHostedCampaign(userId, campaignId)
     .then(c => {
       campaign = c;
-      return campaign.makeDeployment();
+      return campaign.makeDeployment(userAddress);
     })
     .then(o => {
       out = o;
@@ -280,7 +280,7 @@ Campaign.statics.deploy = function (userId, campaignId) {
     });
 };
 
-Campaign.statics.finaliseDeployment = async function (userId, campaignId, blockNumber, transactionIndex) {
+Campaign.statics.finaliseDeployment = async function (userId, userAddress, campaignId, blockNumber, transactionIndex) {
   const validateTransaction = (deployment) => {
     const expectedInput = deployment.transaction;
     return web3.eth.getTransactionFromBlock(blockNumber, transactionIndex)
@@ -337,7 +337,7 @@ Campaign.statics.finaliseDeployment = async function (userId, campaignId, blockN
 
   let campaign = await this.fetchHostedCampaign(userId, campaignId);
   let web3 = web3OnNetwork(campaign.hostedCampaign.onChainData.network);
-  let campaignContract = await (campaign.makeDeployment()
+  let campaignContract = await (campaign.makeDeployment(userAddress)
     .then(validateTransaction)
     .then(getCampaignContract));
   campaign.hostedCampaign.tokenContract = await getInnerContract('TrustFeedToken');
