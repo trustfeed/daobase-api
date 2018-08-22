@@ -140,7 +140,7 @@ export const putOffChainData = (req, res) => {
 };
 
 // This returns a presigned URL to upload an image
-export const imageURL = (req, res) => {
+export const coverImageURL = (req, res) => {
   if (!req.decoded.id) {
     res.status(400).send({ message: 'missing user id' });
     return;
@@ -161,9 +161,9 @@ export const imageURL = (req, res) => {
       return s3.signUpload(req.params.id, 'images', extension, contentType);
     })
     .then(url => {
-      const uploadUrl = url;
-      const viewUrl = uploadUrl.split(/[?#]/)[0];
-      res.status(201).send({ uploadUrl, viewUrl });
+      const uploadURL = url;
+      const viewURL = uploadURL.split(/[?#]/)[0];
+      res.status(201).send({ uploadURL, viewURL });
     })
     .catch(err =>
       te.handleError(err, res));
@@ -188,9 +188,9 @@ export const pdfURL = (req, res) => {
       return s3.signUpload(req.params.id, 'white-papers', extension, contentType);
     })
     .then(url => {
-      const uploadUrl = url;
-      const viewUrl = uploadUrl.split(/[?#]/)[0];
-      res.status(201).send({ uploadUrl, viewUrl });
+      const uploadURL = url;
+      const viewURL = uploadURL.split(/[?#]/)[0];
+      res.status(201).send({ uploadURL, viewURL });
     })
     .catch(err =>
       te.handleError(err, res));

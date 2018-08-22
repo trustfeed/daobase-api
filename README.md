@@ -97,7 +97,7 @@ Success should return 201. The fields that can be edited are
 | Field | Type | Description |
 | --- | --- | --- |
 | imageURL | String | The url for the cover image. |
-| whitePaperUrl | String | The url for the white paper. |
+| whitePaperURL | String | The url for the white paper. |
 | description | String | A short description of the campaign. |
 | keywords | [String] | A list of keywords for the campaign. |
 
@@ -108,7 +108,7 @@ curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/campaigns/${ID}/image -H 'c
 
 The extension and contentType is optional. Defaults to jpg and image/jpeg.
 
-On success you should get 201 and `{"uploadUrl" : "https://tokenadmin.work.s3/fdsafd", "viewUrl": "fdsa" }`
+On success you should get 201 and `{"uploadURL" : "https://tokenadmin.work.s3/fdsafd", "viewURL": "fdsa" }`
 
 ### Upload a White Paper for a Campaign
 ```bash
@@ -117,7 +117,7 @@ curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/campaigns/${ID}/white-paper
 
 The extension and contentType is optional. Defaults to pdf and application/pdf.
 
-On success you should get 201 and `{"uploadUrl" : "https://tokenadmin.work.s3/fdsafd", "viewUrl": "fdsa" }`
+On success you should get 201 and `{"uploadURL" : "https://tokenadmin.work.s3/fdsafd", "viewURL": "fdsa" }`
 
 ### Submit for Review
 Once the campaign data has been prepared it may be submitted for review by a system admin.

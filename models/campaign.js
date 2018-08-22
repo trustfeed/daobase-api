@@ -64,7 +64,7 @@ const OnChainData = new Schema({
 
 // The off-chain data that can be altered at other times
 const OffChainData = new Schema({
-  imageURL: {
+  coverImageURL: {
     type: String,
   },
   whitePaperURL: {
