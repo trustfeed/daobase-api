@@ -33,7 +33,7 @@ const viewOffChainData = (d) => {
     return undefined;
   } else {
     return {
-      imageURL: d.imageURL,
+      coverImageURL: d.coverImageURL,
       whitePaperURL: d.whitePaperURL,
       description: d.description,
       keywords: d.keywords,

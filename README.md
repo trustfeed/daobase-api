@@ -96,14 +96,14 @@ Success should return 201. The fields that can be edited are
 
 | Field | Type | Description |
 | --- | --- | --- |
-| imageURL | String | The url for the cover image. |
+| coverImageURL | String | The url for the cover image. |
 | whitePaperURL | String | The url for the white paper. |
 | description | String | A short description of the campaign. |
 | keywords | [String] | A list of keywords for the campaign. |
 
-### Upload an image for a Campaign
+### Upload an Cover Image for a Campaign
 ```bash
-curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/campaigns/${ID}/image -H 'content-type: application/json' --data '{"extension": "png", "contentType": "image/png" }'
+curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/campaigns/${ID}/cover-image -H 'content-type: application/json' --data '{"extension": "png", "contentType": "image/png" }'
 ```
 
 The extension and contentType is optional. Defaults to jpg and image/jpeg.

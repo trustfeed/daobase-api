@@ -9,7 +9,7 @@ router.get('/:id', controller.get);
 router.put('/:id/on-chain-data', controller.putOnChainData);
 router.put('/:id/off-chain-data', controller.putOffChainData);
 
-router.post('/:id/image', controller.imageURL);
+router.post('/:id/cover-image', controller.coverImageURL);
 router.post('/:id/white-paper', controller.pdfURL);
 
 router.post('/:id/submit-for-review', controller.submitForReview);
