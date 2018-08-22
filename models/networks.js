@@ -7,6 +7,8 @@ const web3OnNetwork = (network) => {
     return new Web3(`https://rinkeby.infura.io/${config.infuraKey}`);
   case 'local':
     return new Web3('ws://localhost:7545');
+  case 'ganache-trustfeed':
+    return new Web3('https://ganache.trustfeed.io');
   default:
     throw new Error('unknown network');
   }

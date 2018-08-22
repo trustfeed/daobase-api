@@ -26,7 +26,7 @@ const OnChainData = new Schema({
   },
   network: {
     type: String,
-    enum: ['local', 'rinkeby'],
+    enum: ['local', 'ganache-trustfeed', 'rinkeby'],
     required: true,
     default: ['rinkeby'],
   },
