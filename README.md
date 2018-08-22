@@ -85,7 +85,7 @@ Success should return 201. The fields that can be edited are
 | softCap | Number | The minimum to be raised. Must be greater than 0. |
 | hardCap | Number | The maximum that can be raised. Must be greater than the softCap. |
 | rate | Number | The price of the token. |
-| network | String | The name of the network. Only rinkeby is supported now. |
+| network | String | The name of the network. Only rinkeby and ganache-trustfeed are supported now. |
 
 ### Update a Campaigns Off-Chain Data
 ```bash
