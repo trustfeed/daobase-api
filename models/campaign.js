@@ -100,6 +100,10 @@ const HostedCampaign = new Schema({
     type: DeployedContract,
     required: false,
   },
+  walletContract: {
+    type: DeployedContract,
+    required: true,
+  },
   onChainData: {
     type: OnChainData,
     required: true,
@@ -315,9 +319,10 @@ Campaign.statics.finaliseDeployment = async function (userId, userAddress, campa
       });
   };
 
-  const getInnerContract = (innerName) => {
+  const getInnerContract = (innerName, func) => {
     let out = {};
-    return campaignContract.methods.token().call({})
+    // return campaignContract.methods.token().call({})
+    return func.call({})
       .then(res => {
         out.address = res;
         return Contract.findOne({
@@ -340,8 +345,15 @@ Campaign.statics.finaliseDeployment = async function (userId, userAddress, campa
   let campaignContract = await (campaign.makeDeployment(userAddress)
     .then(validateTransaction)
     .then(getCampaignContract));
-  campaign.hostedCampaign.tokenContract = await getInnerContract('TrustFeedToken');
-  campaign.hostedCampaign.crowdsaleContract = await getInnerContract('TrustFeedCrowdsale');
+  campaign.hostedCampaign.tokenContract = await getInnerContract(
+    'TrustFeedToken',
+    campaignContract.methods.token());
+  campaign.hostedCampaign.crowdsaleContract = await getInnerContract(
+    'TrustFeedCrowdsale',
+    campaignContract.methods.crowdsale());
+  campaign.hostedCampaign.walletContract = await getInnerContract(
+    'TrustFeedWallet',
+    campaignContract.methods.wallet());
   return campaign.save();
 };
 
