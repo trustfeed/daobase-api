@@ -230,7 +230,7 @@ Campaign.statics.putOffChainData = function (userId, campaignId, data) {
   return this.fetchHostedCampaign(userId, campaignId)
     .then(campaign => {
       campaign.hostedCampaign.offChainData = data;
-      campaign.updatedAt();
+      campaign.updatedAt = Date.now();
       return campaign.save();
     });
 };
