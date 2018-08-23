@@ -52,12 +52,14 @@ These APIs are to create, modify and deploy campaigns on the platform. The user 
 
 The general flow is;
 
-DRAFT created via post, updated via puts
-PENDING_REVIEW submitted for review
-REVIEWED passed review
-DEPLOYED on the network
+| Status | Description |
+| --- | --- |
+| DRAFT | Created via post, updated via puts. |
+| PENDING_REVIEW | Submitted for review. |
+| REVIEWED | Passed review. |
+| DEPLOYED | Live on the network. |
 
-Campaigns are created by the user as drafts, once draft is finalised they are submitted by the user for an admin to review. The admin can move the campaing to REVIEWED status, or if it fails the review place it back in draft status. The user can deploy a campaign that is in REVIEWED status.
+Campaigns are created by the user as drafts, once draft is finalised they are submitted by the user for an admin to review. The admin can move the campaing to REVIEWED status, or if it fails the review place it back in DRAFT status. The user can deploy a campaign that is in REVIEWED status.
 
 ### Create a new campaign
 
