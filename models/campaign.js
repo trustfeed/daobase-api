@@ -61,6 +61,18 @@ const OnChainData = new Schema({
     required: true,
     default: ['0.0.0'],
   },
+  tokenContract: {
+    type: DeployedContract,
+    required: false,
+  },
+  crowdsaleContract: {
+    type: DeployedContract,
+    required: false,
+  },
+  walletContract: {
+    type: DeployedContract,
+    required: false,
+  },
 });
 
 OnChainData.methods.generateReport = function () {
@@ -191,18 +203,6 @@ const HostedCampaign = new Schema({
     enum: ['DRAFT', 'PENDING_REVIEW', 'REVIEWED', 'DEPLOYING', 'DEPLOYED'],
     required: true,
     default: ['DRAFT'],
-  },
-  tokenContract: {
-    type: DeployedContract,
-    required: false,
-  },
-  crowdsaleContract: {
-    type: DeployedContract,
-    required: false,
-  },
-  walletContract: {
-    type: DeployedContract,
-    required: false,
   },
   onChainData: {
     type: OnChainData,
@@ -458,13 +458,13 @@ Campaign.statics.finaliseDeployment = async function (userId, userAddress, campa
   let campaignContract = await (campaign.makeDeployment(userAddress)
     .then(validateTransaction)
     .then(getCampaignContract));
-  campaign.hostedCampaign.tokenContract = await getInnerContract(
+  campaign.hostedCampaign.onChainData.tokenContract = await getInnerContract(
     'TrustFeedToken',
     campaignContract.methods.token());
-  campaign.hostedCampaign.crowdsaleContract = await getInnerContract(
+  campaign.hostedCampaign.onChainData.crowdsaleContract = await getInnerContract(
     'TrustFeedCrowdsale',
     campaignContract.methods.crowdsale());
-  campaign.hostedCampaign.walletContract = await getInnerContract(
+  campaign.hostedCampaign.onChainData.walletContract = await getInnerContract(
     'TrustFeedWallet',
     campaignContract.methods.wallet());
   campaign.hostedCampaign.campaignStatus = 'DEPLOYED';

@@ -24,6 +24,9 @@ const viewOnChainData = (d) => {
       startingTime: startingTime,
       duration: d.duration,
       rate: d.rate,
+      tokenContract: viewDeployedContract(d.tokenContract),
+      crowdsaleContract: viewDeployedContract(d.crowdsaleContract),
+      walletContract: viewDeployedContract(d.walletContract),
     };
   }
 };
@@ -47,8 +50,6 @@ const viewHosted = (c) => {
   } else {
     return {
       campaignStatus: c.campaignStatus,
-      tokenContract: viewDeployedContract(c.tokenContract),
-      crowdsaleContract: viewDeployedContract(c.crowdsaleContract),
       onChainData: viewOnChainData(c.onChainData),
       offChainData: viewOffChainData(c.offChainData),
     };
