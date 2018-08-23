@@ -14,7 +14,7 @@ router.post('/:id/white-paper', controller.pdfURL);
 
 router.post('/:id/submit-for-review', controller.submitForReview);
 router.post('/:id/review-passed', controller.acceptReview);
-router.post('/:id/deploy', controller.deploy);
+router.get('/:id/deployment-transaction', controller.deploymentTransaction);
 router.post('/:id/finalise-deployment', controller.finaliseDeployment);
 
 module.exports = router;

@@ -209,7 +209,7 @@ export const acceptReview = (req, res) => {
     .catch(err => te.handleError(err, res));
 };
 
-export const deploy = (req, res) => {
+export const deploymentTransaction = (req, res) => {
   if (!req.decoded.id) {
     res.status(400).send({ message: 'missing user id' });
     return;
@@ -250,6 +250,6 @@ export const finaliseDeployment = (req, res) => {
     mongoose.Types.ObjectId(req.params.id),
     blockNumber,
     transactionIndex)
-    .then(o => res.status(200).send({ message: 'finalised' }))
+    .then(o => res.status(201).send({ message: 'finalised' }))
     .catch(e => te.handleError(e, res));
 };

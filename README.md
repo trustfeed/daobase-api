@@ -138,7 +138,7 @@ curl -H 'x-access-token: fds' -XPOST ${HOST}/admin/campaigns/${CAMPAIGN_ID}/revi
 Once the review stage is passed the server can prepare a transaction that deploys both token and crowdsale.
 
 ```bash
-curl -H 'x-access-token: fdsaf' -XGET ${HOST}/admin/campaigns/${ID}/deploy
+curl -H 'x-access-token: fdsaf' -XGET ${HOST}/admin/campaigns/${ID}/deployment-transaction
 ```
 
 This will return a transaction that needs to be sent to the Ethereum network via metamask. The user has to make sure the network is set to the same network as TrustFeed server.
@@ -169,7 +169,7 @@ web3.eth.sendTransaction(
 
 The address of the transaction should then be posted back to the server;
 ```bash
-curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/campaigns/${ID}/deploy -XPOST -H 'content-type: application/json' --data '{"blockNumber": 500, "transactionIndex": 4}'
+curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/campaigns/${ID}/finalise-deployment -XPOST -H 'content-type: application/json' --data '{"blockNumber": 500, "transactionIndex": 4}'
 ```
 
 ## Public Campaign

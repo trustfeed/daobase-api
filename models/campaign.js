@@ -200,7 +200,7 @@ const HostedCampaign = new Schema({
   },
   campaignStatus: {
     type: String,
-    enum: ['DRAFT', 'PENDING_REVIEW', 'REVIEWED', 'DEPLOYING', 'DEPLOYED'],
+    enum: ['DRAFT', 'PENDING_REVIEW', 'REVIEWED', 'DEPLOYED'],
     required: true,
     default: ['DRAFT'],
   },
@@ -379,22 +379,12 @@ Campaign.methods.makeDeployment = function (userAddress) {
     });
 };
 
-Campaign.statics.deploy = function (userId, userAddress, campaignId) {
-  let campaign, out;
-
-  return this.fetchHostedCampaign(userId, campaignId)
-    .then(c => {
-      campaign = c;
-      return campaign.makeDeployment(userAddress);
-    })
-    .then(o => {
-      out = o;
-      campaign.hostedCampaign.campaignStatus = 'DEPLOYING';
-      return campaign.save();
-    })
-    .then(() => {
-      return out;
-    });
+Campaign.statics.deploymentTransaction = async function (userId, userAddress, campaignId) {
+  let campaign = await this.fetchHostedCampaign(userId, campaignId);
+  if (campaign.hostedCampaign.campaignStatus !== 'REVIEWED') {
+    throw new te.TypedError(400, 'the campaign is not reviewed');
+  }
+  return campaign.makeDeployment;
 };
 
 Campaign.statics.finaliseDeployment = async function (userId, userAddress, campaignId, blockNumber, transactionIndex) {
@@ -454,6 +444,11 @@ Campaign.statics.finaliseDeployment = async function (userId, userAddress, campa
   };
 
   let campaign = await this.fetchHostedCampaign(userId, campaignId);
+
+  if (campaign.hostedCampaign.campaignStatus !== 'REVIEWED') {
+    throw new te.TypedError(400, 'the campaign is not reviewed');
+  }
+
   let web3 = web3OnNetwork(campaign.hostedCampaign.onChainData.network);
   let campaignContract = await (campaign.makeDeployment(userAddress)
     .then(validateTransaction)
