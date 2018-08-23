@@ -219,7 +219,7 @@ export const deploymentTransaction = (req, res) => {
     return;
   }
 
-  Campaign.deploy(
+  Campaign.deploymentTransaction(
     req.decoded.id,
     req.decoded.publicAddress,
     mongoose.Types.ObjectId(req.params.id),
