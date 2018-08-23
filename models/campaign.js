@@ -4,6 +4,7 @@ import * as te from '../typedError';
 import Contract from './contract';
 import config from '../config';
 import web3OnNetwork from './networks';
+import validate from 'validate.js';
 const Schema = mongoose.Schema;
 
 // A contract that is deployed on a network
@@ -62,6 +63,87 @@ const OnChainData = new Schema({
   },
 });
 
+OnChainData.methods.generateReport = function () {
+  const constraints = {
+    network: {
+      presence: true,
+      inclusion: ['local', 'ganache-trustfeed', 'rinkeby'],
+    },
+    tokenName: {
+      presence: true,
+    },
+    tokenSymbol: {
+      presence: true,
+    },
+    numberOfDecimals: {
+      presence: true,
+      numericality: {
+        noStrings: true,
+        greaterThanOrEqualTo: 0,
+        lessThanOrEqualTo: 18,
+      },
+    },
+    startingTime: {
+      presence: true,
+    },
+    duration: {
+      presence: true,
+      numericality: {
+        noStrings: true,
+        greaterThanOrEqualTo: 1,
+      },
+    },
+    rate: {
+      presence: true,
+      numericality: {
+        noStrings: true,
+        greaterThan: 0,
+      },
+    },
+    softCap: {
+      presence: true,
+      numericality: {
+        noStrings: true,
+        greaterThan: 0,
+      },
+    },
+    hardCap: {
+      presence: true,
+      numericality: {
+        noStrings: true,
+        greaterThan: 0,
+      },
+    },
+    version: {
+      presence: true,
+      inclusion: ['0.0.0'],
+    },
+  };
+  let errs = validate(this, constraints);
+  if (errs === undefined) {
+    errs = {};
+  }
+
+  if (this.startingTime && this.startingTime.getTime() < Date.now() + 1000 * 60 * 60 * 24) {
+    const msg = 'Starting time must be at least one day into the future';
+    if (errs.startingTime) {
+      errs.startingTime.push(msg);
+    } else {
+      errs.startingTime = [msg];
+    }
+  }
+
+  if (this.softCap && this.hardCap && this.softCap > this.hardCap) {
+    const msg = 'The hard cap must be above the soft cap.';
+    if (errs.hardCap) {
+      errs.hardCap.push(msg);
+    } else {
+      errs.hardCap = [msg];
+    }
+  }
+  return errs;
+};
+
 // The off-chain data that can be altered at other times
 const OffChainData = new Schema({
   coverImageURL: {
@@ -77,6 +159,24 @@ const OffChainData = new Schema({
     type: [String],
   },
 });
+
+OffChainData.methods.generateReport = function () {
+  const constraints = {
+    coverImageURL: {
+      presence: true,
+      url: true,
+    },
+    whitePaperURL: {
+      presence: true,
+      url: true,
+    },
+  };
+  let errs = validate(this, constraints);
+  if (errs === undefined) {
+    errs = {};
+  }
+  return errs;
+};
 
 // A campaign that is hosted by TrustFeed
 const HostedCampaign = new Schema({
@@ -196,9 +296,22 @@ Campaign.statics.submitForReview = function (userId, campaignId) {
       if (campaign.hostedCampaign.campaignStatus !== 'DRAFT') {
         throw new te.TypedError(400, 'the campaign is not a draft');
       } else {
-        campaign.hostedCampaign.campaignStatus = 'PENDING_REVIEW';
-        campaign.updatedAt = Date.now();
-        return campaign.save();
+        const onChainErrs = campaign.hostedCampaign.onChainData.generateReport();
+        const offChainErrs = campaign.hostedCampaign.offChainData.generateReport();
+        if (Object.keys(onChainErrs).length > 0 ||
+Object.keys(offChainErrs).length > 0) {
+          throw new te.TypedError(
+            400,
+            'validation error',
+            'INVALID_DATA',
+            { onChainValidationErrors: onChainErrs,
+              offChainValidationErrors: offChainErrs,
+            });
+        } else {
+          campaign.hostedCampaign.campaignStatus = 'PENDING_REVIEW';
+          campaign.updatedAt = Date.now();
+          return campaign.save();
+        }
       }
     });
 };

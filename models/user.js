@@ -19,12 +19,6 @@ const Email = new Schema({
 });
 
 const User = new Schema({
-  // _id: {
-  //  type: Schema.Types.ObjectId,
-  //  index: true,
-  //  unique: true,
-  //  required: true,
-  // },
   publicAddress: {
     type: String,
     index: true,
@@ -61,7 +55,6 @@ User.statics.findOneById = function (id) {
 User.statics.create = function (publicAddress) {
   const nonce = Math.floor(Math.random() * 10000).toString();
   const user = this({
-    // _id: new mongoose.Types.ObjectId(),
     publicAddress,
     nonce,
   });

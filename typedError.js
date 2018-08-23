@@ -1,11 +1,12 @@
 import mongoose from 'mongoose';
 
 export class TypedError extends Error {
-  constructor (code, message, type) {
+  constructor (code, message, type, data) {
     super(message);
     this.httpStatus = code;
     this.message = message;
     this.type = type;
+    this.data = data;
   }
 }
 
@@ -14,7 +15,7 @@ export function handleError (err, res, code) {
     console.log(err);
     res.status(500).send({ message: 'internal error' });
   } else {
-    res.status(err.httpStatus).send({ message: err.message, type: err.type });
+    res.status(err.httpStatus).send({ message: err.message, type: err.type, data: err.data });
   }
 };
 

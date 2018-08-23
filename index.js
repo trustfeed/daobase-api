@@ -61,5 +61,63 @@ db.once('open', () => {
   console.log('connected to db');
 });
 
-const Contract = require('./models/contract');
-Contract.migrateAll().catch(() => {});
+// const Contract = require('./models/contract');
+// Contract.migrateAll().catch(() => {});
+
+const validate = require('validate.js');
+const constraints = {
+  network: {
+    presence: true,
+    inclusion: ['local', 'ganache-trustfeed', 'rinkeby'],
+  },
+//  tokenName: {
+//    presence: true,
+//  },
+//  tokenSymbol: {
+//    presence: true,
+//  },
+//  numberOfDecimals: {
+//    presence: true,
+//    numericality: {
+//      noStrings: true,
+//      greaterThanOrEqualTo: 0,
+//      lessThanOrEqualTo: 18,
+//    },
+//  },
+//  startingTime: {
+//    presence: true,
+//  },
+//  duration: {
+//    presence: true,
+//    numericality: {
+//      noStrings: true,
+//      greaterThanOrEqualTo: 1,
+//    },
+//  },
+//  rate: {
+//    presence: true,
+//    numericality: {
+//      noStrings: true,
+//      greaterThan: 0,
+//    },
+//  },
+//  softCap: {
+//    presence: true,
+//    numericality: {
+//      noStrings: true,
+//      greaterThan: 0,
+//    },
+//  },
+//  hardCap: {
+//    presence: true,
+//    numericality: {
+//      noStrings: true,
+//      greaterThan: 0,
+//    },
+//  },
+//  version: {
+//    presence: true,
+//    inclusion: ['0.0.0'],
+//  },
+};
+console.log(validate({ network: 'local' }, constraints));

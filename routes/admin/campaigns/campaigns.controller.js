@@ -181,13 +181,14 @@ export const submitForReview = (req, res) => {
 
   const userId = req.decoded.id;
   const campaignId = mongoose.Types.ObjectId(req.params.id);
-  setTimeout(() => {
-    Campaign.acceptReview(userId, campaignId);
-  }, 60 * 1000);
 
   Campaign
     .submitForReview(req.decoded.id, mongoose.Types.ObjectId(req.params.id))
     .then(() => res.status(201).send({ message: 'submitted' }))
+    .then(() =>
+      setTimeout(() => {
+        Campaign.acceptReview(userId, campaignId);
+      }, 60 * 1000))
     .catch(err => te.handleError(err, res));
 };
 
