@@ -188,7 +188,7 @@ export const submitForReview = (req, res) => {
     .then(() =>
       setTimeout(() => {
         Campaign.acceptReview(userId, campaignId);
-      }, 60 * 1000))
+      }, 10 * 1000))
     .catch(err => te.handleError(err, res));
 };
 
