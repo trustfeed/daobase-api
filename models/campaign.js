@@ -136,7 +136,9 @@ OnChainData.methods.generateReport = function () {
     errs = {};
   }
 
-  if (this.startingTime && this.startingTime.getTime() < Date.now() + 1000 * 60 * 60 * 24) {
+  if (this.startingTime && this.startingTime.getTime() * 1000 < Date.now() + 1000 * 60 * 60 * 24) {
+    console.log(this.startingTime);
+    console.log(this.startingTime.getTime(), Date.now() + 1000 * 60 * 60 * 24);
     const msg = 'Starting time must be at least one day into the future';
     if (errs.startingTime) {
       errs.startingTime.push(msg);
@@ -384,7 +386,7 @@ Campaign.statics.deploymentTransaction = async function (userId, userAddress, ca
   if (campaign.hostedCampaign.campaignStatus !== 'REVIEWED') {
     throw new te.TypedError(400, 'the campaign is not reviewed');
   }
-  return campaign.makeDeployment;
+  return campaign.makeDeployment(userAddress);
 };
 
 Campaign.statics.finaliseDeployment = async function (userId, userAddress, campaignId, blockNumber, transactionIndex) {
