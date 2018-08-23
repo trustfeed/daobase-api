@@ -50,7 +50,7 @@ The response will include a field type which will be one of; `SUCCESS`, `INVALID
 
 These APIs are to create, modify and deploy campaigns on the platform. The user must be logged in. Include the JWT in the header as 'x-access-token'.
 
-The general flow is;
+The possible status for a campaign are as follows.
 
 | Status | Description |
 | --- | --- |
@@ -58,6 +58,8 @@ The general flow is;
 | PENDING_REVIEW | Submitted for review. |
 | REVIEWED | Passed review. |
 | DEPLOYED | Live on the network. |
+
+The general flow is as follows.
 
 Campaigns are created by the user as drafts, once draft is finalised they are submitted by the user for an admin to review. The admin can move the campaing to REVIEWED status, or if it fails the review place it back in DRAFT status. The user can deploy a campaign that is in REVIEWED status.
 
