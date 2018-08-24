@@ -61,7 +61,7 @@ The possible status for a campaign are as follows.
 
 The general flow is as follows.
 
-Campaigns are created by the user as drafts, once draft is finalised they are submitted by the user for an admin to review. The admin can move the campaing to REVIEWED status, or if it fails the review place it back in DRAFT status. The user can deploy a campaign that is in REVIEWED status.
+Campaigns are created by the user in status DRAFT, once draft is finalised they are submitted by the user for an admin to review, resulting in status PENDING_REVIEW. The admin can move the campaing to REVIEWED status, or if it fails the review place it back in DRAFT status. The user can deploy a campaign that is in REVIEWED status.
 
 ### Create a new campaign
 
@@ -97,10 +97,10 @@ Success should return 201. The fields that can be edited are
 | numberOfDecimals | Number | Must be an integer between 0 and 18. |
 | startingTime | Number | Unix timestamp to start the campaign. Must be at least 24 hours in the future. |
 | duration | Number | The number of days the campaign will run. Must be greater than 1. |
-| softCap | Number | The minimum to be raised. Must be greater than 0. |
-| hardCap | Number | The maximum that can be raised. Must be greater than the softCap. |
-| rate | Number | The price of the token. |
-| network | String | The name of the network. Only rinkeby and ganache-trustfeed are supported now. |
+| softCap | String | The minimum to be raised. Must be greater than 0. The unit is wei, must be an integer. |
+| hardCap | String | The maximum that can be raised. Must be greater than the softCap. The unit is wei, must be an integer. |
+| rate | String | The price of the token. The tokens recieved from a purchase will be Wei * rate * 10^-decimals. This must be an integer. |
+| network | String | The name of the network. Only rinkeby is supported now. |
 
 ### Update a Campaigns Off-Chain Data
 ```bash

@@ -1,5 +1,7 @@
 import { Base64 } from 'js-base64';
 import mongoose from 'mongoose';
+import BigNumber from 'bignumber.js';
+import BigNumberSchema from 'mongoose-bignumber';
 import * as te from '../typedError';
 import Contract from './contract';
 import config from '../config';
@@ -27,7 +29,7 @@ const OnChainData = new Schema({
   },
   network: {
     type: String,
-    enum: ['local', 'ganache-trustfeed', 'rinkeby'],
+    enum: ['rinkeby'], // 'local', 'ganache-trustfeed', 'rinkeby'],
     required: true,
     default: ['rinkeby'],
   },
@@ -47,13 +49,13 @@ const OnChainData = new Schema({
     type: Number,
   },
   rate: {
-    type: Number,
+    type: BigNumberSchema,
   },
   softCap: {
-    type: Number,
+    type: BigNumberSchema,
   },
   hardCap: {
-    type: Number,
+    type: BigNumberSchema,
   },
   version: {
     type: String,
@@ -107,24 +109,12 @@ OnChainData.methods.generateReport = function () {
     },
     rate: {
       presence: true,
-      numericality: {
-        noStrings: true,
-        greaterThan: 0,
-      },
     },
     softCap: {
       presence: true,
-      numericality: {
-        noStrings: true,
-        greaterThan: 0,
-      },
     },
     hardCap: {
       presence: true,
-      numericality: {
-        noStrings: true,
-        greaterThan: 0,
-      },
     },
     version: {
       presence: true,
@@ -147,6 +137,24 @@ OnChainData.methods.generateReport = function () {
     }
   }
 
+  if (this.softCap && this.softCap < 1) {
+    const msg = 'Soft cap must be larger than 0';
+    if (errs.softCap) {
+      errs.softCap.push(msg);
+    } else {
+      errs.softCap = [msg];
+    }
+  }
+
+  if (this.softCap && !this.softCap.isInteger()) {
+    const msg = 'Soft cap must be an integer';
+    if (errs.softCap) {
+      errs.softCap.push(msg);
+    } else {
+      errs.softCap = [msg];
+    }
+  }
+
   if (this.softCap && this.hardCap && this.softCap > this.hardCap) {
     const msg = 'The hard cap must be above the soft cap.';
     if (errs.hardCap) {
@@ -155,6 +163,34 @@ OnChainData.methods.generateReport = function () {
       errs.hardCap = [msg];
     }
   }
+
+  if (this.hardCap && !this.hardCap.isInteger()) {
+    const msg = 'Hard cap must be an integer';
+    if (errs.hardCap) {
+      errs.hardCap.push(msg);
+    } else {
+      errs.hardCap = [msg];
+    }
+  }
+
+  if (this.rate && this.rate < 1) {
+    const msg = 'rate must be larger than 0';
+    if (errs.rate) {
+      errs.rate.push(msg);
+    } else {
+      errs.rate = [msg];
+    }
+  }
+
+  if (this.rate && !this.rate.isInteger()) {
+    const msg = 'Rate must be an integer';
+    if (errs.rate) {
+      errs.rate.push(msg);
+    } else {
+      errs.rate = [msg];
+    }
+  }
+
   return errs;
 };
 
@@ -371,12 +407,15 @@ Campaign.methods.makeDeployment = function (userAddress) {
           this.hostedCampaign.onChainData.tokenName,
           this.hostedCampaign.onChainData.tokenSymbol,
           this.hostedCampaign.onChainData.numberOfDecimals,
-          this.hostedCampaign.onChainData.hardCap,
+          this.hostedCampaign.onChainData.hardCap * this.hostedCampaign.onChainData.rate,
           startTime,
           startTime + this.hostedCampaign.onChainData.duration * 60 * 60 * 24,
           this.hostedCampaign.onChainData.rate,
           this.hostedCampaign.onChainData.hardCap,
           this.hostedCampaign.onChainData.softCap,
+          this._id.toString(),
+          // TODO: different networks
+          config.registryAddressGanacheTrustFeed,
         ]);
     });
 };
