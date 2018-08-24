@@ -412,6 +412,7 @@ Campaign.methods.makeDeployment = function (userAddress) {
 
           startTime,
           startTime + this.hostedCampaign.onChainData.duration * 60 * 60 * 24,
+
           (this.hostedCampaign.onChainData.rate),
           (this.hostedCampaign.onChainData.hardCap),
           (this.hostedCampaign.onChainData.softCap),
