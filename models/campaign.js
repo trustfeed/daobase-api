@@ -408,7 +408,7 @@ Campaign.methods.makeDeployment = function (userAddress) {
 
           Web3.utils.toBN(
             this.hostedCampaign.onChainData.hardCap)
-            .mul(Web3.toBN(this.hostedCampaign.onChainData.rate)),
+            .mul(Web3.utils.toBN(this.hostedCampaign.onChainData.rate)),
 
           startTime,
           startTime + this.hostedCampaign.onChainData.duration * 60 * 60 * 24,
