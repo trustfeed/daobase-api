@@ -67,14 +67,12 @@ const listFilesPromise = (dirname) => {
 };
 
 Contract.statics.addFromFile = function (fname) {
-  return readFilePromise(fname)
+  const obj = JSON.parse(fs.readFileSync(fname));
+  return this.deleteOne({
+    name: obj.contractName,
+    version: obj.contractVersion,
+  })
     .then(data => {
-      let obj;
-      try {
-        obj = JSON.parse(data);
-      } catch (err) {
-        throw new Error(err);
-      }
       const contract = this({
         createdAt: Date.now(),
         name: obj.contractName,
