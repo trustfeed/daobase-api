@@ -61,11 +61,13 @@ db.once('open', () => {
   console.log('connected to db');
 });
 
-const Contract = require('./models/contract');
-Contract.migrateAll().catch(() => {});
-
-const x = require('./models/networks');
-const web3 = x.default('rinkeby');
-web3.eth.getBlockNumber()
-  .then(n => console.log('~~~~~BLOCK NUMBER: ' + n + '~~~~~~~~~~~'))
-  .catch(err => console.log(err));
+// const Contract = require('./models/contract');
+// Contract.migrateAll().catch(() => {});
+//
+setTimeout(() => {
+  const x = require('./models/networks');
+  const web3 = x.default('rinkeby');
+  web3.eth.getBlockNumber()
+    .then(n => console.log('~~~~~BLOCK NUMBER: ' + n + '~~~~~~~~~~~'))
+    .catch(err => console.log('~~~~~~ERR: ' + err + '~~~~~~~~~~~~'));
+}, 1000 * 60);
