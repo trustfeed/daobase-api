@@ -417,7 +417,7 @@ Campaign.methods.makeDeployment = function (userAddress) {
           (this.hostedCampaign.onChainData.softCap),
           this._id.toString(),
           // TODO: different networks
-          config.registryAddressGanacheTrustFeed,
+          '0xB900F568D3F54b5DE594B7968e68181fC45fCAc6',
         ]);
     });
 };
