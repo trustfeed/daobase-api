@@ -1,12 +1,11 @@
 import { Base64 } from 'js-base64';
 import mongoose from 'mongoose';
-import BigNumber from 'bignumber.js';
-import BigNumberSchema from 'mongoose-bignumber';
 import * as te from '../typedError';
 import Contract from './contract';
 import config from '../config';
 import web3OnNetwork from './networks';
 import validate from 'validate.js';
+import Web3 from 'web3';
 const Schema = mongoose.Schema;
 
 // A contract that is deployed on a network
@@ -49,13 +48,13 @@ const OnChainData = new Schema({
     type: Number,
   },
   rate: {
-    type: BigNumberSchema,
+    type: String,
   },
   softCap: {
-    type: BigNumberSchema,
+    type: String,
   },
   hardCap: {
-    type: BigNumberSchema,
+    type: String,
   },
   version: {
     type: String,
@@ -81,7 +80,7 @@ OnChainData.methods.generateReport = function () {
   const constraints = {
     network: {
       presence: true,
-      inclusion: ['local', 'ganache-trustfeed', 'rinkeby'],
+      inclusion: ['rinkeby'],
     },
     tokenName: {
       presence: true,
@@ -137,59 +136,59 @@ OnChainData.methods.generateReport = function () {
     }
   }
 
-  if (this.softCap && this.softCap < 1) {
-    const msg = 'Soft cap must be larger than 0';
-    if (errs.softCap) {
-      errs.softCap.push(msg);
-    } else {
-      errs.softCap = [msg];
-    }
-  }
+  // if (this.softCap && this.softCap < 1) {
+  //  const msg = 'Soft cap must be larger than 0';
+  //  if (errs.softCap) {
+  //    errs.softCap.push(msg);
+  //  } else {
+  //    errs.softCap = [msg];
+  //  }
+  // }
 
-  if (this.softCap && !this.softCap.isInteger()) {
-    const msg = 'Soft cap must be an integer';
-    if (errs.softCap) {
-      errs.softCap.push(msg);
-    } else {
-      errs.softCap = [msg];
-    }
-  }
+  // if (this.softCap && !this.softCap.isInteger()) {
+  //  const msg = 'Soft cap must be an integer';
+  //  if (errs.softCap) {
+  //    errs.softCap.push(msg);
+  //  } else {
+  //    errs.softCap = [msg];
+  //  }
+  // }
 
-  if (this.softCap && this.hardCap && this.softCap > this.hardCap) {
-    const msg = 'The hard cap must be above the soft cap.';
-    if (errs.hardCap) {
-      errs.hardCap.push(msg);
-    } else {
-      errs.hardCap = [msg];
-    }
-  }
+  // if (this.softCap && this.hardCap && this.softCap > this.hardCap) {
+  //  const msg = 'The hard cap must be above the soft cap.';
+  //  if (errs.hardCap) {
+  //    errs.hardCap.push(msg);
+  //  } else {
+  //    errs.hardCap = [msg];
+  //  }
+  // }
 
-  if (this.hardCap && !this.hardCap.isInteger()) {
-    const msg = 'Hard cap must be an integer';
-    if (errs.hardCap) {
-      errs.hardCap.push(msg);
-    } else {
-      errs.hardCap = [msg];
-    }
-  }
+  // if (this.hardCap && !this.hardCap.isInteger()) {
+  //  const msg = 'Hard cap must be an integer';
+  //  if (errs.hardCap) {
+  //    errs.hardCap.push(msg);
+  //  } else {
+  //    errs.hardCap = [msg];
+  //  }
+  // }
 
-  if (this.rate && this.rate < 1) {
-    const msg = 'rate must be larger than 0';
-    if (errs.rate) {
-      errs.rate.push(msg);
-    } else {
-      errs.rate = [msg];
-    }
-  }
+  // if (this.rate && this.rate < 1) {
+  //  const msg = 'rate must be larger than 0';
+  //  if (errs.rate) {
+  //    errs.rate.push(msg);
+  //  } else {
+  //    errs.rate = [msg];
+  //  }
+  // }
 
-  if (this.rate && !this.rate.isInteger()) {
-    const msg = 'Rate must be an integer';
-    if (errs.rate) {
-      errs.rate.push(msg);
-    } else {
-      errs.rate = [msg];
-    }
-  }
+  // if (this.rate && !this.rate.isInteger()) {
+  //  const msg = 'Rate must be an integer';
+  //  if (errs.rate) {
+  //    errs.rate.push(msg);
+  //  } else {
+  //    errs.rate = [msg];
+  //  }
+  // }
 
   return errs;
 };
@@ -336,8 +335,7 @@ Campaign.statics.submitForReview = function (userId, campaignId) {
       } else {
         const onChainErrs = campaign.hostedCampaign.onChainData.generateReport();
         const offChainErrs = campaign.hostedCampaign.offChainData.generateReport();
-        if (Object.keys(onChainErrs).length > 0 ||
-Object.keys(offChainErrs).length > 0) {
+        if (Object.keys(onChainErrs).length > 0 || Object.keys(offChainErrs).length > 0) {
           throw new te.TypedError(
             400,
             'validation error',
@@ -407,12 +405,16 @@ Campaign.methods.makeDeployment = function (userAddress) {
           this.hostedCampaign.onChainData.tokenName,
           this.hostedCampaign.onChainData.tokenSymbol,
           this.hostedCampaign.onChainData.numberOfDecimals,
-          (this.hostedCampaign.onChainData.hardCap * this.hostedCampaign.onChainData.rate).toString(),
+
+          Web3.utils.toBN(
+            this.hostedCampaign.onChainData.hardCap)
+            .mul(web3.toBN(this.hostedCampaign.onChainData.rate)),
+
           startTime,
           startTime + this.hostedCampaign.onChainData.duration * 60 * 60 * 24,
-          (this.hostedCampaign.onChainData.rate).toString(),
-          (this.hostedCampaign.onChainData.hardCap).toString(),
-          (this.hostedCampaign.onChainData.softCap).toString(),
+          (this.hostedCampaign.onChainData.rate),
+          (this.hostedCampaign.onChainData.hardCap),
+          (this.hostedCampaign.onChainData.softCap),
           this._id.toString(),
           // TODO: different networks
           config.registryAddressGanacheTrustFeed,
