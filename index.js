@@ -64,10 +64,10 @@ db.once('open', () => {
 const Contract = require('./models/contract');
 Contract.migrateAll().catch(() => {});
 
-setTimeout(() => {
-  const x = require('./models/networks');
-  x.default('rinkeby')
-    .then(web3 => { return web3.eth.getBlockNumber(); })
-    .then(n => console.log('~~~~~BLOCK NUMBER: ' + n + '~~~~~~~~~~~'))
-    .catch(err => console.log('~~~~~~ERR: ' + err + '~~~~~~~~~~~~'));
-}, 1000 * 5);
+// setTimeout(() => {
+//  const x = require('./models/networks');
+//  x.default('rinkeby')
+//    .then(web3 => { return web3.eth.getBlockNumber(); })
+//    .then(n => console.log('~~~~~BLOCK NUMBER: ' + n + '~~~~~~~~~~~'))
+//    .catch(err => console.log('~~~~~~ERR: ' + err + '~~~~~~~~~~~~'));
+// }, 1000 * 5);

@@ -10,7 +10,7 @@ const web3OnNetwork = async (network) => {
       config.rinkebyNode,
       {
         headers: {
-          Origin: 'localhost',
+          Origin: 'api.tokenadmin.work',
         },
       });
     let w3 = new Web3(prov);
