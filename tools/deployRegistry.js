@@ -1,11 +1,10 @@
 import web3OnNetwork from '../models/networks';
 import fs from 'fs';
-import EthereumTx from 'ethereumjs-tx';
 
 const contractData = JSON.parse(fs.readFileSync('contracts/TrustFeedCampaignRegistry.json'));
 var web3 = web3OnNetwork(process.argv[2]);
 
-// const accnt = web3.eth.accounts.privateKeyToAccount(process.argv[4]);
+const accnt = web3.eth.accounts.privateKeyToAccount(process.argv[4]);
 //
 // console.log(accnt);
 // accnt.signTransaction({
@@ -27,10 +26,10 @@ const deploy = contract.deploy({ data: contractData.bytecode });
 deploy
   .estimateGas()
   .then(cost => {
-    // return accnt.signTransaction({ data: deploy.encodeABI(), gas: Math.round(1.5 * cost), from: process.argv[3] });
-  });
-/// /  .then(tx => {
-/// /    console.log(tx);
-/// /    return web3.eth.sendSignedTransaction(tx);
-/// /  })
-/// /  .then(console.log);
+    return accnt.signTransaction({ data: deploy.encodeABI(), gas: Math.round(1.5 * cost), from: process.argv[3] });
+  })
+  .then(tx => {
+    console.log(tx);
+    return web3.eth.sendSignedTransaction(tx.rawTransaction);
+  })
+  .then(console.log);
