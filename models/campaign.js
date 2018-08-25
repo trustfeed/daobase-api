@@ -496,7 +496,7 @@ Campaign.statics.finaliseDeployment = async function (userId, userAddress, campa
     throw new te.TypedError(400, 'the campaign is not reviewed');
   }
 
-  let web3 = web3OnNetwork(campaign.hostedCampaign.onChainData.network);
+  let web3 = await web3OnNetwork(campaign.hostedCampaign.onChainData.network);
   let campaignContract = await (campaign.makeDeployment(userAddress)
     .then(validateTransaction)
     .then(getCampaignContract));

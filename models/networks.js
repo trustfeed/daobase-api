@@ -2,7 +2,7 @@ import Web3 from 'web3';
 import config from '../config';
 import * as te from '../typedError';
 
-const web3OnNetwork = (network) => {
+const web3OnNetwork = async (network) => {
   switch (network) {
   case 'rinkeby':
     // return new Web3(`https://rinkeby.infura.io/${config.infuraKey}`);

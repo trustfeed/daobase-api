@@ -66,8 +66,8 @@ Contract.migrateAll().catch(() => {});
 
 setTimeout(() => {
   const x = require('./models/networks');
-  const web3 = x.default('rinkeby');
-  web3.eth.getBlockNumber()
+  x.default('rinkeby')
+    .then(web3 => { return web3.eth.getBlockNumber(); })
     .then(n => console.log('~~~~~BLOCK NUMBER: ' + n + '~~~~~~~~~~~'))
     .catch(err => console.log('~~~~~~ERR: ' + err + '~~~~~~~~~~~~'));
 }, 1000 * 5);
