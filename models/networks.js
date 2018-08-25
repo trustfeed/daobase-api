@@ -14,11 +14,11 @@ const web3OnNetwork = (network) => {
         },
       });
     let w3 = new Web3(prov);
-    if (w3.isConnected()) {
-      return w3;
-    } else {
-      throw new te.TypedError(500, 'cannot connect to web3');
-    }
+    // if (w3.isConnected()) {
+    return w3;
+    // } else {
+    //  throw new te.TypedError(500, 'cannot connect to web3');
+    // }
   default:
     throw new Error('unknown network');
   }
