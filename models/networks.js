@@ -6,7 +6,7 @@ const web3OnNetwork = (network) => {
   case 'rinkeby':
     // return new Web3(`https://rinkeby.infura.io/${config.infuraKey}`);
     let prov = new Web3.providers.WebsocketProvider(
-      config.reinkebyNode,
+      config.rinkebyNode,
       {
         headers: {
           Origin: 'localhost',
