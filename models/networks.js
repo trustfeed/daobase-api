@@ -15,7 +15,14 @@ const web3OnNetwork = (network) => {
       });
     let w3 = new Web3(prov);
     // if (w3.isConnected()) {
-    return w3;
+    return w3.getBlockNumber()
+      .then(() => {
+        return w3;
+      })
+      .catch(err => {
+        console.log(err);
+        throw new te.TypedError(500, 'cannot connect to web3');
+      });
     // } else {
     //  throw new te.TypedError(500, 'cannot connect to web3');
     // }

@@ -210,6 +210,7 @@ export const acceptReview = (req, res) => {
 };
 
 export const deploymentTransaction = (req, res) => {
+  console.log('got deployment request');
   if (!req.decoded.id) {
     res.status(400).send({ message: 'missing user id' });
     return;
