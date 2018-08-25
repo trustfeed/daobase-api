@@ -15,7 +15,7 @@ const web3OnNetwork = (network) => {
       });
     let w3 = new Web3(prov);
     // if (w3.isConnected()) {
-    return w3.getBlockNumber()
+    return w3.eth.getBlockNumber()
       .then(() => {
         return w3;
       })
