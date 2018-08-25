@@ -1,5 +1,6 @@
 import Web3 from 'web3';
 import config from '../config';
+import * as te from '../typedError';
 
 const web3OnNetwork = (network) => {
   switch (network) {
@@ -12,7 +13,12 @@ const web3OnNetwork = (network) => {
           Origin: 'localhost',
         },
       });
-    return new Web3(prov);
+    let w3 = new Web3(prov);
+    if (w3.isConnected()) {
+      return w3;
+    } else {
+      throw new te.TypedError(500, 'cannot connect to web3');
+    }
   default:
     throw new Error('unknown network');
   }
