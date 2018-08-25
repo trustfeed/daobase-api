@@ -5,7 +5,7 @@ const web3OnNetwork = (network) => {
   switch (network) {
   case 'rinkeby':
     // return new Web3(`https://rinkeby.infura.io/${config.infuraKey}`);
-    let prov = new Web3.providers.WebSocketProvider(
+    let prov = new Web3.providers.WebsocketProvider(
       config.reinkebyNode,
       {
         headers: {
