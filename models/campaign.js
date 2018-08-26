@@ -125,7 +125,7 @@ OnChainData.methods.generateReport = function () {
     errs = {};
   }
 
-  const tomorrow = Date.now() + 1000 * 60 * 60 * 24;
+  const tomorrow = Date.now(); // + 1000 * 60 * 60 * 24;
   if (this.startingTime && this.startingTime.getTime() * 1000 < tomorrow) {
     console.log(this.startingTime);
     console.log(this.startingTime.getTime(), Date.now() + 1000 * 60 * 60 * 24);
