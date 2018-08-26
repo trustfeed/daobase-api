@@ -125,7 +125,8 @@ OnChainData.methods.generateReport = function () {
     errs = {};
   }
 
-  if (this.startingTime && this.startingTime.getTime() * 1000 < Date.now() + 1000 * 60 * 60 * 24) {
+  const tomorrow = Date.now() + 1000 * 60 * 60 * 24;
+  if (this.startingTime && this.startingTime.getTime() * 1000 < tomorrow) {
     console.log(this.startingTime);
     console.log(this.startingTime.getTime(), Date.now() + 1000 * 60 * 60 * 24);
     const msg = 'Starting time must be at least one day into the future';
@@ -373,6 +374,7 @@ Campaign.statics.putOnChainData = function (userId, campaignId, data) {
         throw new te.TypedError(403, 'the campaign is not in DRAFT status');
       } else {
         campaign.hostedCampaign.onChainData = data;
+        campaign.hostedCampaign.onChainData.startingTime = new Date(data.startingTime * 1000);
         campaign.updatedAt = Date.now();
         return campaign.save();
       }
