@@ -373,7 +373,7 @@ Campaign.statics.putOnChainData = function (userId, campaignId, data) {
       if (campaign.hostedCampaign.campaignStatus !== 'DRAFT') {
         throw new te.TypedError(403, 'the campaign is not in DRAFT status');
       } else {
-        data.startingTime = new Date(data.startingTime * 1000);
+        data.startingTime = data.startingTime * 1000;
         campaign.hostedCampaign.onChainData = data;
         campaign.updatedAt = Date.now();
         return campaign.save();
