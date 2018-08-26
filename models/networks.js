@@ -1,20 +1,20 @@
 import Web3 from 'web3';
 import config from '../config';
-import * as te from '../typedError';
+//import * as te from '../typedError';
 
 const web3OnNetwork = async (network) => {
   switch (network) {
   case 'rinkeby':
-     return new Web3(`https://rinkeby.infura.io/${config.infuraKey}`);
-    //let prov = new Web3.providers.WebsocketProvider(
+    return new Web3(`https://rinkeby.infura.io/${config.infuraKey}`);
+    // let prov = new Web3.providers.WebsocketProvider(
     //  config.rinkebyNode,
     //  {
     //    headers: {
     //      Origin: 'api.tokenadmin.work',
     //    },
     //  });
-    //let w3 = new Web3(prov);
-    //return w3.eth.getBlockNumber()
+    // let w3 = new Web3(prov);
+    // return w3.eth.getBlockNumber()
     //  .then(() => {
     //    return w3;
     //  })
