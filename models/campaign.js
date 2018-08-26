@@ -400,12 +400,7 @@ Campaign.methods.makeDeployment = function (userAddress) {
       if (!contract) {
         throw new te.TypedError(500, 'error finding contract');
       }
-      const startTime = this.hostedCampaign.onChainData.startingTime.getTime() / 1000;
-      console.log(startTime);
-      console.log(this.hostedCampaign.onChainData.startingTime);
-      console.log(this.hostedCampaign.onChainData.duration);
-      console.log(startTime + this.hostedCampaign.onChainData.duration * 60 * 60 * 24);
-      console.log(new Date(1000 * (startTime + this.hostedCampaign.onChainData.duration * 60 * 60 * 24)));
+      const startTime = (new Date().getTime()) / 1000 + 5 * 60; //this.hostedCampaign.onChainData.startingTime.getTime() / 1000;
       return contract.makeDeployment(
         this.hostedCampaign.onChainData.network,
         [
