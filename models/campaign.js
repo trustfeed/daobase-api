@@ -389,6 +389,7 @@ Campaign.statics.putOffChainData = function (userId, campaignId, data) {
 };
 
 Campaign.methods.makeDeployment = function (userAddress) {
+  console.log(this);
   return Contract.findOne({
     name: 'TrustFeedCampaign',
     version: this.hostedCampaign.onChainData.version,
