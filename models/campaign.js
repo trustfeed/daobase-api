@@ -403,10 +403,10 @@ Campaign.methods.makeDeployment = function (userAddress) {
       if (!contract) {
         throw new te.TypedError(500, 'error finding contract');
       }
-      const startTime = (new Date().getTime()) / 1000 + 5 * 60;
-      console.log(startTime);
-      console.log(startTime + this.hostedCampaign.onChainData.duration * 60 * 60 * 24);
-      // const startTime = this.hostedCampaign.onChainData.startingTime.getTime() / 1000;
+      // const startTime = (new Date().getTime()) / 1000 + 5 * 60;
+      // console.log(startTime);
+      // console.log(startTime + this.hostedCampaign.onChainData.duration * 60 * 60 * 24);
+      const startTime = this.hostedCampaign.onChainData.startingTime.getTime() / 1000;
       return contract.makeDeployment(
         this.hostedCampaign.onChainData.network,
         [
@@ -437,6 +437,8 @@ Campaign.statics.deploymentTransaction = async function (userId, userAddress, ca
   if (campaign.hostedCampaign.campaignStatus !== 'REVIEWED') {
     throw new te.TypedError(400, 'the campaign is not reviewed');
   }
+  campaign.hostedCampaign.onChainData.startingTime = new Date(1000 * ((new Date().getTime()) / 1000 + 5 * 60));
+  await campaign.save();
   return campaign.makeDeployment(userAddress);
 };
 
