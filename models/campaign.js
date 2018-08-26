@@ -274,12 +274,14 @@ Campaign.index({ 'hostedCampaign.owner': 1 });
 
 // Create a hosted campaign with the given on-chain data
 Campaign.statics.createHostedDomain = function (owner, onChainData) {
+  if (onChainData) {
+    onChainData.startingTime = Date(onChainData.startingTime * 1000);
+  }
   let hostedCampaign = {
     owner,
     onChainData: onChainData || {},
     offChainData: {},
   };
-  hostedCampaign.onChainData.startingTime = Date(onChainData.startingTime * 1000);
   const campaign = this({
     _id: new mongoose.Types.ObjectId(),
     hostedCampaign: hostedCampaign,
@@ -375,7 +377,7 @@ Campaign.statics.putOnChainData = function (userId, campaignId, data) {
         throw new te.TypedError(403, 'the campaign is not in DRAFT status');
       } else {
         campaign.hostedCampaign.onChainData = data;
-        campaign.hostedCampaign.startingTime = Date(data.startingTime * 1000);
+        campaign.hostedCampaign.onChainData.startingTime = Date(data.startingTime * 1000);
         campaign.updatedAt = Date.now();
         return campaign.save();
       }
