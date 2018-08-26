@@ -125,17 +125,17 @@ OnChainData.methods.generateReport = function () {
     errs = {};
   }
 
-  const tomorrow = Date.now(); // + 1000 * 60 * 60 * 24;
-  if (this.startingTime && this.startingTime.getTime() * 1000 < tomorrow) {
-    console.log(this.startingTime);
-    console.log(this.startingTime.getTime(), Date.now() + 1000 * 60 * 60 * 24);
-    const msg = 'Starting time must be at least one day into the future';
-    if (errs.startingTime) {
-      errs.startingTime.push(msg);
-    } else {
-      errs.startingTime = [msg];
-    }
-  }
+  // const tomorrow = Date.now(); // + 1000 * 60 * 60 * 24;
+  // if (this.startingTime && this.startingTime.getTime() * 1000 < tomorrow) {
+  //  console.log(this.startingTime);
+  //  console.log(this.startingTime.getTime(), Date.now() + 1000 * 60 * 60 * 24);
+  //  const msg = 'Starting time must be at least one day into the future';
+  //  if (errs.startingTime) {
+  //    errs.startingTime.push(msg);
+  //  } else {
+  //    errs.startingTime = [msg];
+  //  }
+  // }
 
   // if (this.softCap && this.softCap < 1) {
   //  const msg = 'Soft cap must be larger than 0';
@@ -373,8 +373,8 @@ Campaign.statics.putOnChainData = function (userId, campaignId, data) {
       if (campaign.hostedCampaign.campaignStatus !== 'DRAFT') {
         throw new te.TypedError(403, 'the campaign is not in DRAFT status');
       } else {
+        data.startingTime = new Date(data.startingTime * 1000);
         campaign.hostedCampaign.onChainData = data;
-        campaign.hostedCampaign.onChainData.startingTime = new Date(data.startingTime * 1000);
         campaign.updatedAt = Date.now();
         return campaign.save();
       }
@@ -400,7 +400,7 @@ Campaign.methods.makeDeployment = function (userAddress) {
       if (!contract) {
         throw new te.TypedError(500, 'error finding contract');
       }
-      const startTime = (new Date().getTime()) / 1000 + 5 * 60; //this.hostedCampaign.onChainData.startingTime.getTime() / 1000;
+      const startTime = (new Date().getTime()) / 1000 + 5 * 60; // this.hostedCampaign.onChainData.startingTime.getTime() / 1000;
       return contract.makeDeployment(
         this.hostedCampaign.onChainData.network,
         [
