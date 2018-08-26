@@ -274,11 +274,12 @@ Campaign.index({ 'hostedCampaign.owner': 1 });
 
 // Create a hosted campaign with the given on-chain data
 Campaign.statics.createHostedDomain = function (owner, onChainData) {
-  const hostedCampaign = {
+  let hostedCampaign = {
     owner,
     onChainData: onChainData || {},
     offChainData: {},
   };
+  hostedCampaign.onChainData.startingTime = Date(onChainData.startingTime * 1000);
   const campaign = this({
     _id: new mongoose.Types.ObjectId(),
     hostedCampaign: hostedCampaign,
@@ -373,8 +374,8 @@ Campaign.statics.putOnChainData = function (userId, campaignId, data) {
       if (campaign.hostedCampaign.campaignStatus !== 'DRAFT') {
         throw new te.TypedError(403, 'the campaign is not in DRAFT status');
       } else {
-        data.startingTime = data.startingTime * 1000;
         campaign.hostedCampaign.onChainData = data;
+        campaign.hostedCampaign.startingTime = Date(data.startingTime * 1000);
         campaign.updatedAt = Date.now();
         return campaign.save();
       }
@@ -400,7 +401,8 @@ Campaign.methods.makeDeployment = function (userAddress) {
       if (!contract) {
         throw new te.TypedError(500, 'error finding contract');
       }
-      const startTime = (new Date().getTime()) / 1000 + 5 * 60; // this.hostedCampaign.onChainData.startingTime.getTime() / 1000;
+      const startTime = (new Date().getTime()) / 1000 + 5 * 60;
+      // const startTime = this.hostedCampaign.onChainData.startingTime.getTime() / 1000;
       return contract.makeDeployment(
         this.hostedCampaign.onChainData.network,
         [
