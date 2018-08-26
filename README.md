@@ -95,7 +95,7 @@ Success should return 201. The fields that can be edited are
 | tokenSymbol | String | The symbol to display on exchanges. Must be latin characters [A-Z] (?). |
 | tokenName | String | The long name of the token. Must be latin characters and spaces (?). |
 | numberOfDecimals | Number | Must be an integer between 0 and 18. |
-| startingTime | Number | Unix timestamp to start the campaign. Must be at least 24 hours in the future. |
+| startingTime | Number | Unix timestamp (seconds) to start the campaign. Must be at least 24 hours in the future. |
 | duration | Number | The number of days the campaign will run. Must be greater than 1. |
 | softCap | String | The minimum to be raised. Must be greater than 0. The unit is wei, must be an integer. |
 | hardCap | String | The maximum that can be raised. Must be greater than the softCap. The unit is wei, must be an integer. |
