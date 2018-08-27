@@ -2,7 +2,7 @@ var Campaign = artifacts.require('./TrustFeedCampaign.sol');
 var Registry = artifacts.require('./TrustFeedCampaignRegistry.sol');
 
 module.exports = function (deployer, network, accounts) {
-  const openingTime = Date.now() / 1000 + 10;
+  const openingTime = Date.now() / 1000;
   const closingTime = openingTime + 100 * 60 * 60 * 24;
   const rate = 1;
   const hardCap = 10000000;
