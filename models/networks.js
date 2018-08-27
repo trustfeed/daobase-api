@@ -8,10 +8,10 @@ const web3OnNetwork = async (network) => {
     return new Web3(`https://rinkeby.infura.io/${config.infuraKey}`);
   case 'kovan':
     let prov = new Web3.providers.WebsocketProvider(
-      config.kovanNode,
+      'ws://kovan:21000', // config.kovanNode,
       {
         headers: {
-          Origin: 'api.tokenadmin.work',
+          Origin: 'localhost',
         },
       });
     let w3 = new Web3(prov);
@@ -19,8 +19,9 @@ const web3OnNetwork = async (network) => {
       .then(() => {
         return w3;
       })
-      .then(() => {
-        throw new te.TypedError('parity connection error');
+      .catch(err => {
+        console.log(err);
+        throw new te.TypedError(500, 'parity connection error');
       });
   default:
     throw new Error('unknown network');
