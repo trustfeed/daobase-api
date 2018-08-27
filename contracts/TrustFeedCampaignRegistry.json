@@ -1,6 +1,6 @@
 {
   "contractName": "TrustFeedCampaignRegistry",
-  "contractVersion": "TrustFeedCampaignRegistry",
+  "contractVersion": "0.0.0",
   "abi": [
     {
       "anonymous": false,
