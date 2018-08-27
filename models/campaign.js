@@ -80,7 +80,7 @@ OnChainData.methods.generateReport = function () {
   const constraints = {
     network: {
       presence: true,
-      inclusion: ['rinkeby', 'rinkeby'],
+      inclusion: ['rinkeby', 'kovan'],
     },
     tokenName: {
       presence: true,
