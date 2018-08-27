@@ -10,7 +10,7 @@ const config = {
   region: process.env.AWS_REGION,
   mailgunApiKey: process.env.MAILGUN_API_KEY,
   mailgunDomain: process.env.MAILGUN_DOMAIN || 'mg.trustfeed.io',
-  rinkebyNode: 'ws://rinkeby:8546',
+  rinkebyNode: 'ws://kovan:21000',
 
   trustfeedAddress: process.env.TRUSTFEED_ADDRESS || '0x3aa9ce734dd21fa5e6962978e2ccc7f4ac513348',
   infuraKey: process.env.INFURA_KEY,

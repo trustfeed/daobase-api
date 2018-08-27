@@ -28,7 +28,7 @@ const OnChainData = new Schema({
   },
   network: {
     type: String,
-    enum: ['rinkeby'], // 'local', 'ganache-trustfeed', 'rinkeby'],
+    enum: ['rinkeby', 'kovan'], // 'local', 'ganache-trustfeed', 'rinkeby'],
     required: true,
     default: ['rinkeby'],
   },
@@ -80,7 +80,7 @@ OnChainData.methods.generateReport = function () {
   const constraints = {
     network: {
       presence: true,
-      inclusion: ['rinkeby'],
+      inclusion: ['rinkeby', 'rinkeby'],
     },
     tokenName: {
       presence: true,
@@ -407,6 +407,8 @@ Campaign.methods.makeDeployment = function (userAddress) {
       // console.log(startTime);
       // console.log(startTime + this.hostedCampaign.onChainData.duration * 60 * 60 * 24);
       const startTime = this.hostedCampaign.onChainData.startingTime.getTime() / 1000;
+      console.log(startTime);
+      console.log(startTime + this.hostedCampaign.onChainData.duration * 60 * 60 * 24);
       return contract.makeDeployment(
         this.hostedCampaign.onChainData.network,
         [
