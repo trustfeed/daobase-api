@@ -16,7 +16,8 @@ const web3OnNetwork = async (network) => {
       });
     let w3 = new Web3(prov);
     return w3.eth.getBlockNumber()
-      .then(() => {
+      .then(b => {
+        console.log('koven block:', b);
         return w3;
       })
       .catch(err => {
