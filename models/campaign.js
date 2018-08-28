@@ -56,6 +56,10 @@ const OnChainData = new Schema({
   hardCap: {
     type: String,
   },
+  mintable: {
+    type: Boolean,
+    default: [false],
+  },
   version: {
     type: String,
     enum: ['0.0.0'],
@@ -113,6 +117,9 @@ OnChainData.methods.generateReport = function () {
       presence: true,
     },
     hardCap: {
+      presence: true,
+    },
+    mintable: {
       presence: true,
     },
     version: {
@@ -394,24 +401,40 @@ Campaign.statics.putOffChainData = function (userId, campaignId, data) {
 };
 
 Campaign.methods.makeDeployment = function (userAddress) {
-  console.log(this);
+  let name = 'TrustFeedCampaign';
+  if (this.mintable) {
+    name = 'TrustFeedMintedCampaign';
+  }
+
   return Contract.findOne({
-    name: 'TrustFeedCampaign',
+    name,
     version: this.hostedCampaign.onChainData.version,
   })
     .then(contract => {
       if (!contract) {
         throw new te.TypedError(500, 'error finding contract');
       }
-      // const startTime = (new Date().getTime()) / 1000 + 5 * 60;
-      // console.log(startTime);
-      // console.log(startTime + this.hostedCampaign.onChainData.duration * 60 * 60 * 24);
       const startTime = this.hostedCampaign.onChainData.startingTime.getTime() / 1000;
-      console.log(startTime);
-      console.log(startTime + this.hostedCampaign.onChainData.duration * 60 * 60 * 24);
-      return contract.makeDeployment(
-        this.hostedCampaign.onChainData.network,
-        [
+      let args;
+      if (this.mintable) {
+        args = [
+          [config.trustfeedAddress, userAddress],
+          this.hostedCampaign.onChainData.tokenName,
+          this.hostedCampaign.onChainData.tokenSymbol,
+          this.hostedCampaign.onChainData.numberOfDecimals,
+
+          startTime,
+          startTime + this.hostedCampaign.onChainData.duration * 60 * 60 * 24,
+
+          (this.hostedCampaign.onChainData.rate),
+          (this.hostedCampaign.onChainData.hardCap),
+          (this.hostedCampaign.onChainData.softCap),
+          this._id.toString(),
+          // TODO: different networks
+          '0xB900F568D3F54b5DE594B7968e68181fC45fCAc6',
+        ];
+      } else {
+        args = [
           [config.trustfeedAddress, userAddress],
           this.hostedCampaign.onChainData.tokenName,
           this.hostedCampaign.onChainData.tokenSymbol,
@@ -430,7 +453,12 @@ Campaign.methods.makeDeployment = function (userAddress) {
           this._id.toString(),
           // TODO: different networks
           '0xB900F568D3F54b5DE594B7968e68181fC45fCAc6',
-        ]);
+        ];
+      }
+      return contract.makeDeployment(
+        this.hostedCampaign.onChainData.network,
+        args,
+      );
     });
 };
 

@@ -1,26 +1,6 @@
 var Campaign = artifacts.require('./TrustFeedCampaign.sol');
+var MintedCampaign = artifacts.require('./TrustFeedMintedCampaign.sol');
 var Registry = artifacts.require('./TrustFeedCampaignRegistry.sol');
-
-const duration = {
-  seconds: function (val) {
-    return val;
-  },
-  minutes: function (val) {
-    return val * this.seconds(60);
-  },
-  hours: function (val) {
-    return val * this.minutes(60);
-  },
-  days: function (val) {
-    return val * this.hours(24);
-  },
-  weeks: function (val) {
-    return val * this.days(7);
-  },
-  years: function (val) {
-    return val * this.days(365);
-  },
-};
 
 module.exports = function (deployer, network, accounts) {
   const openingTime = Date.now() / 1000;
@@ -36,11 +16,27 @@ module.exports = function (deployer, network, accounts) {
     .deploy(Registry)
     .then(() => {
       return deployer.deploy(
-        Campaign, [accounts[0], accounts[1]],
+        Campaign,
+        [accounts[0], accounts[1]],
         name,
         symbol,
         decimals,
         init,
+        openingTime,
+        closingTime,
+        rate,
+        hardCap,
+        softCap,
+        'some_fake_id',
+        Registry.address);
+    })
+    .then(() => {
+      return deployer.deploy(
+        MintedCampaign,
+        [accounts[0], accounts[1]],
+        name,
+        symbol,
+        decimals,
         openingTime,
         closingTime,
         rate,
