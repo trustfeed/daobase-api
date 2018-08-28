@@ -64,6 +64,24 @@ db.once('open', () => {
 const Contract = require('./models/contract');
 Contract.migrateAll().catch(() => {});
 
+const Campaign = require('./models/campaign');
+Campaign.listenForDeploy()
+  .catch(err => {
+    console.log(err);
+  });
+
+// const tmpFunc = async () => {
+//  const x = require('./models/networks');
+//  let web3 = await x.default('rinkeby');
+//  let contJson = await Contract.findOne({ 'name': 'TrustFeedCampaignRegistry' }).exec();
+//  let cont = new web3.eth.Contract(
+//    JSON.parse(contJson.abi),
+//    '0xB900F568D3F54b5DE594B7968e68181fC45fCAc6',
+//  );
+//  cont.events.NewCampaign({ fromBlock: 2882300 }, (err, out) => { console.log(err, out); });
+// };
+//
+// tmpFunc();
 // setTimeout(() => {
 //  const x = require('./models/networks');
 //  x.default('rinkeby')

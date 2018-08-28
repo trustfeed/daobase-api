@@ -67,6 +67,8 @@ spec:
                         value: 27017
                       - name: TRUSTFEED_ADDRESS
                         value: 0x3aa9ce734dd21fa5e6962978e2ccc7f4ac513348
+                      - name: RINKEBY_LIGHT_NODE
+                        value: ws://rinkeby:8546
                       - name: AWS_ACCESS_KEY_ID
                         valueFrom:
                           secretKeyRef:

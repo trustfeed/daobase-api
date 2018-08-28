@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import * as te from '../typedError';
 import Contract from './contract';
 import config from '../config';
-import web3OnNetwork from './networks';
+import Networks from './networks';
 import validate from 'validate.js';
 import Web3 from 'web3';
 const Schema = mongoose.Schema;
@@ -536,6 +536,9 @@ Campaign.statics.finaliseDeployment = async function (userId, userAddress, campa
         } else if (transaction.input !== expectedInput) {
           throw new te.TypedError(400, 'that transaction data is not correct');
         } else {
+          // console.log(transaction.hash);
+          // console.log(transaction);
+          //  web3.eth.getTransaction(transaction.hash).then(console.log);
           return web3.eth.getTransactionReceipt(transaction.hash);
         }
       })
@@ -561,7 +564,7 @@ Campaign.statics.finaliseDeployment = async function (userId, userAddress, campa
     throw new te.TypedError(400, 'the campaign is not reviewed');
   }
 
-  let web3 = await web3OnNetwork(campaign.hostedCampaign.onChainData.network);
+  const web3 = Networks.fastestNode(campaign.hostedCampaign.onChainData.network);
   let campaignContract = await (campaign.makeDeployment(userAddress)
     .then(validateTransaction)
     .then(getCampaignContract));
@@ -595,6 +598,37 @@ Campaign.statics.publicById = function (campaignId) {
     _id: campaignId,
     'hostedCampaign.campaignStatus': 'DEPLOYED',
   }).exec();
+};
+
+Campaign.statics.listenForDeploy = async function () {
+  const abi = await Contract
+    .findOne({ name: 'TrustFeedCampaignRegistry' })
+    .exec()
+    .then(c => {
+      if (!c) {
+        throw new Error('cannot find registry');
+      } else {
+        return JSON.parse(c.abi);
+      }
+    });
+
+  const listenToContract = async (network) => {
+    const w3 = await Networks.lightNode(network);
+    const contract = new w3.eth.Contract(abi, Networks.registry(network));
+    contract.events.NewCampaign(
+      { fromBlock: 2882300 },
+      (err, out) => {
+        if (err) {
+          console.log(err);
+        } else {
+          // actually do this!
+          console.log(out);
+        }
+      });
+  };
+
+  const ns = Networks.supported;
+  return Promise.all(ns.map(listenToContract));
 };
 
 module.exports = mongoose.model('Campaign', Campaign);

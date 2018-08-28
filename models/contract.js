@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import fs from 'fs';
 import path from 'path';
-import web3OnNetwork from './networks';
+import Networks from './networks';
 const Schema = mongoose.Schema;
 
 const Contract = new Schema({
@@ -42,18 +42,6 @@ const Contract = new Schema({
 
 Contract.index({ name: 1, version: 1 }, { unique: true });
 
-const readFilePromise = (fname) => {
-  return new Promise((resolve, reject) => {
-    fs.readFile(fname, (err, data) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(data);
-      }
-    });
-  });
-};
-
 const listFilesPromise = (dirname) => {
   return new Promise((resolve, reject) => {
     fs.readdir(dirname, (err, data) => {
@@ -87,17 +75,16 @@ Contract.statics.addFromFile = function (fname) {
     });
 };
 
-Contract.statics.migrateAll = function () {
+Contract.statics.migrateAll = async function () {
   const dirName = 'contracts';
   const procFile = (fname) => this.addFromFile(path.join(dirName, fname)).catch(console.log);
-  return listFilesPromise(dirName)
-    .then(fs => {
-      return Promise.all(fs.map(procFile));
-    });
+
+  const files = await listFilesPromise(dirName);
+  return Promise.all(files.map(procFile));
 };
 
 Contract.methods.makeDeployment = async function (network, args) {
-  const web3 = await web3OnNetwork(network);
+  const web3 = await Networks.fastestNode(network);
   const contract = new web3.eth.Contract(JSON.parse(this.abi));
   const deploy = contract.deploy({ data: this.bytecode, arguments: args });
   return deploy
