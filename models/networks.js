@@ -33,7 +33,7 @@ const Networks = {
         throw new te.TypedError(500, 'no light node available');
       } else {
         let prov = new Web3.providers.WebsocketProvider(
-          config.rinkebyNode,
+          config.rinkebyLightNode,
           {
             headers: {
               Origin: 'localhost',
