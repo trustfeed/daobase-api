@@ -28,7 +28,7 @@ const OnChainData = new Schema({
   },
   network: {
     type: String,
-    enum: ['rinkeby', 'kovan'], // 'local', 'ganache-trustfeed', 'rinkeby'],
+    enum: ['rinkeby'], // 'local', 'ganache-trustfeed', 'rinkeby'],
     required: true,
     default: ['rinkeby'],
   },
@@ -80,7 +80,7 @@ OnChainData.methods.generateReport = function () {
   const constraints = {
     network: {
       presence: true,
-      inclusion: ['rinkeby', 'kovan'],
+      inclusion: ['rinkeby'],
     },
     tokenName: {
       presence: true,
