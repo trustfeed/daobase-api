@@ -262,13 +262,13 @@ const HostedCampaign = new Schema({
 // Get the contract describing the campaign
 HostedCampaign.methods.getCampaignContract = function () {
   let name = 'TrustFeedCampaign';
-  if (this.isMinted) {
+  if (this.onChainData.isMinted) {
     name = 'TrustFeedMintedCampaign';
   }
 
   return Contract.findOne({
     name,
-    version: this.hostedCampaign.onChainData.version,
+    version: this.onChainData.version,
   }).exec();
 };
 
@@ -399,6 +399,7 @@ Campaign.statics.putOnChainData = function (userId, campaignId, data) {
         campaign.hostedCampaign.onChainData = data;
         campaign.hostedCampaign.onChainData.startingTime = Date(data.startingTime * 1000);
         campaign.updatedAt = Date.now();
+        console.log(campaign.hostedCampaign.onChainData);
         return campaign.save();
       }
     });
@@ -414,14 +415,14 @@ Campaign.statics.putOffChainData = function (userId, campaignId, data) {
 };
 
 Campaign.methods.makeDeployment = function (userAddress) {
-  return this.hostedCampaign.getContract()
+  return this.hostedCampaign.getCampaignContract()
     .then(contract => {
       if (!contract) {
         throw new te.TypedError(500, 'error finding contract');
       }
       const startTime = this.hostedCampaign.onChainData.startingTime.getTime() / 1000;
       let args;
-      if (this.isMinted) {
+      if (this.hostedCampaign.onChainData.isMinted) {
         args = [
           [config.trustfeedAddress, userAddress],
           this.hostedCampaign.onChainData.tokenName,
@@ -477,7 +478,7 @@ Campaign.statics.deploymentTransaction = async function (userId, userAddress, ca
   return campaign.makeDeployment(userAddress);
 };
 
-Campaign.statics.fetchInnerContracts = async function (campaignContract) {
+Campaign.methods.fetchInnerContracts = async function (campaignContract) {
   const getInnerContract = (innerName, func) => {
     let out = {};
     return func.call({})
@@ -548,7 +549,7 @@ Campaign.statics.finaliseDeployment = async function (userId, userAddress, campa
   };
 
   const getCampaignContract = (receipt) => {
-    return campaign.hostedCampaign.getContract()
+    return campaign.hostedCampaign.getCampaignContract()
       .then(c => {
         return new web3.eth.Contract(JSON.parse(c.abi), receipt.contractAddress);
       });
