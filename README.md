@@ -94,6 +94,7 @@ Success should return 201. The fields that can be edited are
 | --- | --- | --- |
 | tokenSymbol | String | The symbol to display on exchanges. Must be latin characters [A-Z] (?). |
 | tokenName | String | The long name of the token. Must be latin characters and spaces (?). |
+| minted | Bool | If false the hard cap is allocated as intial supply and transfered for purchase. If true the intial supply is 0, the token is minted for each purchase. |
 | numberOfDecimals | Number | Must be an integer between 0 and 18. |
 | startingTime | Number | Unix timestamp (seconds) to start the campaign. Must be at least 24 hours in the future. |
 | duration | Number | The number of days the campaign will run. Must be greater than 1. |

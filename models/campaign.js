@@ -56,7 +56,7 @@ const OnChainData = new Schema({
   hardCap: {
     type: String,
   },
-  mintable: {
+  minted: {
     type: Boolean,
     default: [false],
   },
@@ -119,7 +119,7 @@ OnChainData.methods.generateReport = function () {
     hardCap: {
       presence: true,
     },
-    mintable: {
+    minted: {
       presence: true,
     },
     version: {
@@ -402,7 +402,7 @@ Campaign.statics.putOffChainData = function (userId, campaignId, data) {
 
 Campaign.methods.makeDeployment = function (userAddress) {
   let name = 'TrustFeedCampaign';
-  if (this.mintable) {
+  if (this.minted) {
     name = 'TrustFeedMintedCampaign';
   }
 
@@ -416,7 +416,7 @@ Campaign.methods.makeDeployment = function (userAddress) {
       }
       const startTime = this.hostedCampaign.onChainData.startingTime.getTime() / 1000;
       let args;
-      if (this.mintable) {
+      if (this.minted) {
         args = [
           [config.trustfeedAddress, userAddress],
           this.hostedCampaign.onChainData.tokenName,
