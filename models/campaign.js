@@ -56,10 +56,10 @@ const OnChainData = new Schema({
   hardCap: {
     type: String,
   },
-  // minted: {
-  //  type: Boolean,
-  //  default: [false],
-  // },
+  minted: {
+    type: Boolean,
+    // default: false,
+  },
   version: {
     type: String,
     enum: ['0.0.0'],
@@ -119,9 +119,9 @@ OnChainData.methods.generateReport = function () {
     hardCap: {
       presence: true,
     },
-    // minted: {
-    //  presence: true,
-    // },
+    minted: {
+      presence: true,
+    },
     version: {
       presence: true,
       inclusion: ['0.0.0'],
