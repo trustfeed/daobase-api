@@ -28,7 +28,7 @@ const OnChainData = new Schema({
   },
   network: {
     type: String,
-    enum: ['rinkeby'], // 'local', 'ganache-trustfeed', 'rinkeby'],
+    enum: ['rinkeby'],
     required: true,
     default: ['rinkeby'],
   },
@@ -259,7 +259,8 @@ const HostedCampaign = new Schema({
   },
 });
 
-HostedCampaign.methods.getContract = function () {
+// Get the contract describing the campaign
+HostedCampaign.methods.getCampaignContract = function () {
   let name = 'TrustFeedCampaign';
   if (this.isMinted) {
     name = 'TrustFeedMintedCampaign';
@@ -476,6 +477,51 @@ Campaign.statics.deploymentTransaction = async function (userId, userAddress, ca
   return campaign.makeDeployment(userAddress);
 };
 
+Campaign.statics.fetchInnerContracts = async function (campaignContract) {
+  const getInnerContract = (innerName, func) => {
+    let out = {};
+    return func.call({})
+      .then(res => {
+        out.address = res;
+        return Contract.findOne({
+          name: innerName,
+          version: this.hostedCampaign.onChainData.version,
+        });
+      })
+      .then(c => {
+        if (!c) {
+          throw new te.TypedError(500, 'error finding contract');
+        } else {
+          out.abi = c.abi;
+          return out;
+        }
+      });
+  };
+
+  if (this.hostedCampaign.onChainData.isMinted) {
+    this.hostedCampaign.onChainData.tokenContract = await getInnerContract(
+      'TrustFeedToken',
+      campaignContract.methods.token());
+    this.hostedCampaign.onChainData.crowdsaleContract = await getInnerContract(
+      'TrustFeedCrowdsale',
+      campaignContract.methods.crowdsale());
+    this.hostedCampaign.onChainData.walletContract = await getInnerContract(
+      'TrustFeedWallet',
+      campaignContract.methods.wallet());
+  } else {
+    this.hostedCampaign.onChainData.tokenContract = await getInnerContract(
+      'TrustFeedMintableToken',
+      campaignContract.methods.token());
+    this.hostedCampaign.onChainData.crowdsaleContract = await getInnerContract(
+      'TrustFeedMintedCrowdsale',
+      campaignContract.methods.crowdsale());
+    this.hostedCampaign.onChainData.walletContract = await getInnerContract(
+      'TrustFeedWallet',
+      campaignContract.methods.wallet());
+  }
+  return this;
+};
+
 Campaign.statics.finaliseDeployment = async function (userId, userAddress, campaignId, blockNumber, transactionIndex) {
   const validateTransaction = (deployment) => {
     const expectedInput = deployment.transaction;
@@ -508,27 +554,6 @@ Campaign.statics.finaliseDeployment = async function (userId, userAddress, campa
       });
   };
 
-  const getInnerContract = (innerName, func) => {
-    let out = {};
-    // return campaignContract.methods.token().call({})
-    return func.call({})
-      .then(res => {
-        out.address = res;
-        return Contract.findOne({
-          name: innerName,
-          version: campaign.hostedCampaign.onChainData.version,
-        });
-      })
-      .then(c => {
-        if (!c) {
-          throw new te.TypedError(500, 'error finding contract');
-        } else {
-          out.abi = c.abi;
-          return out;
-        }
-      });
-  };
-
   let campaign = await this.fetchHostedCampaign(userId, campaignId);
 
   if (campaign.hostedCampaign.campaignStatus !== 'REVIEWED') {
@@ -539,15 +564,7 @@ Campaign.statics.finaliseDeployment = async function (userId, userAddress, campa
   let campaignContract = await (campaign.makeDeployment(userAddress)
     .then(validateTransaction)
     .then(getCampaignContract));
-  campaign.hostedCampaign.onChainData.tokenContract = await getInnerContract(
-    'TrustFeedToken',
-    campaignContract.methods.token());
-  campaign.hostedCampaign.onChainData.crowdsaleContract = await getInnerContract(
-    'TrustFeedCrowdsale',
-    campaignContract.methods.crowdsale());
-  campaign.hostedCampaign.onChainData.walletContract = await getInnerContract(
-    'TrustFeedWallet',
-    campaignContract.methods.wallet());
+  campaign = await campaign.fetchInnerContracts(campaignContract);
   campaign.hostedCampaign.campaignStatus = 'DEPLOYED';
   return campaign.save();
 };
