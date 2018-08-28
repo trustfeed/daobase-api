@@ -119,9 +119,9 @@ OnChainData.methods.generateReport = function () {
     hardCap: {
       presence: true,
     },
-     isMinted: {
+    isMinted: {
       presence: true,
-     },
+    },
     version: {
       presence: true,
       inclusion: ['0.0.0'],
@@ -258,6 +258,18 @@ const HostedCampaign = new Schema({
     required: true,
   },
 });
+
+HostedCampaign.methods.getContract = function () {
+  let name = 'TrustFeedCampaign';
+  if (this.isMinted) {
+    name = 'TrustFeedMintedCampaign';
+  }
+
+  return Contract.findOne({
+    name,
+    version: this.hostedCampaign.onChainData.version,
+  }).exec();
+};
 
 // The complete campaign data model
 const Campaign = new Schema({
@@ -401,15 +413,7 @@ Campaign.statics.putOffChainData = function (userId, campaignId, data) {
 };
 
 Campaign.methods.makeDeployment = function (userAddress) {
-  let name = 'TrustFeedCampaign';
-  if (this.isMinted) {
-    name = 'TrustFeedMintedCampaign';
-  }
-
-  return Contract.findOne({
-    name,
-    version: this.hostedCampaign.onChainData.version,
-  })
+  return this.hostedCampaign.getContract()
     .then(contract => {
       if (!contract) {
         throw new te.TypedError(500, 'error finding contract');
@@ -498,10 +502,7 @@ Campaign.statics.finaliseDeployment = async function (userId, userAddress, campa
   };
 
   const getCampaignContract = (receipt) => {
-    return Contract.findOne({
-      name: 'TrustFeedCampaign',
-      version: campaign.hostedCampaign.onChainData.version,
-    }).exec()
+    return campaign.hostedCampaign.getContract()
       .then(c => {
         return new web3.eth.Contract(JSON.parse(c.abi), receipt.contractAddress);
       });
