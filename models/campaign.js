@@ -6,6 +6,7 @@ import config from '../config';
 import Networks from './networks';
 import validate from 'validate.js';
 import Web3 from 'web3';
+import User from './user';
 const Schema = mongoose.Schema;
 
 // A contract that is deployed on a network
@@ -600,6 +601,37 @@ Campaign.statics.publicById = function (campaignId) {
   }).exec();
 };
 
+Campaign.statics.verifyRegistyEvent = async function (registryEvent) {
+  // (campaignId, campaignAddress, blockNumber, transactionIndex) {
+  // Grab the campaign
+  const campaignId = mongoose.Types.ObjectId(registryEvent.returnValues.campaignId);
+  const campaign = await this.findOne({ _id: campaignId });
+  if (!campaign) {
+    throw new Error('invalid campaign id');
+  }
+  if (!campaign.hostedCampaign) {
+    throw new Error('not a hosted campaign');
+  }
+  console.log(campaign);
+  // TODO: Check status of campaign
+  const user = await User.findOneById(campaign.userId);
+  if (!user) {
+    throw new Error('invalid user id');
+  }
+  const deployment = await campaign.makeDeployment(user.publicAddress);
+  const fastNode = await Networks.fastestNode(campaign.hostedCampaign.onChainData.network);
+  const transaction = fastNode.eth.getTransactionFromBlock(
+    registryEvent.blockNumber,
+    registryEvent.transactionIndex,
+  );
+  if (transaction.input !== deployment.deployment) {
+    throw new Error('transaction data doesn\'t match');
+  }
+  // Grab the reciept
+  // TODO: update the database
+  console.log('here!');
+};
+
 Campaign.statics.listenForDeploy = async function () {
   const abi = await Contract
     .findOne({ name: 'TrustFeedCampaignRegistry' })
@@ -617,12 +649,15 @@ Campaign.statics.listenForDeploy = async function () {
     const contract = new w3.eth.Contract(abi, Networks.registry(network));
     contract.events.NewCampaign(
       { fromBlock: 2882300 },
-      (err, out) => {
+      (err, registryEvent) => {
         if (err) {
           console.log(err);
         } else {
           // actually do this!
-          console.log(out);
+          console.log(registryEvent);
+          this.verifyRegistyEvent(
+            registryEvent
+          );
         }
       });
   };
