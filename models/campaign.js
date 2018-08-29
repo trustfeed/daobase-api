@@ -666,7 +666,7 @@ Campaign.statics.publicById = function (campaignId) {
       { _id: campaignId },
       { $or: [
         { 'hostedCampaign.campaignStatus': 'DEPLOYED' },
-        { $exists: 'externalCampaign' },
+        { externalCampaign: { $exists: true } },
       ] }],
   }).exec();
 };
