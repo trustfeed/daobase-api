@@ -479,26 +479,31 @@ Campaign.statics.deploymentTransaction = async function (userId, userAddress, ca
   return campaign.makeDeployment(userAddress);
 };
 
-Campaign.methods.fetchInnerContracts = async function (campaignContract) {
-  const getInnerContract = (innerName, func) => {
-    let out = {};
-    return func.call({})
-      .then(res => {
-        out.address = res;
-        return Contract.findOne({
-          name: innerName,
-          version: this.hostedCampaign.onChainData.version,
-        });
-      })
-      .then(c => {
-        if (!c) {
-          throw new te.TypedError(500, 'error finding contract');
-        } else {
-          out.abi = c.abi;
-          return out;
-        }
-      });
+Campaign.methods.fetchContracts = async function (campaignAddress) {
+  const getInnerContract = async (innerName, func) => {
+    const contractJSON = await Contract.findOne({
+      name: innerName,
+      version: this.hostedCampaign.onChainData.version,
+    });
+
+    if (!contractJSON) {
+      throw new te.TypedError(500, 'cannot locate contract: ' + innerName);
+    }
+
+    return {
+      address: await func.call({}),
+      abi: contractJSON.abi,
+    };
   };
+
+  const campaignContractJson = await this.hostedCampaign.getCampaignContract();
+  const web3 = await Networks.fastestNode(this.hostedCampaign.onChainData.network);
+  const campaignContract = new web3.eth.Contract(
+    JSON.parse(campaignContractJson.abi),
+    campaignAddress,
+  );
+
+  this.hostedCampaign.onChainData.campaignContract = campaignContract;
 
   if (this.hostedCampaign.onChainData.isMinted) {
     this.hostedCampaign.onChainData.tokenContract = await getInnerContract(
@@ -525,53 +530,54 @@ Campaign.methods.fetchInnerContracts = async function (campaignContract) {
 };
 
 Campaign.statics.finaliseDeployment = async function (userId, userAddress, campaignId, blockNumber, transactionIndex) {
-  const validateTransaction = (deployment) => {
-    const expectedInput = deployment.transaction;
-    return web3.eth.getTransactionFromBlock(blockNumber, transactionIndex)
-      .catch(() => {
-        throw new te.TypedError(400, 'cannot look up that block number and transaction index');
-      })
-      .then(transaction => {
-        if (!transaction) {
-          throw new te.TypedError(400, 'no such transaction');
-        } else if (transaction.input !== expectedInput) {
-          throw new te.TypedError(400, 'that transaction data is not correct');
-        } else {
-          // console.log(transaction.hash);
-          // console.log(transaction);
-          //  web3.eth.getTransaction(transaction.hash).then(console.log);
-          return web3.eth.getTransactionReceipt(transaction.hash);
-        }
-      })
-      .then(receipt => {
-        if (!receipt.status) {
-          throw new te.TypedError(400, 'that transaction was not successful');
-        } else {
-          return receipt;
-        }
-      });
-  };
-
-  const getCampaignContract = (receipt) => {
-    return campaign.hostedCampaign.getCampaignContract()
-      .then(c => {
-        return new web3.eth.Contract(JSON.parse(c.abi), receipt.contractAddress);
-      });
-  };
-
-  let campaign = await this.fetchHostedCampaign(userId, campaignId);
-
-  if (campaign.hostedCampaign.campaignStatus !== 'REVIEWED') {
-    throw new te.TypedError(400, 'the campaign is not reviewed');
-  }
-
-  const web3 = Networks.fastestNode(campaign.hostedCampaign.onChainData.network);
-  let campaignContract = await (campaign.makeDeployment(userAddress)
-    .then(validateTransaction)
-    .then(getCampaignContract));
-  campaign = await campaign.fetchInnerContracts(campaignContract);
-  campaign.hostedCampaign.campaignStatus = 'DEPLOYED';
-  return campaign.save();
+  return undefined;
+//  const validateTransaction = (deployment) => {
+//    const expectedInput = deployment.transaction;
+//    return web3.eth.getTransactionFromBlock(blockNumber, transactionIndex)
+//      .catch(() => {
+//        throw new te.TypedError(400, 'cannot look up that block number and transaction index');
+//      })
+//      .then(transaction => {
+//        if (!transaction) {
+//          throw new te.TypedError(400, 'no such transaction');
+//        } else if (transaction.input !== expectedInput) {
+//          throw new te.TypedError(400, 'that transaction data is not correct');
+//        } else {
+//          // console.log(transaction.hash);
+//          // console.log(transaction);
+//          //  web3.eth.getTransaction(transaction.hash).then(console.log);
+//          return web3.eth.getTransactionReceipt(transaction.hash);
+//        }
+//      })
+//      .then(receipt => {
+//        if (!receipt.status) {
+//          throw new te.TypedError(400, 'that transaction was not successful');
+//        } else {
+//          return receipt;
+//        }
+//      });
+//  };
+//
+//  const getCampaignContract = (receipt) => {
+//    return campaign.hostedCampaign.getCampaignContract()
+//      .then(c => {
+//        return new web3.eth.Contract(JSON.parse(c.abi), receipt.contractAddress);
+//      });
+//  };
+//
+//  let campaign = await this.fetchHostedCampaign(userId, campaignId);
+//
+//  if (campaign.hostedCampaign.campaignStatus !== 'REVIEWED') {
+//    throw new te.TypedError(400, 'the campaign is not reviewed');
+//  }
+//
+//  const web3 = Networks.fastestNode(campaign.hostedCampaign.onChainData.network);
+//  let campaignContract = await (campaign.makeDeployment(userAddress)
+//    .then(validateTransaction)
+//    .then(getCampaignContract));
+//  campaign = await campaign.fetchInnerContracts(campaignContract);
+//  campaign.hostedCampaign.campaignStatus = 'DEPLOYED';
+//  return campaign.save();
 };
 
 Campaign.statics.allPublic = function (offset) {
@@ -599,71 +605,6 @@ Campaign.statics.publicById = function (campaignId) {
     _id: campaignId,
     'hostedCampaign.campaignStatus': 'DEPLOYED',
   }).exec();
-};
-
-Campaign.statics.verifyRegistyEvent = async function (registryEvent) {
-  // (campaignId, campaignAddress, blockNumber, transactionIndex) {
-  // Grab the campaign
-  const campaignId = mongoose.Types.ObjectId(registryEvent.returnValues.campaignId);
-  const campaign = await this.findOne({ _id: campaignId });
-  if (!campaign) {
-    throw new Error('invalid campaign id');
-  }
-  if (!campaign.hostedCampaign) {
-    throw new Error('not a hosted campaign');
-  }
-  console.log(campaign);
-  // TODO: Check status of campaign
-  const user = await User.findOneById(campaign.userId);
-  if (!user) {
-    throw new Error('invalid user id');
-  }
-  const deployment = await campaign.makeDeployment(user.publicAddress);
-  const fastNode = await Networks.fastestNode(campaign.hostedCampaign.onChainData.network);
-  const transaction = fastNode.eth.getTransactionFromBlock(
-    registryEvent.blockNumber,
-    registryEvent.transactionIndex,
-  );
-  if (transaction.input !== deployment.deployment) {
-    throw new Error('transaction data doesn\'t match');
-  }
-  // Grab the reciept
-  // TODO: update the database
-  console.log('here!');
-};
-
-Campaign.statics.listenForDeploy = async function () {
-  const abi = await Contract
-    .findOne({ name: 'TrustFeedCampaignRegistry' })
-    .exec()
-    .then(c => {
-      if (!c) {
-        throw new Error('cannot find registry');
-      } else {
-        return JSON.parse(c.abi);
-      }
-    });
-
-  const listenToContract = async (network) => {
-    const w3 = await Networks.lightNode(network);
-    const contract = new w3.eth.Contract(abi, Networks.registry(network));
-    contract.events.NewCampaign(
-      { fromBlock: 2882300 },
-      (err, registryEvent) => {
-        if (err) {
-          console.log(err);
-        } else {
-          // actually do this!
-          console.log(registryEvent);
-          this.verifyRegistyEvent(
-            registryEvent
-          );
-        }
-      });
-  };
-
-  const ns = Networks.supported;
-  return Promise.all(ns.map(listenToContract));
 };
 
 module.exports = mongoose.model('Campaign', Campaign);

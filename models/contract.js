@@ -87,11 +87,12 @@ Contract.methods.makeDeployment = async function (network, args) {
   const web3 = await Networks.fastestNode(network);
   const contract = new web3.eth.Contract(JSON.parse(this.abi));
   const deploy = contract.deploy({ data: this.bytecode, arguments: args });
-  return deploy
-    .estimateGas()
-    .then(cost => {
-      return { estimatedGas: cost, transaction: deploy.encodeABI() };
-    });
+  return { transaction: deploy.encodeABI() };
+  // return deploy
+  // .estimateGas()
+  // .then(cost => {
+  //  return { estimatedGas: cost, transaction: deploy.encodeABI() };
+  // });
 };
 
 module.exports = mongoose.model('Contract', Contract);

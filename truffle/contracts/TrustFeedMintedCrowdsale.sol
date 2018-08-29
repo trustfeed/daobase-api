@@ -7,7 +7,7 @@ import 'openzeppelin-solidity/contracts/crowdsale/distribution/RefundableCrowdsa
 import 'openzeppelin-solidity/contracts/crowdsale/emission/MintedCrowdsale.sol';
 import './TrustFeedMintableToken.sol';
 
-contract TrustFeedMintedCrowdsale is MintedCrowdsale {
+contract TrustFeedMintedCrowdsale is MintedCrowdsale, TimedCrowdsale, CappedCrowdsale, RefundableCrowdsale {
 	constructor(
     // Start
     uint256 _openingTime,
@@ -26,9 +26,9 @@ contract TrustFeedMintedCrowdsale is MintedCrowdsale {
   )
     public                                                                                            
     Crowdsale(_rate, _wallet, _token)
-    //TimedCrowdsale(_openingTime, _closingTime)
-    //CappedCrowdsale(_cap)
-    //RefundableCrowdsale(_goal)
+    TimedCrowdsale(_openingTime, _closingTime)
+    CappedCrowdsale(_cap)
+    RefundableCrowdsale(_goal)
   {
     require(_goal <= _cap);
   }

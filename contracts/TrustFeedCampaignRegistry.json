@@ -48,14 +48,14 @@
     "absolutePath": "/home/wetterj/crowdsale-api/truffle/contracts/TrustFeedRegistry.sol",
     "exportedSymbols": {
       "TrustFeedCampaignRegistry": [
-        219
+        201
       ]
     },
-    "id": 220,
+    "id": 202,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 199,
+        "id": 181,
         "literals": [
           "solidity",
           "^",
@@ -71,9 +71,9 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 219,
+        "id": 201,
         "linearizedBaseContracts": [
-          219
+          201
         ],
         "name": "TrustFeedCampaignRegistry",
         "nodeType": "ContractDefinition",
@@ -81,20 +81,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 205,
+            "id": 187,
             "name": "NewCampaign",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 204,
+              "id": 186,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 201,
+                  "id": 183,
                   "indexed": false,
                   "name": "campaignAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 205,
+                  "scope": 187,
                   "src": "115:23:3",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -103,7 +103,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 200,
+                    "id": 182,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "115:7:3",
@@ -117,11 +117,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 203,
+                  "id": 185,
                   "indexed": false,
                   "name": "campaignId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 205,
+                  "scope": 187,
                   "src": "144:17:3",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -130,7 +130,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 202,
+                    "id": 184,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "144:6:3",
@@ -149,7 +149,7 @@
           },
           {
             "body": {
-              "id": 217,
+              "id": 199,
               "nodeType": "Block",
               "src": "239:56:3",
               "statements": [
@@ -159,11 +159,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 213,
+                        "id": 195,
                         "name": "campaignAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 207,
+                        "referencedDeclaration": 189,
                         "src": "262:15:3",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -172,11 +172,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 214,
+                        "id": 196,
                         "name": "campaignId",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 209,
+                        "referencedDeclaration": 191,
                         "src": "279:10:3",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_memory_ptr",
@@ -195,18 +195,18 @@
                           "typeString": "string memory"
                         }
                       ],
-                      "id": 212,
+                      "id": 194,
                       "name": "NewCampaign",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 205,
+                      "referencedDeclaration": 187,
                       "src": "250:11:3",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_address_$_t_string_memory_ptr_$returns$__$",
                         "typeString": "function (address,string memory)"
                       }
                     },
-                    "id": 215,
+                    "id": 197,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -220,14 +220,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 216,
+                  "id": 198,
                   "nodeType": "EmitStatement",
                   "src": "245:45:3"
                 }
               ]
             },
             "documentation": null,
-            "id": 218,
+            "id": 200,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -235,15 +235,15 @@
             "name": "register",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 210,
+              "id": 192,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 207,
+                  "id": 189,
                   "name": "campaignAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 218,
+                  "scope": 200,
                   "src": "188:23:3",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -252,7 +252,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 206,
+                    "id": 188,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "188:7:3",
@@ -266,10 +266,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 209,
+                  "id": 191,
                   "name": "campaignId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 218,
+                  "scope": 200,
                   "src": "213:17:3",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -278,7 +278,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 208,
+                    "id": 190,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "213:6:3",
@@ -295,19 +295,19 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 211,
+              "id": 193,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "239:0:3"
             },
-            "scope": 219,
+            "scope": 201,
             "src": "170:125:3",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 220,
+        "scope": 202,
         "src": "53:244:3"
       }
     ],
@@ -317,14 +317,14 @@
     "absolutePath": "/home/wetterj/crowdsale-api/truffle/contracts/TrustFeedRegistry.sol",
     "exportedSymbols": {
       "TrustFeedCampaignRegistry": [
-        219
+        201
       ]
     },
-    "id": 220,
+    "id": 202,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 199,
+        "id": 181,
         "literals": [
           "solidity",
           "^",
@@ -340,9 +340,9 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 219,
+        "id": 201,
         "linearizedBaseContracts": [
-          219
+          201
         ],
         "name": "TrustFeedCampaignRegistry",
         "nodeType": "ContractDefinition",
@@ -350,20 +350,20 @@
           {
             "anonymous": false,
             "documentation": null,
-            "id": 205,
+            "id": 187,
             "name": "NewCampaign",
             "nodeType": "EventDefinition",
             "parameters": {
-              "id": 204,
+              "id": 186,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 201,
+                  "id": 183,
                   "indexed": false,
                   "name": "campaignAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 205,
+                  "scope": 187,
                   "src": "115:23:3",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -372,7 +372,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 200,
+                    "id": 182,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "115:7:3",
@@ -386,11 +386,11 @@
                 },
                 {
                   "constant": false,
-                  "id": 203,
+                  "id": 185,
                   "indexed": false,
                   "name": "campaignId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 205,
+                  "scope": 187,
                   "src": "144:17:3",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -399,7 +399,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 202,
+                    "id": 184,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "144:6:3",
@@ -418,7 +418,7 @@
           },
           {
             "body": {
-              "id": 217,
+              "id": 199,
               "nodeType": "Block",
               "src": "239:56:3",
               "statements": [
@@ -428,11 +428,11 @@
                     "arguments": [
                       {
                         "argumentTypes": null,
-                        "id": 213,
+                        "id": 195,
                         "name": "campaignAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 207,
+                        "referencedDeclaration": 189,
                         "src": "262:15:3",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -441,11 +441,11 @@
                       },
                       {
                         "argumentTypes": null,
-                        "id": 214,
+                        "id": 196,
                         "name": "campaignId",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 209,
+                        "referencedDeclaration": 191,
                         "src": "279:10:3",
                         "typeDescriptions": {
                           "typeIdentifier": "t_string_memory_ptr",
@@ -464,18 +464,18 @@
                           "typeString": "string memory"
                         }
                       ],
-                      "id": 212,
+                      "id": 194,
                       "name": "NewCampaign",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 205,
+                      "referencedDeclaration": 187,
                       "src": "250:11:3",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_event_nonpayable$_t_address_$_t_string_memory_ptr_$returns$__$",
                         "typeString": "function (address,string memory)"
                       }
                     },
-                    "id": 215,
+                    "id": 197,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -489,14 +489,14 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 216,
+                  "id": 198,
                   "nodeType": "EmitStatement",
                   "src": "245:45:3"
                 }
               ]
             },
             "documentation": null,
-            "id": 218,
+            "id": 200,
             "implemented": true,
             "isConstructor": false,
             "isDeclaredConst": false,
@@ -504,15 +504,15 @@
             "name": "register",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 210,
+              "id": 192,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 207,
+                  "id": 189,
                   "name": "campaignAddress",
                   "nodeType": "VariableDeclaration",
-                  "scope": 218,
+                  "scope": 200,
                   "src": "188:23:3",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -521,7 +521,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 206,
+                    "id": 188,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "188:7:3",
@@ -535,10 +535,10 @@
                 },
                 {
                   "constant": false,
-                  "id": 209,
+                  "id": 191,
                   "name": "campaignId",
                   "nodeType": "VariableDeclaration",
-                  "scope": 218,
+                  "scope": 200,
                   "src": "213:17:3",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -547,7 +547,7 @@
                     "typeString": "string"
                   },
                   "typeName": {
-                    "id": 208,
+                    "id": 190,
                     "name": "string",
                     "nodeType": "ElementaryTypeName",
                     "src": "213:6:3",
@@ -564,19 +564,19 @@
             },
             "payable": false,
             "returnParameters": {
-              "id": 211,
+              "id": 193,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "239:0:3"
             },
-            "scope": 219,
+            "scope": 201,
             "src": "170:125:3",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 220,
+        "scope": 202,
         "src": "53:244:3"
       }
     ],
@@ -586,14 +586,7 @@
     "name": "solc",
     "version": "0.4.24+commit.e67f0147.Emscripten.clang"
   },
-  "networks": {
-    "5777": {
-      "events": {},
-      "links": {},
-      "address": "0x36ac448cfd5cfef316cd0878c0fe5c4073372b8c",
-      "transactionHash": "0xb37876c46e9f4ba4a2875e1bf9c4eaa1b450971fe0c102935b22bd6bdb2bc0d2"
-    }
-  },
+  "networks": {},
   "schemaVersion": "2.0.1",
-  "updatedAt": "2018-08-27T05:59:57.827Z"
+  "updatedAt": "2018-08-29T03:50:25.896Z"
 }
