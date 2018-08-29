@@ -6,7 +6,6 @@ import config from '../config';
 import Networks from './networks';
 import validate from 'validate.js';
 import Web3 from 'web3';
-import User from './user';
 const Schema = mongoose.Schema;
 
 // A contract that is deployed on a network
@@ -273,6 +272,45 @@ HostedCampaign.methods.getCampaignContract = function () {
   }).exec();
 };
 
+const PeriodSchema = new Schema({
+  openingTime: Date,
+  closingTime: Date,
+});
+
+const LinkSchema = new Schema({
+  type: {
+    type: String,
+    required: true,
+  },
+});
+
+const TeamMemberSchema = new Schema({
+  name: String,
+  role: String,
+  description: String,
+  links: [LinkSchema],
+});
+
+const ExternalCampaign = new Schema({
+  addedBy: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    index: true,
+    required: true,
+  },
+  name: String,
+  symbol: String,
+  description: String,
+  companyURL: String,
+  whitePaperURL: String,
+  coverImageURL: String,
+  preICO: PeriodSchema,
+  ico: PeriodSchema,
+  links: [LinkSchema],
+  location: String,
+  team: [TeamMemberSchema],
+});
+
 // The complete campaign data model
 const Campaign = new Schema({
   createdAt: {
@@ -288,6 +326,9 @@ const Campaign = new Schema({
   },
   hostedCampaign: {
     type: HostedCampaign,
+  },
+  externalCampaign: {
+    type: ExternalCampaign,
   },
 });
 
@@ -306,6 +347,8 @@ Campaign.statics.createHostedDomain = function (owner, onChainData) {
   const campaign = this({
     _id: new mongoose.Types.ObjectId(),
     hostedCampaign: hostedCampaign,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
   });
 
   return campaign.save();
@@ -331,6 +374,18 @@ Campaign.statics.findByOwner = function (owner, offset) {
       }
       return { campaigns: cs, next: nextOffset };
     });
+};
+
+Campaign.statics.createExternalCampaign = function (userId, data) {
+  data.addedBy = userId;
+
+  const campaign = this({
+    externalCampaign: data,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  });
+
+  return campaign.save();
 };
 
 // This fetches a hosted campaign and checks the user matches
@@ -582,7 +637,12 @@ Campaign.statics.finaliseDeployment = async function (userId, userAddress, campa
 
 Campaign.statics.allPublic = function (offset) {
   const pageSize = 20;
-  let q = { 'hostedCampaign.campaignStatus': 'DEPLOYED' };
+  let q = {
+    $or: [
+      { 'hostedCampaign.campaignStatus': 'DEPLOYED' },
+      { externalCampaign: { $exists: true } },
+    ],
+  };
   if (offset) {
     q.updatedAt = { $lt: new Date(Number(Base64.decode(offset))) };
   }
@@ -602,8 +662,12 @@ Campaign.statics.allPublic = function (offset) {
 
 Campaign.statics.publicById = function (campaignId) {
   return this.findOne({
-    _id: campaignId,
-    'hostedCampaign.campaignStatus': 'DEPLOYED',
+    $and: [
+      { _id: campaignId },
+      { $or: [
+        { 'hostedCampaign.campaignStatus': 'DEPLOYED' },
+        { $exists: 'externalCampaign' },
+      ] }],
   }).exec();
 };
 
