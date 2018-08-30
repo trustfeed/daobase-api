@@ -38,6 +38,7 @@ const viewOffChainData = (d) => {
     return {
       coverImageURL: d.coverImageURL,
       whitePaperURL: d.whitePaperURL,
+      summary: d.summary,
       description: d.description,
       keywords: d.keywords,
     };
@@ -98,6 +99,7 @@ const viewExternal = (c) => {
     return {
       name: c.name,
       symbol: c.symbol,
+      summary: c.summary,
       description: c.description,
       companyURL: c.companyURL,
       whitePaperURL: c.whitePaperURL,

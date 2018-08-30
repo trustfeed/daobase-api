@@ -209,6 +209,9 @@ const OffChainData = new Schema({
   whitePaperURL: {
     type: String,
   },
+  summary: {
+    type: String,
+  },
   description: {
     type: String,
   },
@@ -300,6 +303,7 @@ const ExternalCampaign = new Schema({
   },
   name: String,
   symbol: String,
+  summary: String,
   description: String,
   companyURL: String,
   whitePaperURL: String,
