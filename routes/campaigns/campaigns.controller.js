@@ -4,14 +4,14 @@ import view from '../../views/adminCampaign';
 import Vote from '../../models/vote';
 import mongoose from 'mongoose';
 
-export const getAll = (req, res) => {
-  Campaign.allPublic(req.query.offset)
-    .then(data => {
-      res.status(200).send({ campaigns: data.campaigns.map(view), next: data.next });
-    })
-    .catch(err =>
-      te.handleError(err, res)
-    );
+export const getAll = async (req, res) => {
+  try {
+    let data = await Campaign.allPublic(req.query.offset);
+    await Promise.all(data.campaigns.map(x => x.addWeiRaised()));
+    res.status(200).send({ campaigns: data.campaigns.map(view), next: data.next });
+  } catch (err) {
+    te.handleError(err, res);
+  }
 };
 
 export const get = (req, res) => {

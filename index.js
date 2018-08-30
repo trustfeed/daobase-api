@@ -69,39 +69,39 @@ Contract.migrateAll()
   })
   .catch(() => {});
 
-const addTON = () => {
-  const Campaign = require('./models/campaign');
-  return Campaign.createExternalCampaign(
-    mongoose.Types.ObjectId('5b8618e6d72ba764e9f2de1c'),
-    {
-      name: 'Telegram Open Network',
-      symbol: 'TON',
-      description: 'Launching in 2018, this cryptocurrency will be based on multi-blockchain Proof-of-Stake system - TON (Telegram Open Network, after 2021 The Open Network) - designed to host a new generation of cryptocurrencies and decentralized applications.',
-      companyURL: 'https://telegram.org',
-      whitePaperURL: 'https://drive.google.com/file/d/1oaKoJDWvhtlvtQEuqxgfkUHcI5np1t5Q/view',
-      location: 'Russia',
-      links: [ { type: 'twitter', url: 'https://twitter.com/telegram' } ],
-      team: [
-        {
-          name: 'Nikolai Durov',
-          role: 'Co-founder, CTO',
-        },
-        {
-          name: 'Pavel Durov',
-          role: 'Co-founder, CEO',
-          links: [
-            {
-              type: 'facebook',
-              url: 'https://www.facebook.com/durov',
-            },
-            {
-              type: 'linkedin',
-              url: 'https://www.linkedin.com/in/pavel-durov-80174366/',
-            }],
-        },
-      ],
-    }
-  );
-};
+// const addTON = () => {
+//  const Campaign = require('./models/campaign');
+//  return Campaign.createExternalCampaign(
+//    mongoose.Types.ObjectId('5b8618e6d72ba764e9f2de1c'),
+//    {
+//      name: 'Telegram Open Network',
+//      symbol: 'TON',
+//      description: 'Launching in 2018, this cryptocurrency will be based on multi-blockchain Proof-of-Stake system - TON (Telegram Open Network, after 2021 The Open Network) - designed to host a new generation of cryptocurrencies and decentralized applications.',
+//      companyURL: 'https://telegram.org',
+//      whitePaperURL: 'https://drive.google.com/file/d/1oaKoJDWvhtlvtQEuqxgfkUHcI5np1t5Q/view',
+//      location: 'Russia',
+//      links: [ { type: 'twitter', url: 'https://twitter.com/telegram' } ],
+//      team: [
+//        {
+//          name: 'Nikolai Durov',
+//          role: 'Co-founder, CTO',
+//        },
+//        {
+//          name: 'Pavel Durov',
+//          role: 'Co-founder, CEO',
+//          links: [
+//            {
+//              type: 'facebook',
+//              url: 'https://www.facebook.com/durov',
+//            },
+//            {
+//              type: 'linkedin',
+//              url: 'https://www.linkedin.com/in/pavel-durov-80174366/',
+//            }],
+//        },
+//      ],
+//    }
+//  );
+// };
 
 // addTON().then(console.log).catch(console.log);

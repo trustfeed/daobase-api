@@ -55,7 +55,7 @@ const listen = async function () {
     const w3 = await Networks.lightNode(network);
     const contract = new w3.eth.Contract(abi, Networks.registry(network));
     contract.events.NewCampaign(
-      { fromBlock: 2896000 },
+      { fromBlock: 2902678 },
       (err, registryEvent) => {
         if (err) {
           console.log(err);

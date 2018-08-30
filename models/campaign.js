@@ -708,4 +708,21 @@ Campaign.statics.publicById = function (campaignId) {
   }).exec();
 };
 
+Campaign.methods.addWeiRaised = async function () {
+  if (!this.hostedCampaign ||
+  !this.hostedCampaign.onChainData ||
+  !this.hostedCampaign.onChainData.network ||
+  this.hostedCampaign.campaignStatus !== 'DEPLOYED' ||
+  !this.hostedCampaign.onChainData.crowdsaleContract) {
+    return;
+  }
+
+  const w3 = await Networks.fastestNode(this.hostedCampaign.onChainData.network);
+
+  let contract = this.hostedCampaign.onChainData.crowdsaleContract;
+  contract = new w3.eth.Contract(JSON.parse(contract.abi), contract.address);
+  this.weiRaised = await contract.methods.weiRaised().call();
+  return this;
+};
+
 module.exports = mongoose.model('Campaign', Campaign);

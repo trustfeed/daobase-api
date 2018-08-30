@@ -2,6 +2,32 @@ import Web3 from 'web3';
 import config from '../config';
 import * as te from '../typedError';
 
+let rinkebyFull = new Web3(`https://rinkeby.infura.io/${config.infuraKey}`);
+
+let rinkebyLight;
+
+try {
+  if (!config.rinkebyLightNode) {
+    console.log('no light node available');
+  } else {
+    let prov = new Web3.providers.WebsocketProvider(
+      config.rinkebyLightNode,
+      {
+        headers: {
+          Origin: 'localhost',
+        },
+      });
+    let w3 = new Web3(prov);
+    w3.eth.getBlockNumber()
+      .then(b => {
+        rinkebyLight = w3;
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+} catch (err) { console.log(err); };
+
 const Networks = {
   // The networs we support
   supported: ['rinkeby'],
@@ -19,7 +45,7 @@ const Networks = {
   fullNode: async (network) => {
     switch (network) {
     case 'rinkeby':
-      return new Web3(`https://rinkeby.infura.io/${config.infuraKey}`);
+      return rinkebyFull;
     default:
       throw new Error('unknown network');
     }
@@ -29,26 +55,10 @@ const Networks = {
   lightNode: async (network) => {
     switch (network) {
     case 'rinkeby':
-      if (!config.rinkebyLightNode) {
+      if (!rinkebyLight) {
         throw new te.TypedError(500, 'no light node available');
       } else {
-        let prov = new Web3.providers.WebsocketProvider(
-          config.rinkebyLightNode,
-          {
-            headers: {
-              Origin: 'localhost',
-            },
-          });
-        let w3 = new Web3(prov);
-        return w3.eth.getBlockNumber()
-          .then(b => {
-            console.log('rinkeby block:', b);
-            return w3;
-          })
-          .catch(err => {
-            console.log(err);
-            throw new te.TypedError(500, 'cannot connect to light node');
-          });
+        return rinkebyLight;
       }
     default:
       throw new Error('unknown network');
