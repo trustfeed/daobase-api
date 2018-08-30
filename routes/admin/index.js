@@ -1,9 +1,14 @@
 import express from 'express';
-import campaigns from './campaigns';
+import hostedCampaigns from './hostedCampaigns';
+import externalCampaigns from './externalCampaigns';
 import authMiddleware from '../../middleware/auth';
+import verifiedEmail from '../../middleware/verifiedEmail';
 
 const router = express.Router();
 router.use('/', authMiddleware);
-router.use('/campaigns', campaigns);
+router.use('/', verifiedEmail);
+router.use('/campaigns', hostedCampaigns);
+router.use('/hosted-campaigns', hostedCampaigns);
+router.use('/external-campaigns', externalCampaigns);
 
 module.exports = router;

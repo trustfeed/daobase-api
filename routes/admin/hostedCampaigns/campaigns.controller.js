@@ -12,7 +12,7 @@ export const post = (req, res) => {
     return;
   }
 
-  User.addCampaign(req.decoded.publicAddress)
+  User.addHostedCampaign(req.decoded.publicAddress)
     .then(campaign => {
       return Campaign.putOnChainData(req.decoded.id, campaign._id, req.body);
     })
@@ -52,7 +52,7 @@ export const getAll = (req, res) => {
     return;
   }
 
-  Campaign.findByOwner(req.decoded.id, req.query.offset)
+  Campaign.findHostedByOwner(req.decoded.id, req.query.offset)
     .then(cs => {
       cs.campaigns = cs.campaigns.map(view);
       res.status(200).send(cs);

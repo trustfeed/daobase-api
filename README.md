@@ -54,7 +54,7 @@ The token will be provided as part of the emailed link. The token is valid for 2
 
 The response will include a field type which will be one of; `SUCCESS`, `INVALID_TOKEN`, `EXPIRED_TOKEN` or `VERIFIED_TOKEN`.
 
-## Admin Campaigns
+## Admin Hosted Campaigns
 
 These APIs are to create, modify and deploy campaigns on the platform. The user must be logged in. Include the JWT in the header as 'x-access-token'.
 
@@ -74,7 +74,7 @@ Campaigns are created by the user in status DRAFT, once draft is finalised they 
 ### Create a new campaign
 
 ```bash
-curl -H 'x-access-token: fdsfdsad' -XPOST ${HOST}/admin/campaigns
+curl -H 'x-access-token: fdsfdsad' -XPOST ${HOST}/admin/hosted-campaigns
 ```
 
 On success it should return 201 and `{"campaign_id": "fdsaf"}`.
@@ -82,7 +82,7 @@ On success it should return 201 and `{"campaign_id": "fdsaf"}`.
 ### View All Owned Campaigns
 
 ```bash
-curl -H 'x-access-token: fdsafds' -XGET ${HOST}/admin/campaigns
+curl -H 'x-access-token: fdsafds' -XGET ${HOST}/admin/hosted-campaigns
 ```
 
 On success it should return 200 and `{"campaigns": [CAMPAIGN_OBJECTS]}`.
@@ -90,13 +90,13 @@ On success it should return 200 and `{"campaigns": [CAMPAIGN_OBJECTS]}`.
 ### View One Campaign
 
 ```bash
-curl -H 'x-access-token: fdsafds' -XGET ${HOST}/admin/campaigns/${ID}
+curl -H 'x-access-token: fdsafds' -XGET ${HOST}/admin/hosted-campaigns/${ID}
 ```
 
 ### Update a Campaigns On-Chain Data
 
 ```bash
-curl -H 'x-access-token: fdsaf' -XPUT ${HOST}/admin/campaigns/${ID}/on-chain-data -H 'content-type: application/json' --data '{ "tokenSymbol" : "TFT" }'
+curl -H 'x-access-token: fdsaf' -XPUT ${HOST}/admin/hosted-campaigns/${ID}/on-chain-data -H 'content-type: application/json' --data '{ "tokenSymbol" : "TFT" }'
 ```
 
 Success should return 201. The fields that can be edited are
@@ -117,7 +117,7 @@ Success should return 201. The fields that can be edited are
 ### Update a Campaigns Off-Chain Data
 
 ```bash
-curl -H 'x-access-token: fdsaf' -XPUT ${HOST}/admin/campaigns/${ID}/off-chain-data -H 'content-type: application/json' --data '{ "description" : "My amazing crowdsale" }'
+curl -H 'x-access-token: fdsaf' -XPUT ${HOST}/admin/hosted-campaigns/${ID}/off-chain-data -H 'content-type: application/json' --data '{ "description" : "My amazing crowdsale" }'
 ```
 
 Success should return 201. The fields that can be edited are
@@ -132,7 +132,7 @@ Success should return 201. The fields that can be edited are
 ### Upload an Cover Image for a Campaign
 
 ```bash
-curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/campaigns/${ID}/cover-image -H 'content-type: application/json' --data '{"extension": "png", "contentType": "image/png" }'
+curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/hosted-campaigns/${ID}/cover-image -H 'content-type: application/json' --data '{"extension": "png", "contentType": "image/png" }'
 ```
 
 The extension and contentType is optional. Defaults to jpg and image/jpeg.
@@ -142,7 +142,7 @@ On success you should get 201 and `{"uploadURL" : "https://tokenadmin.work.s3/fd
 ### Upload a White Paper for a Campaign
 
 ```bash
-curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/campaigns/${ID}/white-paper -H 'content-type: application/json' --data '{"extension": "pdf", "contentType": "application/pdf" }'
+curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/hosted-campaigns/${ID}/white-paper -H 'content-type: application/json' --data '{"extension": "pdf", "contentType": "application/pdf" }'
 ```
 
 The extension and contentType is optional. Defaults to pdf and application/pdf.
@@ -154,13 +154,13 @@ On success you should get 201 and `{"uploadURL" : "https://tokenadmin.work.s3/fd
 Once the campaign data has been prepared it may be submitted for review by a system admin.
 
 ```bash
-curl -H 'x-access-token: fds' -XPOST ${HOST}/admin/campaigns/${CAMPAIGN_ID}/submit-for-review
+curl -H 'x-access-token: fds' -XPOST ${HOST}/admin/hosted-campaigns/${CAMPAIGN_ID}/submit-for-review
 ```
 
 For now the user can force the review to be finalised.
 
 ```bash
-curl -H 'x-access-token: fds' -XPOST ${HOST}/admin/campaigns/${CAMPAIGN_ID}/review-passed
+curl -H 'x-access-token: fds' -XPOST ${HOST}/admin/hosted-campaigns/${CAMPAIGN_ID}/review-passed
 ```
 
 ### Deploying a Campaign
@@ -168,7 +168,7 @@ curl -H 'x-access-token: fds' -XPOST ${HOST}/admin/campaigns/${CAMPAIGN_ID}/revi
 Once the review stage is passed the server can prepare a transaction that deploys both token and crowdsale.
 
 ```bash
-curl -H 'x-access-token: fdsaf' -XGET ${HOST}/admin/campaigns/${ID}/deployment-transaction
+curl -H 'x-access-token: fdsaf' -XGET ${HOST}/admin/hosted-campaigns/${ID}/deployment-transaction
 ```
 
 This will return a transaction that needs to be sent to the Ethereum network via metamask. The user has to make sure the network is set to the same network as TrustFeed server.
@@ -178,7 +178,6 @@ The returned data will be like this;
 ```javascript
 {
   transaction: "0x54AE23...",
-  estimatedGas: 20000
 }
 ```
 
@@ -190,20 +189,38 @@ web3.eth.sendTransaction(
     from: '0XTHE_PUBLIC_ADDRESS_OF_USER',
     data: '0XTHE_TRANSACTION_FROM_ABOVE'
   }
-).then(r => {
-  if (r.status) {
-    postTransactionAddress(r.blockNumber, r.transactionIndex);
-  } else {
-    // error!
-  }
-}).catch(//error!);
+)
 ```
 
-The address of the transaction should then be posted back to the server;
+## Admin for External Campaigns
+
+Users can create new external campaigns;
 
 ```bash
-curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/campaigns/${ID}/finalise-deployment -XPOST -H 'content-type: application/json' --data '{"blockNumber": 500, "transactionIndex": 4}'
+curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/external-campaigns -H 'content-type: application/json' --data '{ "name" : "some campaign" }'
 ```
+
+| Field         | Type     | Description                          |
+| ------------- | -------- | ------------------------------------ |
+| name          | String   | The name of the campaign.            |
+| symbol        | String   | The token symbol.                    |
+| description   | String   | A short description of the ICO.      |
+| companyURL    | String   | The URL to the main site of the company. |
+| whitePaperURL | String   | A URL to the white paper.            |
+| coverImageURL | String   | A URL for the image to use as a cover image. |
+| preICO        | Duration | The openingTime and closingTime in unix time. |
+| ico           | Duration | The openingTime and closingTime in unix time. |
+| links         | [Link]   | The type and url of any additional links. |
+| location      | String   | The country in which the company is based. |
+| team          | [Member] | A list of the team members (this needs to be improved - members shared between ICOs). |
+
+Users can update external campaigns;
+
+```bash
+curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/external-campaigns/${ID} -H 'content-type: application/json' --data '{ "name" : "some campaign" }'
+```
+
+The data packet is the same as POST.
 
 ## Public Campaign
 
@@ -256,4 +273,50 @@ To get the vote counts for a campaign
 
 ```bash
 CURL -XGET -H 'x-access-token: fdsa' ${HOST}/campaign/${CAMPAIGN_ID}/votes
+```
+
+# Run a Testing Environment
+
+There are three components;
+1. MongoDB
+2. A light Geth node
+3. The api server.
+
+## MongoDB
+
+Launch MongoDB in docker with;
+```bash
+docker run --name crowdsale-mongo-dev -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=test -e MONGO_INITDB_ROOT_PASSWORD=test -d mongo:4
+```
+
+## Geth
+
+Launch a geth node for rinkeby with (substitute GETH_DATA_DIR with some place to store the blockchain state).
+```bash
+docker run -p 8545:8545 -p 8546:8546 -d -v ${GETH_DATA_DIR}:/root/.ethereum --name geth ethereum/client-go:stable  --cache=256 --rinkeby --syncmode light --ws --wsaddr "0.0.0.0" --wsorigins "*" --wsapi="db,eth,net,web3,personal,web3" --rpc --rpcaddr "0.0.0.0"  --rpcapi="db,eth,net,web3,personal,web3"
+```
+
+This may take time to sink (20 minutes or more). Check with 
+```bash
+docker logs geth
+```
+
+## Launch API Server
+
+You need to set some environment variables;
+1. MONGO_USERNAME=test
+2. MONGO_PASSWORD=test
+3. MONGO_HOST=localhost
+4. MONGO_PORT=27017
+5. TRUSTFEED_ADDRESS=0x3aa9ce734dd21fa5e6962978e2ccc7f4ac513348
+6. RINKEBY_LIGHT_NODE=ws://localhost:8546
+7. AWS_ACCESS_KEY_ID
+8. AWS_SECRET_ACCESS_KEY
+9. AWS_REGION
+10. INFURA_KEY
+
+Then use node (or yarn) to 
+```bash
+npm install
+npm run start
 ```

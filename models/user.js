@@ -62,7 +62,7 @@ User.statics.create = function (publicAddress) {
   return user.save();
 };
 
-User.statics.addCampaign = function (publicAddress) {
+User.statics.addHostedCampaign = function (publicAddress) {
   return this.findOne({
     publicAddress,
   }).exec()
@@ -73,6 +73,15 @@ User.statics.addCampaign = function (publicAddress) {
         return Campaign.createHostedDomain(user._id);
       }
     });
+};
+
+User.statics.addExternalCampaign = async function (publicAddress, data) {
+  const user = await this.findOne({ publicAddress }).exec();
+  if (!user) {
+    throw new te.TypedError(404, 'unknown publicAddress');
+  } else {
+    return Campaign.createExternalCampaign(user._id, data);
+  }
 };
 
 User.methods.addEmail = function (email) {

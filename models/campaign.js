@@ -354,8 +354,29 @@ Campaign.statics.createHostedDomain = function (owner, onChainData) {
   return campaign.save();
 };
 
+Campaign.statics.findAllExternal = function (owner, offset) {
+  const pageSize = 20;
+  let q = { externalCampaign: { $exists: true } };
+  if (offset) {
+    q.updatedAt = { $lt: new Date(Number(Base64.decode(offset))) };
+  }
+  
+  return this
+    .find(q)
+    .sort({ updatedAt: 'desc' })
+    .limit(pageSize)
+    .exec()
+    .then(cs => {
+      let nextOffset;
+      if (cs.length === pageSize) {
+        nextOffset = Base64.encode(cs[cs.length - 1].updatedAt.getTime());
+      }
+      return { campaigns: cs, next: nextOffset };
+    });
+};
+
 // Fetch all hosted campaigns owned by the given user
-Campaign.statics.findByOwner = function (owner, offset) {
+Campaign.statics.findHostedByOwner = function (owner, offset) {
   const pageSize = 20;
   let q = { 'hostedCampaign.owner': owner };
   if (offset) {
@@ -444,6 +465,18 @@ Campaign.statics.acceptReview = function (userId, campaignId) {
         return campaign.save();
       }
     });
+};
+
+Campaign.statics.putExternal = async function (userId, campaignId, data) {
+  const campaign = await this.findOne({ _id: campaignId }).exec();
+  if (!campaign) {
+    throw new te.TypedError(404, 'unknown campaign');
+  } else if (!campaign.externalCampaign) {
+    throw new te.TypedError(403, 'that is not an external campaign');
+  }
+  data.addedBy = campaign.externalCampaign.addedBy;
+  campaign.externalCampaign = data;
+  return campaign.save();
 };
 
 Campaign.statics.putOnChainData = function (userId, campaignId, data) {
