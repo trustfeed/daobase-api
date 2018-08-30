@@ -27,6 +27,7 @@ const viewOnChainData = (d) => {
       tokenContract: viewDeployedContract(d.tokenContract),
       crowdsaleContract: viewDeployedContract(d.crowdsaleContract),
       walletContract: viewDeployedContract(d.walletContract),
+      weiRaised: d.weiRaised,
     };
   }
 };
@@ -118,7 +119,6 @@ export default (c) => {
     id: c._id,
     createdAt: Math.round(c.createdAt.getTime() / 1000),
     updatedAt: Math.round(c.updatedAt.getTime() / 1000),
-    weiRaised: c.weiRaised,
   };
 
   if (c.hostedCampaign) {

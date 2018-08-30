@@ -721,7 +721,7 @@ Campaign.methods.addWeiRaised = async function () {
 
   let contract = this.hostedCampaign.onChainData.crowdsaleContract;
   contract = new w3.eth.Contract(JSON.parse(contract.abi), contract.address);
-  this.weiRaised = await contract.methods.weiRaised().call();
+  this.hostedCampaign.onChainData.weiRaised = await contract.methods.weiRaised().call();
   return this;
 };
 

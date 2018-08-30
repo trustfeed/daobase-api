@@ -14,23 +14,24 @@ export const getAll = async (req, res) => {
   }
 };
 
-export const get = (req, res) => {
+export const get = async (req, res) => {
   if (!req.params.id) {
     res.status(400).send({ message: 'missing campaign id' });
     return;
   }
 
-  Campaign.publicById(mongoose.Types.ObjectId(req.params.id))
-    .then(campaign => {
-      if (!campaign) {
-        throw new te.TypedError(404, 'campaign not found');
-      } else {
-        res.status(200).send(view(campaign));
-      }
-    })
-    .catch(err =>
-      te.handleError(err, res)
-    );
+  try {
+    let campaign = await Campaign.publicById(mongoose.Types.ObjectId(req.params.id));
+    if (!campaign) {
+      throw new te.TypedError(404, 'campaign not found');
+    } else {
+      await campaign.addWeiRaised();
+      res.status(200).send(view(campaign));
+      return;
+    }
+  } catch (err) {
+    te.handleError(err, res);
+  }
 };
 
 export const voteGet = (req, res) => {

@@ -25,7 +25,7 @@ export const post = (req, res) => {
 };
 
 // Get a campaign
-export const get = (req, res) => {
+export const get = async (req, res) => {
   if (!req.decoded.id) {
     res.status(400).send({ message: 'missing user id' });
     return;
@@ -36,30 +36,32 @@ export const get = (req, res) => {
     return;
   }
 
-  Campaign.fetchHostedCampaign(req.decoded.id, mongoose.Types.ObjectId(req.params.id))
-    .then(campaign => {
-      res.status(200).send(view(campaign));
-    })
-    .catch(err =>
-      te.handleError(err, res)
-    );
+  try {
+    let campaign = await Campaign.fetchHostedCampaign(
+      req.decoded.id,
+      mongoose.Types.ObjectId(req.params.id));
+    await campaign.addWeiRaised();
+    res.status(200).send(view(campaign));
+  } catch (err) {
+    te.handleError(err, res);
+  }
 };
 
 // A list of campaigns
-export const getAll = (req, res) => {
+export const getAll = async (req, res) => {
   if (!req.decoded.id) {
     res.status(400).send({ message: 'missing user id' });
     return;
   }
 
-  Campaign.findHostedByOwner(req.decoded.id, req.query.offset)
-    .then(cs => {
-      cs.campaigns = cs.campaigns.map(view);
-      res.status(200).send(cs);
-    })
-    .catch(err =>
-      te.handleError(err, res)
-    );
+  try {
+    let data = await Campaign.findHostedByOwner(req.decoded.id, req.query.offset);
+    await Promise.all(data.campaigns.map(x => x.addWeiRaised()));
+    data.campaigns = data.campaigns.map(view);
+    res.status(200).send(data);
+  } catch (err) {
+    te.handleError(err, res);
+  }
 };
 
 export const putOnChainData = (req, res) => {
