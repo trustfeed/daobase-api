@@ -513,6 +513,7 @@ Campaign.methods.makeDeployment = function (userAddress) {
       if (!contract) {
         throw new te.TypedError(500, 'error finding contract');
       }
+      const rate = Math.round(Number(Web3.toBN(this.hostedCampaign.onChainData.rate)));
       const startTime = this.hostedCampaign.onChainData.startingTime.getTime() / 1000;
       let args;
       if (this.hostedCampaign.onChainData.isMinted) {
@@ -525,7 +526,7 @@ Campaign.methods.makeDeployment = function (userAddress) {
           startTime,
           startTime + this.hostedCampaign.onChainData.duration * 60 * 60 * 24,
 
-          (this.hostedCampaign.onChainData.rate),
+          rate,
           (this.hostedCampaign.onChainData.hardCap),
           (this.hostedCampaign.onChainData.softCap),
           this._id.toString(),
@@ -546,7 +547,7 @@ Campaign.methods.makeDeployment = function (userAddress) {
           startTime,
           startTime + this.hostedCampaign.onChainData.duration * 60 * 60 * 24,
 
-          (this.hostedCampaign.onChainData.rate),
+          rate,
           (this.hostedCampaign.onChainData.hardCap),
           (this.hostedCampaign.onChainData.softCap),
           this._id.toString(),
