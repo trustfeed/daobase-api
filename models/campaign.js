@@ -513,7 +513,7 @@ Campaign.methods.makeDeployment = function (userAddress) {
       if (!contract) {
         throw new te.TypedError(500, 'error finding contract');
       }
-      const rate = Math.round(Number(Web3.toBN(this.hostedCampaign.onChainData.rate)));
+      const rate = Math.round(Number(this.hostedCampaign.onChainData.rate));
       const startTime = this.hostedCampaign.onChainData.startingTime.getTime() / 1000;
       let args;
       if (this.hostedCampaign.onChainData.isMinted) {
