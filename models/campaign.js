@@ -161,7 +161,7 @@ OnChainData.methods.generateReport = function () {
   // }
 
   const softCap = stringToBNOrUndefined(this.softCap);
-  if (softCap || softCap < 1) {
+  if (!softCap || softCap < 1) {
     const msg = 'Soft cap must be an integer larger than 0';
     if (errs.softCap) {
       errs.softCap.push(msg);
@@ -171,7 +171,7 @@ OnChainData.methods.generateReport = function () {
   }
 
   const hardCap = stringToBNOrUndefined(this.hardCap);
-  if (hardCap || (softCap && hardCap < softCap)) {
+  if (!hardCap || (softCap && hardCap < softCap)) {
     const msg = 'Hard cap must be an integer greater than soft cap';
     if (errs.hardCap) {
       errs.hardCap.push(msg);
@@ -475,19 +475,25 @@ Campaign.statics.putExternal = async function (userId, campaignId, data) {
   return campaign.save();
 };
 
-Campaign.statics.putOnChainData = function (userId, campaignId, data) {
-  return this.fetchHostedCampaign(userId, campaignId)
-    .then(campaign => {
-      if (campaign.hostedCampaign.campaignStatus !== 'DRAFT') {
-        throw new te.TypedError(403, 'the campaign is not in DRAFT status');
-      } else {
-        campaign.hostedCampaign.onChainData = data;
-        campaign.hostedCampaign.onChainData.startingTime = Date(data.startingTime * 1000);
-        campaign.updatedAt = Date.now();
-        console.log(campaign.hostedCampaign.onChainData);
-        return campaign.save();
-      }
-    });
+Campaign.statics.putOnChainData = async function (userId, campaignId, data) {
+  const campaign = await this.fetchHostedCampaign(userId, campaignId);
+  if (campaign.hostedCampaign.campaignStatus !== 'DRAFT') {
+    throw new te.TypedError(403, 'the campaign is not in DRAFT status');
+  }
+
+  campaign.hostedCampaign.onChainData = data;
+  campaign.hostedCampaign.onChainData.startingTime = Date(data.startingTime * 1000);
+  campaign.updatedAt = Date.now();
+  const errs = campaign.hostedCampaign.onChainData.generateReport();
+  if (Object.keys(errs).length > 0) {
+    throw new te.TypedError(
+      400,
+      'validation error',
+      'INVALID_DATA',
+      { onChainValidationErrors: errs },
+    );
+  }
+  return campaign.save();
 };
 
 Campaign.statics.putOffChainData = function (userId, campaignId, data) {
@@ -533,7 +539,7 @@ Campaign.methods.makeDeployment = function (userAddress) {
           this.hostedCampaign.onChainData.numberOfDecimals,
 
           Web3.utils.toBN(this.hostedCampaign.onChainData.hardCap)
-            .mul(rate),
+            .mul(Web3.utils.toBN(rate)),
 
           startTime,
           startTime + this.hostedCampaign.onChainData.duration * 60 * 60 * 24,
