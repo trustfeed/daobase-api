@@ -80,6 +80,22 @@ const OnChainData = new Schema({
   },
 });
 
+const stringToBNOrUndefined = (s) => {
+  try {
+    return Web3.utils.toBN(s);
+  } catch (err) {
+    return undefined;
+  }
+};
+
+const stringRoundedOrUndefined = (s) => {
+  try {
+    return Math.round(Number(s));
+  } catch (err) {
+    return undefined;
+  }
+};
+
 OnChainData.methods.generateReport = function () {
   const constraints = {
     network: {
@@ -144,59 +160,35 @@ OnChainData.methods.generateReport = function () {
   //  }
   // }
 
-  // if (this.softCap && this.softCap < 1) {
-  //  const msg = 'Soft cap must be larger than 0';
-  //  if (errs.softCap) {
-  //    errs.softCap.push(msg);
-  //  } else {
-  //    errs.softCap = [msg];
-  //  }
-  // }
+  const softCap = stringToBNOrUndefined(this.softCap);
+  if (softCap || softCap < 1) {
+    const msg = 'Soft cap must be an integer larger than 0';
+    if (errs.softCap) {
+      errs.softCap.push(msg);
+    } else {
+      errs.softCap = [msg];
+    }
+  }
 
-  // if (this.softCap && !this.softCap.isInteger()) {
-  //  const msg = 'Soft cap must be an integer';
-  //  if (errs.softCap) {
-  //    errs.softCap.push(msg);
-  //  } else {
-  //    errs.softCap = [msg];
-  //  }
-  // }
+  const hardCap = stringToBNOrUndefined(this.hardCap);
+  if (hardCap || (softCap && hardCap < softCap)) {
+    const msg = 'Hard cap must be an integer greater than soft cap';
+    if (errs.hardCap) {
+      errs.hardCap.push(msg);
+    } else {
+      errs.hardCap = [msg];
+    }
+  }
 
-  // if (this.softCap && this.hardCap && this.softCap > this.hardCap) {
-  //  const msg = 'The hard cap must be above the soft cap.';
-  //  if (errs.hardCap) {
-  //    errs.hardCap.push(msg);
-  //  } else {
-  //    errs.hardCap = [msg];
-  //  }
-  // }
-
-  // if (this.hardCap && !this.hardCap.isInteger()) {
-  //  const msg = 'Hard cap must be an integer';
-  //  if (errs.hardCap) {
-  //    errs.hardCap.push(msg);
-  //  } else {
-  //    errs.hardCap = [msg];
-  //  }
-  // }
-
-  // if (this.rate && this.rate < 1) {
-  //  const msg = 'rate must be larger than 0';
-  //  if (errs.rate) {
-  //    errs.rate.push(msg);
-  //  } else {
-  //    errs.rate = [msg];
-  //  }
-  // }
-
-  // if (this.rate && !this.rate.isInteger()) {
-  //  const msg = 'Rate must be an integer';
-  //  if (errs.rate) {
-  //    errs.rate.push(msg);
-  //  } else {
-  //    errs.rate = [msg];
-  //  }
-  // }
+  const rate = stringRoundedOrUndefined(this.rate);
+  if (!rate || rate < 1) {
+    const msg = 'rate must be larger than 0';
+    if (errs.rate) {
+      errs.rate.push(msg);
+    } else {
+      errs.rate = [msg];
+    }
+  }
 
   return errs;
 };
@@ -513,7 +505,7 @@ Campaign.methods.makeDeployment = function (userAddress) {
       if (!contract) {
         throw new te.TypedError(500, 'error finding contract');
       }
-      const rate = Math.round(Number(this.hostedCampaign.onChainData.rate));
+      const rate = stringRoundedOrUndefined(this.hostedCampaign.onChainData.rate);
       const startTime = this.hostedCampaign.onChainData.startingTime.getTime() / 1000;
       let args;
       if (this.hostedCampaign.onChainData.isMinted) {
@@ -540,9 +532,8 @@ Campaign.methods.makeDeployment = function (userAddress) {
           this.hostedCampaign.onChainData.tokenSymbol,
           this.hostedCampaign.onChainData.numberOfDecimals,
 
-          Web3.utils.toBN(
-            this.hostedCampaign.onChainData.hardCap)
-            .mul(Web3.utils.toBN(this.hostedCampaign.onChainData.rate)),
+          Web3.utils.toBN(this.hostedCampaign.onChainData.hardCap)
+            .mul(rate),
 
           startTime,
           startTime + this.hostedCampaign.onChainData.duration * 60 * 60 * 24,
