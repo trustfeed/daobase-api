@@ -68,7 +68,7 @@ Investment.statics.updateBalance = async function (network, token, publicAddress
 
   const user = await User.findOne({ publicAddress }).exec();
   if (!user) {
-    throw new te.TypedError(404, 'user not found');
+    throw new te.TypedError(404, `user not found (${publicAddress})`);
   }
 
   let investments = await this.findOne({ user: user._id }).exec();

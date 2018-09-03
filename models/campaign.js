@@ -171,8 +171,6 @@ OnChainData.methods.generateReport = function () {
   }
 
   const hardCap = stringToBNOrUndefined(this.hardCap);
-  console.log(softCap, hardCap);
-  console.log(softCap.toString(), hardCap.toString());
   if (!hardCap || (softCap && hardCap.lte(softCap))) {
     const msg = 'Hard cap must be an integer greater than soft cap';
     if (errs.hardCap) {

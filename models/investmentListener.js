@@ -23,6 +23,7 @@ const checkUser = async publicAddress => {
       return Investments.updateBalance(
         campaign.hostedCampaign.onChainData.network,
         campaign.hostedCampaign.onChainData.tokenContract.address,
+        publicAddress,
       );
     });
 };
