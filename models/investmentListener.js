@@ -32,7 +32,7 @@ const publicAddresses = new Set([]);
 User.find().stream().on('data', u => {
   checkUser(u.publicAddress);
   publicAddresses.add(u.publicAddress);
-}).catch(err => console.log(err));
+});
 
 export default {
   listenForERC20: () => {
@@ -60,6 +60,7 @@ export default {
     };
 
     const ns = Networks.supported;
+    console.log(ns);
     return Promise.all(ns.map(listenToEvent));
   },
 
