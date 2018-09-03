@@ -67,7 +67,14 @@ Contract.migrateAll()
   .then(() => {
     return VerifyCampaign.listen();
   })
+  .then(() => {
+    const Investment = require('./models/investmentListener');
+    Investment.listenForERC20();
+  })
   .catch(() => {});
+
+// const Investment = require('./models/investments');
+// Investment.updateBalance('rinkeby', '0xbBe512B6754eD05661038cbbe0a374158689A29b', '0x899d17f34e7f9f5f0fc54dabad4d61ac4a40ba36');
 
 // const addTON = () => {
 //  const Campaign = require('./models/campaign');

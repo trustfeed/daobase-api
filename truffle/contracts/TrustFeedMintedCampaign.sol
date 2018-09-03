@@ -36,6 +36,8 @@ contract TrustFeedMintedCampaign {
     TrustFeedCampaignRegistry _registry
   ) public {
 
+    require(_owners[1] == msg.sender, "sent from unexpected address");
+
     wallet = new TrustFeedWallet(
       _owners,
       2);

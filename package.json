@@ -7,6 +7,7 @@
   "author": "James Wetter <wetter.j@gmail.com>",
   "license": "?",
   "scripts": {
+    "test": "babel-node test.js",
     "start": "babel-node .",
     "dev": "nodemon --exec babel-node .",
     "lint": "semistandard --env node",

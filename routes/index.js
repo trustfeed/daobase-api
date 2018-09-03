@@ -5,6 +5,7 @@ import auth from './auth';
 import admin from './admin';
 import campaigns from './campaigns';
 import verify from './verify';
+import investments from './investments';
 
 const router = express.Router();
 router.use('/nonce', nonce);
@@ -13,5 +14,6 @@ router.use('/auth', auth);
 router.use('/admin', admin);
 router.use('/campaigns', campaigns);
 router.use('/verify', verify);
+router.use('/investments', investments);
 
 export default router;
