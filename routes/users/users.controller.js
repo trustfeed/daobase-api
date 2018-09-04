@@ -1,6 +1,7 @@
 import User from '../../models/user';
 import * as te from '../../typedError';
 import authMiddleware from '../../middleware/auth';
+import InvestmentListener from '../../models/investmentListener';
 
 export const get = (req, res) => {
   authMiddleware(req, res, () => {
@@ -33,26 +34,23 @@ export const get = (req, res) => {
   });
 };
 
-export const post = (req, res) => {
-  const { publicAddress } = req.body;
-  if (!publicAddress) {
-    return res.status(400).send({ message: 'publicAddress required' });
-  }
+export const post = async (req, res) => {
+  try {
+    const { publicAddress } = req.body;
+    if (!publicAddress) {
+      throw new te.TypedError(400, 'publicAddress required');
+    }
 
-  User.findOneByPublicAddress(publicAddress)
-    .then(user => {
-      if (user) {
-        throw new te.TypedError(409, 'publicAddress already registered');
-      } else {
-        return User.create(publicAddress);
-      }
-    })
-    .then(user => {
-      res.status(201).json({ nonce: user.nonce });
-    })
-    .catch(err => {
-      te.handleError(err, res);
-    });
+    let user = await User.findOneByPublicAddress(publicAddress);
+    if (user) {
+      throw new te.TypedError(409, 'publicAddress already registered');
+    }
+    user = User.create(publicAddress);
+    InvestmentListener.addAddresses([publicAddress]);
+    res.status(201).json({ nonce: user.nonce });
+  } catch (err) {
+    te.handleError(err, res);
+  }
 };
 
 export const put = (req, res) => {

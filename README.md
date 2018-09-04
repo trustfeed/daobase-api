@@ -244,6 +244,16 @@ View one campaign with
 curl -H 'x-access-token: fdsa' ${HOST}/campaigns/${CAMPAIGN_ID}
 ```
 
+## Investments
+
+The current token investments of an account can be viewed with this;
+
+```bash
+curl -H 'x-access-token: fdsadf' ${HOST}/investments
+```
+
+This should include all ERC20 tokens purchased after account creation. For hosted campaigns it will included all tokens (even those purchased before account creation).
+
 ## Voting
 
 A user can upvote or downvote ongoing campaigns. In order to vote the following conditions must be met;
