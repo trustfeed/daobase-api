@@ -32,11 +32,13 @@ HashToEmail.statics.create = function (user, emailObj) {
   hsh.update(user.toString() + emailObj._id.toString() + Math.random());
   const token = hsh.hex();
 
+  const host = 'http://test.tokenadmin.work.s3-website.ap-northeast-2.amazonaws.com';
+
   sendMail(
     emailObj.address,
     'TrustFeed email verification',
-    `Hello,\nIn order to verify this email address with TrustFeed please use the following link http://localhost:3000/email-verification?token=${token}`,
-    `Hello,\nIn order to verify this email address with TrustFeed please use the following link http://localhost:3000/email-verification?token=${token}`,
+    `Hello,\nIn order to verify this email address with TrustFeed please use the following link ${host}/email-verification?token=${token}`,
+    `Hello,\nIn order to verify this email address with TrustFeed please use the following link ${host}/email-verification?token=${token}`,
     (err) => console.log('SES error:', err),
   );
 
