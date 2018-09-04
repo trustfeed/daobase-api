@@ -329,6 +329,7 @@ const Campaign = new Schema({
 });
 
 Campaign.index({ 'hostedCampaign.owner': 1 });
+Campaign.index({ 'hostedCampaign.onChainData.tokenContract.address': 1 });
 
 // Create a hosted campaign with the given on-chain data
 Campaign.statics.createHostedDomain = function (owner, onChainData) {

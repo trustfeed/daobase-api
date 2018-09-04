@@ -3,8 +3,10 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import config from './config';
 import routes from './routes';
-import db from './models/db';
 import VerifyCampaign from './models/verifyCampaign';
+import mongoose from 'mongoose';
+import InvestmentListener from './models/investmentListener';
+import Contract from './models/contract';
 
 const app = express();
 
@@ -45,19 +47,26 @@ app.listen(
     process.exit(1);
   });
 
-const Contract = require('./models/contract');
-Contract.migrateAll()
-  .then(() => {
-    return VerifyCampaign.listen();
-  })
-  .then(() => {
-    const Investment = require('./models/investmentListener').default;
-    return Investment.listenForERC20();
-  })
-  .catch(err => console.log(err));
+const options = {
+  user: config.mongoUser,
+  pass: config.mongoPass,
+};
 
-// const Investment = require('./models/investments');
-// Investment.updateBalance('rinkeby', '0xbBe512B6754eD05661038cbbe0a374158689A29b', '0x899d17f34e7f9f5f0fc54dabad4d61ac4a40ba36');
+const uri = `mongodb://${config.mongoHost}:${config.mongoPort}/crowdAdmin?authSource=admin`;
+mongoose.connect(uri, options);
+mongoose.Promise = global.Promise;
+const db = mongoose.connection;
+db.on('error', err => {
+  console.error(err);
+  process.exit(1);
+});
+db.once('open', async () => {
+  console.log('connected to db');
+  await Contract.migrateAll();
+  await VerifyCampaign.listen();
+  await InvestmentListener.crawlAllKnown();
+  await InvestmentListener.listenForERC20();
+});
 
 // const addTON = () => {
 //  const Campaign = require('./models/campaign');

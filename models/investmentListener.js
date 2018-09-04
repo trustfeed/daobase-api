@@ -4,7 +4,7 @@ import Investments from './investments';
 import Campaign from './campaign';
 
 const topicToAddress = topic => {
-  if (topic && topic instanceof String && topic.length >= 40) {
+  if (topic && topic.length >= 40) {
     return '0x' + topic.substring(topic.length - 40);
   } else {
     return undefined;
@@ -29,10 +29,6 @@ const checkUser = async publicAddress => {
 };
 
 const publicAddresses = new Set([]);
-User.find().stream().on('data', u => {
-  checkUser(u.publicAddress);
-  publicAddresses.add(u.publicAddress);
-});
 
 export default {
   listenForERC20: () => {
@@ -47,25 +43,31 @@ export default {
         .on('data', tx => {
           const token = tx.address;
           const from = topicToAddress(tx.topics[1]);
-          const to = topicToAddress(tx.topics[1]);
+          const to = topicToAddress(tx.topics[2]);
           if (token && from && to) {
             if (publicAddresses.has(from)) {
-              Investments.updateBalance(token, from).catch(err => console.log(err));
+              Investments.updateBalance(network, token, from).catch(err => console.log(err));
             }
             if (publicAddresses.has(to)) {
-              Investments.updateBalance(token, to).catch(err => console.log(err));
+              Investments.updateBalance(network, token, to).catch(err => console.log(err));
             }
           }
         });
     };
 
     const ns = Networks.supported;
-    console.log(ns);
     return Promise.all(ns.map(listenToEvent));
   },
 
   addAddresses: addresses => {
     Promise.all(addresses.map(checkUser)).catch(err => { console.log(err); });
     addresses.map(publicAddresses.add);
+  },
+
+  crawlAllKnown: () => {
+    User.find().stream().on('data', u => {
+      checkUser(u.publicAddress);
+      publicAddresses.add(u.publicAddress);
+    });
   },
 };
