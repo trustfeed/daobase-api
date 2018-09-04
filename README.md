@@ -314,6 +314,7 @@ You need to set some environment variables;
 8. AWS_SECRET_ACCESS_KEY
 9. AWS_REGION
 10. INFURA_KEY
+11. FRONTEND_HOST=http://localhost:3000
 
 Then use node (or yarn) to 
 ```bash

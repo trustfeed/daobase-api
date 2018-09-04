@@ -14,6 +14,8 @@ const config = {
 
   trustfeedAddress: process.env.TRUSTFEED_ADDRESS || '0x3aa9ce734dd21fa5e6962978e2ccc7f4ac513348',
   infuraKey: process.env.INFURA_KEY,
+
+  frontendHost: process.env.FRONTEND_HOST || 'http://localhost:3000',
 };
 
 export default config;
