@@ -78,6 +78,10 @@ const OnChainData = new Schema({
     type: DeployedContract,
     required: false,
   },
+  weiRaised: {
+    type: String,
+    required: false,
+  },
 });
 
 const stringToBNOrUndefined = (s) => {
@@ -407,8 +411,8 @@ Campaign.statics.createExternalCampaign = function (userId, data) {
 };
 
 // This fetches a hosted campaign and checks the user matches
-Campaign.statics.fetchHostedCampaign = function (userId, campaignId) {
-  return this.findOne({
+Campaign.statics.fetchHostedCampaign = async function (userId, campaignId) {
+  let campaign = await this.findOne({
     _id: campaignId,
   }).exec()
     .then(campaign => {
@@ -422,6 +426,9 @@ Campaign.statics.fetchHostedCampaign = function (userId, campaignId) {
         return campaign;
       }
     });
+
+  campaign.updateWeiRaisedOlderThan().catch(console.log);
+  return campaign;
 };
 
 // Review this hosted campaign
@@ -671,7 +678,7 @@ Campaign.statics.finaliseDeployment = async function (userId, userAddress, campa
 //  return campaign.save();
 };
 
-Campaign.statics.allPublic = function (offset) {
+Campaign.statics.allPublic = async function (offset) {
   const pageSize = 20;
   let q = {
     $or: [
@@ -682,22 +689,25 @@ Campaign.statics.allPublic = function (offset) {
   if (offset) {
     q.updatedAt = { $lt: new Date(Number(Base64.decode(offset))) };
   }
-  return this
+  let cs = await this
     .find(q)
     .sort({ updatedAt: 'desc' })
     .limit(pageSize)
-    .exec()
-    .then(cs => {
-      let nextOffset;
-      if (cs.length === pageSize) {
-        nextOffset = Base64.encode(cs[cs.length - 1].updatedAt.getTime());
-      }
-      return { campaigns: cs, next: nextOffset };
-    });
+    .exec();
+
+  Promise.all(cs.map(c => {
+    return c.updateWeiRaisedOlderThan();
+  })).catch(console.log);
+
+  let nextOffset;
+  if (cs.length === pageSize) {
+    nextOffset = Base64.encode(cs[cs.length - 1].updatedAt.getTime());
+  }
+  return { campaigns: cs, next: nextOffset };
 };
 
-Campaign.statics.publicById = function (campaignId) {
-  return this.findOne({
+Campaign.statics.publicById = async function (campaignId) {
+  let campaign = await this.findOne({
     $and: [
       { _id: campaignId },
       { $or: [
@@ -705,6 +715,10 @@ Campaign.statics.publicById = function (campaignId) {
         { externalCampaign: { $exists: true } },
       ] }],
   }).exec();
+  if (campaign) {
+    campaign.updateWeiRaisedOlderThan().catch(console.log);
+  }
+  return campaign;
 };
 
 Campaign.methods.addWeiRaised = async function () {
@@ -722,6 +736,33 @@ Campaign.methods.addWeiRaised = async function () {
   contract = new w3.eth.Contract(JSON.parse(contract.abi), contract.address);
   this.hostedCampaign.onChainData.weiRaised = await contract.methods.weiRaised().call();
   return this;
+};
+
+Campaign.methods.updateWeiRaisedOlderThan = async function (duration) {
+  if (!duration) {
+    duration = 1000 * 60 * 5;
+  }
+  if (Date.now() - this.updatedAt.getTime() > duration) {
+    await this.addWeiRaised();
+    this.updatedAt = Date.now();
+    return this.save();
+  } else {
+    return Promise.resolve(true);
+  }
+};
+
+Campaign.statics.updateWeiRaised = async function (tokenAddress) {
+  let campaign = await this.findOne({
+    'hostedCampaign.onChainData.tokenContract.address': tokenAddress,
+  }).exec();
+
+  if (!campaign) {
+    throw new te.TypedError(404, 'unknown campaign');
+  }
+
+  campaign = await campaign.addWeiRaised();
+  campaign.updatedAt = Date.now();
+  return campaign.save();
 };
 
 module.exports = mongoose.model('Campaign', Campaign);

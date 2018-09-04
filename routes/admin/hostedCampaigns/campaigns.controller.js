@@ -40,7 +40,7 @@ export const get = async (req, res) => {
     let campaign = await Campaign.fetchHostedCampaign(
       req.decoded.id,
       mongoose.Types.ObjectId(req.params.id));
-    await campaign.addWeiRaised();
+    // await campaign.addWeiRaised();
     res.status(200).send(view(campaign));
   } catch (err) {
     te.handleError(err, res);
@@ -56,7 +56,7 @@ export const getAll = async (req, res) => {
 
   try {
     let data = await Campaign.findHostedByOwner(req.decoded.id, req.query.offset);
-    await Promise.all(data.campaigns.map(x => x.addWeiRaised()));
+    // await Promise.all(data.campaigns.map(x => x.addWeiRaised()));
     data.campaigns = data.campaigns.map(view);
     res.status(200).send(data);
   } catch (err) {

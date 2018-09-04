@@ -44,6 +44,7 @@ export default {
           const token = tx.address;
           const from = topicToAddress(tx.topics[1]);
           const to = topicToAddress(tx.topics[2]);
+          Campaign.updateWeiRaised(token).catch(console.log);
           if (token && from && to) {
             if (publicAddresses.has(from)) {
               Investments.updateBalance(network, token, from).catch(err => console.log(err));
@@ -61,7 +62,7 @@ export default {
 
   addAddresses: addresses => {
     Promise.all(addresses.map(checkUser)).catch(err => { console.log(err); });
-    addresses.map(publicAddresses.add);
+    addresses.map(x => publicAddresses.add(x));
   },
 
   crawlAllKnown: () => {
