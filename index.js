@@ -7,10 +7,12 @@ import VerifyCampaign from './models/verifyCampaign';
 import mongoose from 'mongoose';
 import InvestmentListener from './models/investmentListener';
 import Contract from './models/contract';
+import morgan from 'morgan';
 
 const app = express();
 
 // Global middleware
+app.use(morgan('common'));
 app.use(bodyParser.json());
 app.use(cors());
 
