@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import Campaign from './campaign';
 import * as te from '../typedError';
 import HashToEmail from './hashToEmail';
+import config from '../config';
 
 const Schema = mongoose.Schema;
 
@@ -58,6 +59,10 @@ User.statics.create = function (publicAddress) {
     publicAddress,
     nonce,
   });
+
+  if (config.dev) {
+    user.currentEmail = { address: 'test@trustfeed.io', verifiedAt: Date.now() };
+  }
 
   return user.save();
 };

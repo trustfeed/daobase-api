@@ -16,6 +16,8 @@ const config = {
   infuraKey: process.env.INFURA_KEY,
 
   frontendHost: process.env.FRONTEND_HOST || 'http://localhost:3000',
+
+  dev: process.env.NODE_ENV !== 'production',
 };
 
 export default config;

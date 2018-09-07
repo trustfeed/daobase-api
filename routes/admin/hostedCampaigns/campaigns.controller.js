@@ -75,11 +75,11 @@ export const putOnChainData = (req, res) => {
     return;
   }
 
-  if (req.body &&
-  req.body.startingTime &&
-  typeof req.body.startingTime == 'number') {
-    req.body.startingTime = new Date(req.body.startingTime * 1000);
-  }
+  // if (req.body &&
+  // req.body.startingTime &&
+  // typeof req.body.startingTime == 'number') {
+  //  req.body.startingTime = new Date(req.body.startingTime * 1000);
+  // }
 
   Campaign.putOnChainData(
     req.decoded.id,

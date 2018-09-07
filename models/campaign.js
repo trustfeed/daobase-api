@@ -337,7 +337,7 @@ Campaign.index({ 'hostedCampaign.onChainData.tokenContract.address': 1 });
 
 // Create a hosted campaign with the given on-chain data
 Campaign.statics.createHostedDomain = function (owner, onChainData) {
-  if (onChainData) {
+  if (onChainData && onChainData.startingTime) {
     onChainData.startingTime = Date(onChainData.startingTime * 1000);
   }
   let hostedCampaign = {
@@ -490,7 +490,9 @@ Campaign.statics.putOnChainData = async function (userId, campaignId, data) {
   }
 
   campaign.hostedCampaign.onChainData = data;
-  campaign.hostedCampaign.onChainData.startingTime = Date(data.startingTime * 1000);
+  if (data && data.startingTime) {
+    campaign.hostedCampaign.onChainData.startingTime = data.startingTime * 1000;
+  }
   campaign.updatedAt = Date.now();
   const errs = campaign.hostedCampaign.onChainData.generateReport();
   if (Object.keys(errs).length > 0) {
@@ -572,8 +574,10 @@ Campaign.statics.deploymentTransaction = async function (userId, userAddress, ca
   if (campaign.hostedCampaign.campaignStatus !== 'REVIEWED') {
     throw new te.TypedError(400, 'the campaign is not reviewed');
   }
-  campaign.hostedCampaign.onChainData.startingTime = new Date(1000 * ((new Date().getTime()) / 1000 + 5 * 60));
-  await campaign.save();
+  if (config.dev) {
+    campaign.hostedCampaign.onChainData.startingTime = new Date(1000 * ((new Date().getTime()) / 1000 + 5 * 60));
+    await campaign.save();
+  }
   return campaign.makeDeployment(userAddress);
 };
 
