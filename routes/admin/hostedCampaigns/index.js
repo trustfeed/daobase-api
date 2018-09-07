@@ -13,8 +13,10 @@ router.post('/:id/cover-image', controller.coverImageURL);
 router.post('/:id/white-paper', controller.pdfURL);
 
 router.post('/:id/submit-for-review', controller.submitForReview);
+router.post('/:id/cancel-review', controller.cancelReview);
 router.post('/:id/review-passed', controller.acceptReview);
 router.get('/:id/deployment-transaction', controller.deploymentTransaction);
+router.post('/:id/deployment-transaction', controller.deploymentTransaction);
 router.post('/:id/finalise-deployment', controller.finaliseDeployment);
 
 module.exports = router;

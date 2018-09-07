@@ -185,12 +185,31 @@ export const submitForReview = (req, res) => {
   const campaignId = mongoose.Types.ObjectId(req.params.id);
 
   Campaign
-    .submitForReview(req.decoded.id, mongoose.Types.ObjectId(req.params.id))
+    .submitForReview(userId, campaignId)
     .then(() => res.status(201).send({ message: 'submitted' }))
     .then(() =>
       setTimeout(() => {
         Campaign.acceptReview(userId, campaignId);
       }, 10 * 1000))
+    .catch(err => te.handleError(err, res));
+};
+
+export const cancelReview = (req, res) => {
+  if (!req.decoded.id) {
+    res.status(400).send({ message: 'missing user id' });
+    return;
+  }
+  if (!req.params.id) {
+    res.status(400).send({ message: 'missing campaign id' });
+    return;
+  }
+
+  const userId = req.decoded.id;
+  const campaignId = mongoose.Types.ObjectId(req.params.id);
+
+  Campaign
+    .cancelReview(userId, campaignId)
+    .then(() => res.status(201).send({ message: 'cancelled' }))
     .catch(err => te.handleError(err, res));
 };
 
@@ -226,7 +245,7 @@ export const deploymentTransaction = (req, res) => {
     req.decoded.publicAddress,
     mongoose.Types.ObjectId(req.params.id),
   )
-    .then(o => res.status(200).send(o))
+    .then(o => res.status(201).send(o))
     .catch(e => te.handleError(e, res));
 };
 

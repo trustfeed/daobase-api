@@ -65,6 +65,7 @@ The possible status for a campaign are as follows.
 | DRAFT          | Created via post, updated via puts. |
 | PENDING_REVIEW | Submitted for review.               |
 | REVIEWED       | Passed review.                      |
+| PENDING_DEPLOYMENT | The deployment-transaction has been called, but the contract has not been deployed. |
 | DEPLOYED       | Live on the network.                |
 
 The general flow is as follows.
@@ -163,12 +164,20 @@ For now the user can force the review to be finalised.
 curl -H 'x-access-token: fds' -XPOST ${HOST}/admin/hosted-campaigns/${CAMPAIGN_ID}/review-passed
 ```
 
+### Cancel a Submitted Review
+
+Once a campaign is pending review or reviewed it can be returned to the draft status with cancel.
+
+```bash
+curl -H 'x-access-token: fds' -XPOST ${HOST}/admin/hosted-campaigns/${CAMPAIGN_ID}/cancel-review
+```
+
 ### Deploying a Campaign
 
 Once the review stage is passed the server can prepare a transaction that deploys both token and crowdsale.
 
 ```bash
-curl -H 'x-access-token: fdsaf' -XGET ${HOST}/admin/hosted-campaigns/${ID}/deployment-transaction
+curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/hosted-campaigns/${ID}/deployment-transaction
 ```
 
 This will return a transaction that needs to be sent to the Ethereum network via metamask. The user has to make sure the network is set to the same network as TrustFeed server.

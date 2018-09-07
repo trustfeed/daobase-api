@@ -244,7 +244,7 @@ const HostedCampaign = new Schema({
   },
   campaignStatus: {
     type: String,
-    enum: ['DRAFT', 'PENDING_REVIEW', 'REVIEWED', 'DEPLOYED'],
+    enum: ['DRAFT', 'PENDING_REVIEW', 'REVIEWED', 'PENDING_DEPLOYMENT', 'DEPLOYED'],
     required: true,
     default: ['DRAFT'],
   },
@@ -457,6 +457,17 @@ Campaign.statics.submitForReview = function (userId, campaignId) {
     });
 };
 
+Campaign.statics.cancelReview = async function (userId, campaignId) {
+  let campaign = await this.fetchHostedCampaign(userId, campaignId);
+  if (campaign.hostedCampaign.campaignStatus !== 'PENDING_REVIEW' &&
+  campaign.hostedCampaign.campaignStatus !== 'REVIEWED') {
+    throw new te.TypedError(400, 'the campaign is not pending review or reviewed');
+  }
+  campaign.hostedCampaign.campaignStatus = 'DRAFT';
+  campaign.updatedAt = Date.now();
+  return campaign.save();
+};
+
 // This is temporary. Allow a user to end the review stage.
 Campaign.statics.acceptReview = function (userId, campaignId) {
   return this.fetchHostedCampaign(userId, campaignId)
@@ -578,7 +589,10 @@ Campaign.statics.deploymentTransaction = async function (userId, userAddress, ca
     campaign.hostedCampaign.onChainData.startingTime = new Date(1000 * ((new Date().getTime()) / 1000 + 5 * 60));
     await campaign.save();
   }
-  return campaign.makeDeployment(userAddress);
+  const out = campaign.makeDeployment(userAddress);
+  campaign.hostedCampaign.campaignStatus = 'PENDING_DEPLOYMENT';
+  await campaign.save();
+  return out;
 };
 
 Campaign.methods.fetchContracts = async function (campaignAddress) {
