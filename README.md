@@ -60,6 +60,8 @@ These APIs are to create, modify and deploy campaigns on the platform. The user 
 
 The possible status for a campaign are as follows.
 
+![Daobase States](https://raw.githubusercontent.com/trustfeed/crowdsale-api/master/images/states.png)
+
 | Status         | Description                         |
 | -------------- | ----------------------------------- |
 | DRAFT          | Created via post, updated via puts. |
