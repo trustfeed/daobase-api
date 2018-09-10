@@ -5,74 +5,65 @@ import config from '../../config';
 import User from '../../models/user';
 import * as te from '../../typedError';
 
-export function post (req, res) {
-  const { signature, publicAddress } = req.body;
-  if (!signature || !publicAddress) {
-    return res
-      .status(400)
-      .json({ message: 'Request should have signature and publicAddress' });
+const sign = (user, signature) => {
+  try {
+    const msg = `I am signing my one-time nonce: ${user.nonce}`;
+    const msgBuffer = ethUtil.toBuffer(msg);
+    const msgHash = ethUtil.hashPersonalMessage(msgBuffer);
+    const signatureBuffer = ethUtil.toBuffer(signature);
+    const signatureParams = ethUtil.fromRpcSig(signatureBuffer);
+    const publicKey = ethUtil.ecrecover(
+      msgHash,
+      signatureParams.v,
+      signatureParams.r,
+      signatureParams.s
+    );
+    const addressBuffer = ethUtil.publicToAddress(publicKey);
+    return ethUtil.bufferToHex(addressBuffer);
+  } catch (err) {
+    throw new te.TypedError(401, 'signature verification failed: ' + err.message);
   }
+};
 
-  User.findOneByPublicAddress(publicAddress)
-    .then(user => {
-      if (!user) {
-        throw new te.TypedError(404, 'public address not found');
-      }
-   
-      try {
-        const msg = `I am signing my one-time nonce: ${user.nonce}`;
-        
-        // We now are in possession of msg, publicAddress and signature. We
-        // can perform an elliptic curve signature verification with ecrecover
-        const msgBuffer = ethUtil.toBuffer(msg);
-        const msgHash = ethUtil.hashPersonalMessage(msgBuffer);
-        const signatureBuffer = ethUtil.toBuffer(signature);
-        const signatureParams = ethUtil.fromRpcSig(signatureBuffer);
-        const publicKey = ethUtil.ecrecover(
-          msgHash,
-          signatureParams.v,
-          signatureParams.r,
-          signatureParams.s
-        );
-        const addressBuffer = ethUtil.publicToAddress(publicKey);
-        const address = ethUtil.bufferToHex(addressBuffer);
-        
-        // The signature verification is successful if the address found with
-        // ecrecover matches the initial publicAddress
-        if (address.toLowerCase() === publicAddress.toLowerCase()) {
-          return user;
-        } else {
-          throw new te.TypedError(401, 'signature verification failed');
+const generateToken = async (payload) => {
+  return new Promise((resolve, reject) =>
+    jwt.sign(
+      payload,
+      config.secret,
+      { expiresIn: '1d' },
+      (err, token) => {
+        if (err) {
+          return reject(err);
         }
-      } catch (err) {
-        throw new te.TypedError(401, 'signature verification failed');
+        return resolve(token);
       }
-    })
-    .then(user => {
-      user.nonce = Math.floor(Math.random() * 10000);
-      return user.save();
-    })
-    .then(
-      user =>
-        new Promise((resolve, reject) =>
-          jwt.sign(
-            {
-              id: user.id,
-              publicAddress,
-            },
-            config.secret,
-            { expiresIn: '1d' },
-            (err, token) => {
-              if (err) {
-                return reject(err);
-              }
-              return resolve(token);
-            }
-          )
-        )
     )
-    .then(accessToken => res.status(201).send({ accessToken }))
-    .catch(err => {
-      te.handleError(err, res);
+  );
+};
+
+export async function post (req, res) {
+  try {
+    const { signature, publicAddress } = req.body;
+    if (!signature || !publicAddress) {
+      throw new te.TypedError(400, 'Request should have signature and publicAddress');
+    }
+
+    let user = await User.findOneByPublicAddress(publicAddress);
+    if (!user) {
+      throw new te.TypedError(404, 'public address not found');
+    }
+    const signedAddress = sign(user, signature);
+    if (signedAddress.toLowerCase() !== publicAddress.toLowerCase()) {
+      throw new te.TypedError(401, 'signature verification failed');
+    }
+    user.nonce = Math.floor(Math.random() * 10000);
+    await user.save();
+    const accessToken = await generateToken({
+      id: user.id,
+      publicAddress,
     });
+    res.status(201).send({ accessToken });
+  } catch (err) {
+    te.handleError(err, res);
+  }
 };
