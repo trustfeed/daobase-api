@@ -60,10 +60,6 @@ User.statics.create = function (publicAddress) {
     nonce,
   });
 
-  if (config.dev) {
-    user.currentEmail = { address: 'test@trustfeed.io', verifiedAt: Date.now() };
-  }
-
   return user.save();
 };
 
@@ -97,12 +93,18 @@ User.methods.addEmail = function (email) {
   if (!this.currentEmail || this.currentEmail.address !== email) {
     this.currentEmail = { address: email };
     this.updatedAt = new Date();
-    return this
-      .save()
-      .then(HashToEmail.create(this._id, this.currentEmail))
-      .then(() => {
-        return this;
-      });
+
+    if (config.dev) {
+      this.currentEmail.verifiedAt = Date.now();
+      return this.save();
+    } else {
+      return this
+        .save()
+        .then(HashToEmail.create(this._id, this.currentEmail))
+        .then(() => {
+          return this;
+        });
+    }
   } else {
     return this;
   }
