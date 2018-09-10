@@ -1,6 +1,6 @@
 import Campaign from '../../models/campaign';
 import * as te from '../../typedError';
-import view from '../../views/adminCampaign';
+import views from '../../views/adminCampaign';
 import Vote from '../../models/vote';
 import mongoose from 'mongoose';
 
@@ -8,7 +8,7 @@ export const getAll = async (req, res) => {
   try {
     let data = await Campaign.allPublic(req.query.offset);
     // await Promise.all(data.campaigns.map(x => x.addWeiRaised()));
-    res.status(200).send({ campaigns: data.campaigns.map(view), next: data.next });
+    res.status(200).send({ campaigns: data.campaigns.map(views.publicBrief), next: data.next });
   } catch (err) {
     te.handleError(err, res);
   }
@@ -26,7 +26,7 @@ export const get = async (req, res) => {
       throw new te.TypedError(404, 'campaign not found');
     } else {
       // await campaign.addWeiRaised();
-      res.status(200).send(view(campaign));
+      res.status(200).send(views.publicFull(campaign));
       return;
     }
   } catch (err) {

@@ -1,7 +1,7 @@
 import * as te from '../../../typedError';
 import User from '../../../models/user';
 import Campaign from '../../../models/campaign';
-import view from '../../../views/adminCampaign';
+import views from '../../../views/adminCampaign';
 import * as s3 from '../../../models/s3';
 import mongoose from 'mongoose';
 
@@ -40,8 +40,7 @@ export const get = async (req, res) => {
     let campaign = await Campaign.fetchHostedCampaign(
       req.decoded.id,
       mongoose.Types.ObjectId(req.params.id));
-    // await campaign.addWeiRaised();
-    res.status(200).send(view(campaign));
+    res.status(200).send(views.adminFull(campaign));
   } catch (err) {
     te.handleError(err, res);
   }
@@ -57,7 +56,7 @@ export const getAll = async (req, res) => {
   try {
     let data = await Campaign.findHostedByOwner(req.decoded.id, req.query.offset);
     // await Promise.all(data.campaigns.map(x => x.addWeiRaised()));
-    data.campaigns = data.campaigns.map(view);
+    data.campaigns = data.campaigns.map(views.adminBrief);
     res.status(200).send(data);
   } catch (err) {
     te.handleError(err, res);
@@ -246,31 +245,5 @@ export const deploymentTransaction = (req, res) => {
     mongoose.Types.ObjectId(req.params.id),
   )
     .then(o => res.status(201).send(o))
-    .catch(e => te.handleError(e, res));
-};
-
-export const finaliseDeployment = (req, res) => {
-  if (!req.decoded.id) {
-    res.status(400).send({ message: 'missing user id' });
-    return;
-  }
-  if (!req.params.id) {
-    res.status(400).send({ message: 'missing campaign id' });
-    return;
-  }
-
-  const { blockNumber, transactionIndex } = req.body;
-  if (blockNumber === undefined || transactionIndex === undefined) {
-    res.status(400).send({ message: 'blockNumber and transactionIndex are required' });
-    return;
-  }
-
-  Campaign.finaliseDeployment(
-    req.decoded.id,
-    req.decoded.publicAddress,
-    mongoose.Types.ObjectId(req.params.id),
-    blockNumber,
-    transactionIndex)
-    .then(o => res.status(201).send({ message: 'finalised' }))
     .catch(e => te.handleError(e, res));
 };

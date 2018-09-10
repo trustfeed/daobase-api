@@ -244,7 +244,14 @@ const HostedCampaign = new Schema({
   },
   campaignStatus: {
     type: String,
-    enum: ['DRAFT', 'PENDING_REVIEW', 'REVIEWED', 'PENDING_DEPLOYMENT', 'DEPLOYED'],
+    enum: [
+      'DRAFT',
+      'PENDING_REVIEW',
+      'REVIEWED',
+      'PENDING_DEPLOYMENT',
+      'DEPLOYED',
+      'PENDING_OFF_CHAIN_REVIEW',
+    ],
     required: true,
     default: ['DRAFT'],
   },
@@ -256,6 +263,7 @@ const HostedCampaign = new Schema({
     type: OffChainData,
     required: true,
   },
+  offChainDataDraft: OffChainData,
 });
 
 // Get the contract describing the campaign
@@ -435,9 +443,7 @@ Campaign.statics.fetchHostedCampaign = async function (userId, campaignId) {
 Campaign.statics.submitForReview = function (userId, campaignId) {
   return this.fetchHostedCampaign(userId, campaignId)
     .then(campaign => {
-      if (campaign.hostedCampaign.campaignStatus !== 'DRAFT') {
-        throw new te.TypedError(400, 'the campaign is not a draft');
-      } else {
+      if (campaign.hostedCampaign.campaignStatus === 'DRAFT') {
         const onChainErrs = campaign.hostedCampaign.onChainData.generateReport();
         const offChainErrs = campaign.hostedCampaign.offChainData.generateReport();
         if (Object.keys(onChainErrs).length > 0 || Object.keys(offChainErrs).length > 0) {
@@ -453,31 +459,59 @@ Campaign.statics.submitForReview = function (userId, campaignId) {
           campaign.updatedAt = Date.now();
           return campaign.save();
         }
+      } else if (campaign.hostedCampaign.campaignStatus === 'DEPLOYED') {
+        const draft = campaign.hostedCampaign.offChainDataDraft;
+        const offChainErrs = draft.generateReport();
+        if (Object.keys(offChainErrs).length > 0) {
+          throw new te.TypedError(
+            400,
+            'validation error',
+            'INVALID_DATA',
+            { offChainValidationErrors: offChainErrs });
+        } else {
+          campaign.hostedCampaign.offChainData = draft;
+          campaign.hostedCampaign.campaignStatus = 'PENDING_OFF_CHAIN_REVIEW';
+          campaign.updatedAt = Date.now();
+          return campaign.save();
+        }
+      } else {
+        throw new te.TypedError(400, 'the campaign is not a draft');
       }
     });
 };
 
 Campaign.statics.cancelReview = async function (userId, campaignId) {
   let campaign = await this.fetchHostedCampaign(userId, campaignId);
-  if (campaign.hostedCampaign.campaignStatus !== 'PENDING_REVIEW' &&
-  campaign.hostedCampaign.campaignStatus !== 'REVIEWED') {
-    throw new te.TypedError(400, 'the campaign is not pending review or reviewed');
+
+  const campaignStatus = campaign.hostedCampaign.campaignStatus;
+  if (campaignStatus === 'PENDING_REVIEW' || campaignStatus === 'REVIEWED') {
+    campaign.hostedCampaign.campaignStatus = 'DRAFT';
+    campaign.updatedAt = Date.now();
+    return campaign.save();
+  } else if (campaignStatus === 'PENDING_OFF_CHAIN_REVIEW') {
+    campaign.hostedCampaign.campaignStatus = 'DEPLOYED';
+    campaign.updatedAt = Date.now();
+    return campaign.save();
+  } else {
+    throw new te.TypedError(400, 'the campaign is not pending review, reviewed or pending off chain review');
   }
-  campaign.hostedCampaign.campaignStatus = 'DRAFT';
-  campaign.updatedAt = Date.now();
-  return campaign.save();
 };
 
 // This is temporary. Allow a user to end the review stage.
 Campaign.statics.acceptReview = function (userId, campaignId) {
   return this.fetchHostedCampaign(userId, campaignId)
     .then(campaign => {
-      if (campaign.hostedCampaign.campaignStatus !== 'PENDING_REVIEW') {
-        throw new te.TypedError(400, 'the campaign is not pending review');
-      } else {
+      if (campaign.hostedCampaign.campaignStatus === 'PENDING_REVIEW') {
         campaign.hostedCampaign.campaignStatus = 'REVIEWED';
         campaign.updatedAt = Date.now();
         return campaign.save();
+      } else if (campaign.hostedCampaign.campaignStatus === 'PENDING_OFF_CHAIN_REVIEW') {
+        campaign.hostedCampaign.campaignStatus = 'DEPLOYED';
+        campaign.offChainData = campaign.offChainDataDraft;
+        campaign.updatedAt = Date.now();
+        return campaign.save();
+      } else {
+        throw new te.TypedError(400, 'the campaign is not pending review');
       }
     });
 };
@@ -517,13 +551,19 @@ Campaign.statics.putOnChainData = async function (userId, campaignId, data) {
   return campaign.save();
 };
 
-Campaign.statics.putOffChainData = function (userId, campaignId, data) {
-  return this.fetchHostedCampaign(userId, campaignId)
-    .then(campaign => {
-      campaign.hostedCampaign.offChainData = data;
-      campaign.updatedAt = Date.now();
-      return campaign.save();
-    });
+Campaign.statics.putOffChainData = async function (userId, campaignId, data) {
+  const campaign = await this.fetchHostedCampaign(userId, campaignId);
+  if (campaign.hostedCampaign.campaignStatus === 'DRAFT') {
+    campaign.hostedCampaign.offChainData = data;
+    campaign.updatedAt = Date.now();
+    return campaign.save();
+  } else if (campaign.hostedCampaign.campaignStatus === 'DEPLOYED') {
+    campaign.hostedCampaign.offChainDataDraft = data;
+    campaign.updatedAt = Date.now();
+    return campaign.save();
+  } else {
+    throw new te.TypedError(403, 'the campaign is not in DRAFT or DEPLOYED status');
+  }
 };
 
 Campaign.methods.makeDeployment = function (userAddress) {
@@ -645,62 +685,12 @@ Campaign.methods.fetchContracts = async function (campaignAddress) {
   return this;
 };
 
-Campaign.statics.finaliseDeployment = async function (userId, userAddress, campaignId, blockNumber, transactionIndex) {
-  return undefined;
-//  const validateTransaction = (deployment) => {
-//    const expectedInput = deployment.transaction;
-//    return web3.eth.getTransactionFromBlock(blockNumber, transactionIndex)
-//      .catch(() => {
-//        throw new te.TypedError(400, 'cannot look up that block number and transaction index');
-//      })
-//      .then(transaction => {
-//        if (!transaction) {
-//          throw new te.TypedError(400, 'no such transaction');
-//        } else if (transaction.input !== expectedInput) {
-//          throw new te.TypedError(400, 'that transaction data is not correct');
-//        } else {
-//          // console.log(transaction.hash);
-//          // console.log(transaction);
-//          //  web3.eth.getTransaction(transaction.hash).then(console.log);
-//          return web3.eth.getTransactionReceipt(transaction.hash);
-//        }
-//      })
-//      .then(receipt => {
-//        if (!receipt.status) {
-//          throw new te.TypedError(400, 'that transaction was not successful');
-//        } else {
-//          return receipt;
-//        }
-//      });
-//  };
-//
-//  const getCampaignContract = (receipt) => {
-//    return campaign.hostedCampaign.getCampaignContract()
-//      .then(c => {
-//        return new web3.eth.Contract(JSON.parse(c.abi), receipt.contractAddress);
-//      });
-//  };
-//
-//  let campaign = await this.fetchHostedCampaign(userId, campaignId);
-//
-//  if (campaign.hostedCampaign.campaignStatus !== 'REVIEWED') {
-//    throw new te.TypedError(400, 'the campaign is not reviewed');
-//  }
-//
-//  const web3 = Networks.fastestNode(campaign.hostedCampaign.onChainData.network);
-//  let campaignContract = await (campaign.makeDeployment(userAddress)
-//    .then(validateTransaction)
-//    .then(getCampaignContract));
-//  campaign = await campaign.fetchInnerContracts(campaignContract);
-//  campaign.hostedCampaign.campaignStatus = 'DEPLOYED';
-//  return campaign.save();
-};
-
 Campaign.statics.allPublic = async function (offset) {
   const pageSize = 20;
   let q = {
     $or: [
       { 'hostedCampaign.campaignStatus': 'DEPLOYED' },
+      { 'hostedCampaign.campaignStatus': 'PENDING_OFF_CHAIN_REVIEW' },
       { externalCampaign: { $exists: true } },
     ],
   };
@@ -730,6 +720,7 @@ Campaign.statics.publicById = async function (campaignId) {
       { _id: campaignId },
       { $or: [
         { 'hostedCampaign.campaignStatus': 'DEPLOYED' },
+        { 'hostedCampaign.campaignStatus': 'PENDING_OFF_CHAIN_REVIEW' },
         { externalCampaign: { $exists: true } },
       ] }],
   }).exec();
@@ -743,7 +734,8 @@ Campaign.methods.addWeiRaised = async function () {
   if (!this.hostedCampaign ||
   !this.hostedCampaign.onChainData ||
   !this.hostedCampaign.onChainData.network ||
-  this.hostedCampaign.campaignStatus !== 'DEPLOYED' ||
+  (this.hostedCampaign.campaignStatus !== 'DEPLOYED' &&
+  this.hostedCampaign.campaignStatus !== 'PENDING_OFF_CHAIN_REVIEW') ||
   !this.hostedCampaign.onChainData.crowdsaleContract) {
     return;
   }

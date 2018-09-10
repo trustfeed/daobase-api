@@ -8,6 +8,7 @@ const verifyRegistyEvent = async function (registryEvent) {
   // (campaignId, campaignAddress, blockNumber, transactionIndex) {
   // Grab the campaign
   const campaignId = mongoose.Types.ObjectId(registryEvent.returnValues.campaignId);
+  console.log(campaignId);
   const campaign = await Campaign.findOne({ _id: campaignId });
   if (!campaign) {
     throw new Error('invalid campaign id');
@@ -15,9 +16,10 @@ const verifyRegistyEvent = async function (registryEvent) {
   if (!campaign.hostedCampaign) {
     throw new Error('not a hosted campaign');
   }
-  // if (campaign.hostedCampaign.campaignStatus !== 'REVIEWED') {
-  //  throw new Error('campaign status is not REVIEWED');
-  // }
+  const campaignStatus = campaign.hostedCampaign.campaignStatus;
+  if (campaignStatus !== 'REVIEWED' && campaignStatus !== 'PENDING_DEPLOYMENT') {
+    throw new Error('campaign status is not REVIEWED');
+  }
 
   const user = await User.findOneById(campaign.hostedCampaign.owner);
   if (!user) {
@@ -63,7 +65,7 @@ const listen = async function () {
           verifyRegistyEvent(
             registryEvent
           ).catch(err => {
-            console.log('registry event failed to verify', err.message);
+            console.log('registry event failed to verify:', err.message);
           });
         }
       });

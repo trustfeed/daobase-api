@@ -1,7 +1,7 @@
 import * as te from '../../../typedError';
 import User from '../../../models/user';
 import Campaign from '../../../models/campaign';
-import view from '../../../views/adminCampaign';
+import views from '../../../views/adminCampaign';
 
 const convertTimes = (req) => {
   const convertTimeIfExists = (o, k) => {
@@ -62,7 +62,7 @@ export const put = (req, res) => {
 export const getAll = (req, res) => {
   Campaign.findAllExternal(req.query.offset)
     .then(cs => {
-      cs.campaigns = cs.campaigns.map(view);
+      cs.campaigns = cs.campaigns.map(views.adminBrief);
       res.status(200).send(cs);
     })
     .catch(err =>
@@ -85,7 +85,7 @@ export const get = (req, res) => {
       } else if (!campaign.externalCampaign) {
         throw new te.TypedError(404, 'unknown campaign id');
       } else {
-        res.status(200).send(view(campaign));
+        res.status(200).send(views.adminFull(campaign));
       }
     })
     .catch(err =>

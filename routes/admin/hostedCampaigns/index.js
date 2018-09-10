@@ -17,6 +17,5 @@ router.post('/:id/cancel-review', controller.cancelReview);
 router.post('/:id/review-passed', controller.acceptReview);
 router.get('/:id/deployment-transaction', controller.deploymentTransaction);
 router.post('/:id/deployment-transaction', controller.deploymentTransaction);
-router.post('/:id/finalise-deployment', controller.finaliseDeployment);
 
 module.exports = router;
