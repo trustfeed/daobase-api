@@ -45,7 +45,7 @@ export const post = async (req, res) => {
     if (user) {
       throw new te.TypedError(409, 'publicAddress already registered');
     }
-    user = User.create(publicAddress);
+    user = await User.create(publicAddress);
     InvestmentListener.addAddresses([publicAddress]);
     res.status(201).json({ nonce: user.nonce });
   } catch (err) {
