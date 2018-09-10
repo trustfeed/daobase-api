@@ -62,18 +62,6 @@ The possible status for a campaign are as follows.
 
 ![Daobase States](../master/images/states.png?raw=true)
 
-| Status         | Description                         |
-| -------------- | ----------------------------------- |
-| DRAFT          | Created via post, updated via puts. |
-| PENDING_REVIEW | Submitted for review.               |
-| REVIEWED       | Passed review.                      |
-| PENDING_DEPLOYMENT | The deployment-transaction has been called, but the contract has not been deployed. |
-| DEPLOYED       | Live on the network.                |
-
-The general flow is as follows.
-
-Campaigns are created by the user in status DRAFT, once draft is finalised they are submitted by the user for an admin to review, resulting in status PENDING_REVIEW. The admin can move the campaing to REVIEWED status, or if it fails the review place it back in DRAFT status. The user can deploy a campaign that is in REVIEWED status.
-
 ### Create a new campaign
 
 ```bash

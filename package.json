@@ -8,8 +8,8 @@
   "license": "?",
   "scripts": {
     "test": "babel-node test.js",
-    "start": "babel-node .",
-    "dev": "nodemon --exec babel-node .",
+    "start": "NODE_ENV=production babel-node .",
+    "dev": "NODE_ENV=developement nodemon --exec babel-node .",
     "lint": "semistandard --env node",
     "deploy-registry": "babel-node tools/deployRegistry.js"
   },
