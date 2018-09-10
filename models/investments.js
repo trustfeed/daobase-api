@@ -16,6 +16,7 @@ const OwnedToken = new Schema({
   },
   tokenName: String,
   tokenSymbol: String,
+  tokenDecimals: Number,
 });
 
 // TODO: Consider normalising the collection for sorting ease.
@@ -70,6 +71,7 @@ Investment.statics.updateBalance = async function (
     ownedToken.campaignId = campaign._id;
     ownedToken.tokenName = campaign.hostedCampaign.onChainData.tokenName;
     ownedToken.tokenSymbol = campaign.hostedCampaign.onChainData.tokenSymbol;
+    ownedToken.tokenDecimals = campaign.hostedCampaign.onChainData.numberOfDecimals;
   };
 
   const user = await User.findOne({ publicAddress }).exec();

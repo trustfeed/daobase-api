@@ -64,10 +64,10 @@ db.on('error', err => {
 });
 db.once('open', async () => {
   console.log('connected to db');
-  await Contract.migrateAll();
-  await VerifyCampaign.listen();
-  await InvestmentListener.crawlAllKnown();
-  await InvestmentListener.listenForERC20();
+  await Contract.migrateAll().catch(console.log);
+  await VerifyCampaign.listen().catch(console.log);
+  await InvestmentListener.crawlAllKnown().catch(console.log);
+  await InvestmentListener.listenForERC20().catch(console.log);
 });
 
 // const addTON = () => {

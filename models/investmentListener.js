@@ -60,12 +60,12 @@ export default {
     return Promise.all(ns.map(listenToEvent));
   },
 
-  addAddresses: addresses => {
+  addAddresses: async addresses => {
     Promise.all(addresses.map(checkUser)).catch(err => { console.log(err); });
     addresses.map(x => publicAddresses.add(x));
   },
 
-  crawlAllKnown: () => {
+  crawlAllKnown: async () => {
     User.find().stream().on('data', u => {
       checkUser(u.publicAddress);
       publicAddresses.add(u.publicAddress);

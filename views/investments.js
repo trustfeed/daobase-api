@@ -4,5 +4,7 @@ export default (i) => {
     tokensOwned: i.tokensOwned,
     tokenName: i.tokenName,
     tokenSymbol: i.tokenSymbol,
+    tokenDecimals: i.tokenDecimals,
+    campaignID: i.campaignId,
   };
 };
