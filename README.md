@@ -60,7 +60,7 @@ These APIs are to create, modify and deploy campaigns on the platform. The user 
 
 The possible status for a campaign are as follows.
 
-![Daobase States](../blob/master/images/states.png?raw=true)
+![Daobase States](../master/images/states.png?raw=true)
 
 | Status         | Description                         |
 | -------------- | ----------------------------------- |
