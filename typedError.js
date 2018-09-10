@@ -19,7 +19,7 @@ export function handleError (err, res, code) {
   }
 };
 
-export function convertStringToId (id) {
+export function stringToId (id) {
   try {
     return mongoose.Types.ObjectId(id);
   } catch (err) {

@@ -2,7 +2,6 @@ import Campaign from '../../models/campaign';
 import * as te from '../../typedError';
 import views from '../../views/adminCampaign';
 import Vote from '../../models/vote';
-import mongoose from 'mongoose';
 
 export const getAll = async (req, res) => {
   try {
@@ -21,11 +20,11 @@ export const get = async (req, res) => {
   }
 
   try {
-    let campaign = await Campaign.publicById(mongoose.Types.ObjectId(req.params.id));
+    const campaignId = te.stringToId(req.params.id);
+    let campaign = await Campaign.publicById(campaignId);
     if (!campaign) {
       throw new te.TypedError(404, 'campaign not found');
     } else {
-      // await campaign.addWeiRaised();
       res.status(200).send(views.publicFull(campaign));
       return;
     }
