@@ -1,8 +1,10 @@
 import Networks from './networks';
+import { Base64 } from 'js-base64';
 import User from './user';
 import * as te from '../typedError';
 import Campaign from './campaign';
 import mongoose from 'mongoose';
+import Web3 from 'web3';
 const Schema = mongoose.Schema;
 
 const OwnedToken = new Schema({
@@ -16,6 +18,7 @@ const OwnedToken = new Schema({
   tokenSymbol: String,
 });
 
+// TODO: Consider normalising the collection for sorting ease.
 const Investment = new Schema({
   user: {
     type: Schema.Types.ObjectId,
@@ -31,7 +34,10 @@ const Investment = new Schema({
   },
 });
 
-Investment.statics.updateBalance = async function (network, token, publicAddress) {
+Investment.statics.updateBalance = async function (
+  network,
+  token,
+  publicAddress) {
   const w3 = await Networks.fastestNode(network);
   const abi = [
     {
@@ -83,6 +89,62 @@ Investment.statics.updateBalance = async function (network, token, publicAddress
     investments.tokens.push(ownedToken);
   }
   return investments.save();
+};
+
+Investment.statics.byUser = async function (user, order, offset) {
+  const pageSize = 20;
+  let investments = await this.findOne({ user });
+
+  let tokens = investments.tokens;
+
+  if (offset) {
+    offset = this.decodeOffset(offset);
+  } else {
+    offset = 0;
+  }
+
+  switch (order) {
+  case 'symbol':
+    tokens
+      .sort((x, y) => {
+        if (x.tokenSymbol === y.tokenSymbol) {
+          return x._id > y._id;
+        } else {
+          return x.tokenSymbol > y.tokenSymbol;
+        }
+      });
+    break;
+  case 'name':
+    tokens
+      .sort((x, y) => {
+        if (x.tokenName === y.tokenName) {
+          return x._id > y._id;
+        } else {
+          return x.tokenName > y.tokenName;
+        }
+      });
+    break;
+  case 'owned':
+    tokens
+      .sort((x, y) => {
+        if (x.tokensOwned === y.tokensOwned) {
+          return x._id > y._id;
+        } else {
+          return Web3.utils.toBN(x.tokensOwned).gt(Web3.utils.toBN(y.tokensOwned));
+        }
+      });
+    break;
+  default:
+    throw new te.TypedError(401, 'unknown order');
+  }
+
+  tokens = tokens.slice(offset, offset + pageSize);
+
+  let nextOffset;
+  if (tokens.length === pageSize) {
+    nextOffset = Base64.encode(offset + pageSize);
+  }
+  return { tokens, nextOffset };
 };
 
 module.exports = mongoose.model('Investment', Investment);

@@ -8,7 +8,8 @@ export const get = async (req, res) => {
       throw new te.TypedError(400, 'missing user id');
     }
 
-    const investments = await Investment.findOne({ user: req.decoded.id }).exec();
+    const order = req.query.order || 'symbol';
+    const investments = await Investment.byUser(req.decoded.id, order, req.query.offset);
     if (!investments) {
       res.status(200).send({ investments: [] });
     } else {

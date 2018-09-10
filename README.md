@@ -248,8 +248,10 @@ curl -H 'x-access-token: fdsa' ${HOST}/campaigns/${CAMPAIGN_ID}
 The current token investments of an account can be viewed with this;
 
 ```bash
-curl -H 'x-access-token: fdsadf' ${HOST}/investments
+curl -H 'x-access-token: fdsadf' '${HOST}/investments?order=symbol&offset=FDSAD'
 ```
+
+Order can be; `symbol` (default), `name` or `owned`. If there is more than 20 tokens the response will include `nextOffset` which can be passed to the query to fetch the next page of tokens.
 
 This should include all ERC20 tokens purchased after account creation. For hosted campaigns it will included all tokens (even those purchased before account creation).
 
