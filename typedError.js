@@ -23,6 +23,6 @@ export function stringToId (id) {
   try {
     return mongoose.Types.ObjectId(id);
   } catch (err) {
-    throw new TypedError(400, 'Invalid Id');
+    throw new TypedError(400, 'Invalid Id: ' + id);
   }
 };

@@ -24,6 +24,7 @@ const viewOnChainData = (d) => {
       startingTime: startingTime,
       duration: d.duration,
       rate: d.rate,
+      isMinted: d.isMinted || false,
       tokenContract: viewDeployedContract(d.tokenContract),
       crowdsaleContract: viewDeployedContract(d.crowdsaleContract),
       walletContract: viewDeployedContract(d.walletContract),
