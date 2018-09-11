@@ -51,6 +51,7 @@ const viewOnChainDataBrief = (d) => {
       startingTime: startingTime,
       duration: d.duration,
       rate: d.rate,
+      isMinted: d.isMinted || false,
       weiRaised: d.weiRaised,
     };
   }

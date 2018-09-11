@@ -72,7 +72,9 @@ Investment.statics.updateBalance = async function (
     ownedToken.tokenName = campaign.hostedCampaign.onChainData.tokenName;
     ownedToken.tokenSymbol = campaign.hostedCampaign.onChainData.tokenSymbol;
     ownedToken.tokenDecimals = campaign.hostedCampaign.onChainData.numberOfDecimals;
-  };
+  } else {
+    return true;
+  }
 
   const user = await User.findOne({ publicAddress }).exec();
   if (!user) {

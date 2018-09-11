@@ -44,13 +44,13 @@ export default {
           const token = tx.address;
           const from = topicToAddress(tx.topics[1]);
           const to = topicToAddress(tx.topics[2]);
-          Campaign.updateWeiRaised(token).catch(() => {});// console.log);
+          Campaign.updateWeiRaised(token).catch(() => {});
           if (token && from && to) {
             if (publicAddresses.has(from)) {
-              Investments.updateBalance(network, token, from).catch(() => {});// err => console.log(err));
+              Investments.updateBalance(network, token, from).catch(() => {});
             }
             if (publicAddresses.has(to)) {
-              Investments.updateBalance(network, token, to).catch(() => {});// err => console.log(err));
+              Investments.updateBalance(network, token, to).catch(() => {});
             }
           }
         });

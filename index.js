@@ -62,12 +62,15 @@ db.on('error', err => {
   console.error(err);
   process.exit(1);
 });
+
 db.once('open', async () => {
-  console.log('connected to db');
   await Contract.migrateAll().catch(console.log);
   await VerifyCampaign.listen().catch(console.log);
   await InvestmentListener.crawlAllKnown().catch(console.log);
   await InvestmentListener.listenForERC20().catch(console.log);
+}).catch(err => {
+  console.log('initialisation failed:', err);
+  process.exit(1);
 });
 
 // const addTON = () => {
