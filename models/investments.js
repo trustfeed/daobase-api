@@ -98,6 +98,9 @@ Investment.statics.updateBalance = async function (
 Investment.statics.byUser = async function (user, order, offset) {
   const pageSize = 20;
   let investments = await this.findOne({ user });
+  if (!investments) {
+    return { tokens: [] };
+  }
 
   let tokens = investments.tokens;
 
