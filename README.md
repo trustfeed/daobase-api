@@ -255,6 +255,23 @@ Order can be; `symbol` (default), `name` or `owned`. If there is more than 20 to
 
 This should include all ERC20 tokens purchased after account creation. For hosted campaigns it will included all tokens (even those purchased before account creation).
 
+## KYC
+
+To verify our customers (ICO proposer) we will use KYC. The client should upload an image of a passport and an photo of the users face, then request KYC. The KYC should first be reviewed by TrustFeed, then forwarded to onfido. For MVP it will just be verified after 5 minutes.
+
+Get the URLs to upload;
+```bash
+curl -XPOST ${HOST}/kyc/passport-image
+curl -XPOST ${HOST}/kyc/facial-image
+```
+
+Submit the KYC request
+```bash
+curl -XPOST ${HOST}/kyc -H 'content-type: application/json' --data '{ "passportImageUrl": "some-url", "facialImageURL": "some-other-url" }'
+```
+
+The user information (fetched at `/users`) will contain a field kycStatus which may be `PENDING`, `VERIFIED` or `FAILED`.
+
 ## Voting
 
 A user can upvote or downvote ongoing campaigns. In order to vote the following conditions must be met;

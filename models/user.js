@@ -39,6 +39,14 @@ const User = new Schema({
   name: {
     type: String,
   },
+  kycStatus: {
+    type: String,
+    enum: [
+      'PENDING',
+      'VERIFIED',
+      'FAILED',
+    ],
+  },
 });
 
 User.statics.findOneByPublicAddress = function (publicAddress) {
