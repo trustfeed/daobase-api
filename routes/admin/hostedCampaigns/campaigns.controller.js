@@ -187,7 +187,7 @@ export const submitForReview = async (req, res) => {
     res.status(201).send({ message: 'submitted' });
     setTimeout(() => {
       Campaign.acceptReview(userId, campaignId);
-    }, 5 * 60 * 1000);
+    }, 60 * 1000);
   } catch (err) {
     te.handleError(err, res);
   }

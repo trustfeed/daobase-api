@@ -507,7 +507,7 @@ Campaign.statics.acceptReview = function (userId, campaignId) {
         return campaign.save();
       } else if (campaign.hostedCampaign.campaignStatus === 'PENDING_OFF_CHAIN_REVIEW') {
         campaign.hostedCampaign.campaignStatus = 'DEPLOYED';
-        campaign.offChainData = campaign.offChainDataDraft;
+        campaign.hostedCampaign.offChainData = campaign.hostedCampaign.offChainDataDraft;
         campaign.updatedAt = Date.now();
         return campaign.save();
       } else {
