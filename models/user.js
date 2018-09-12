@@ -71,7 +71,7 @@ User.statics.create = function (publicAddress) {
   return user.save();
 };
 
-User.statics.addHostedCampaign = function (publicAddress) {
+User.statics.addHostedCampaign = function (publicAddress, onChainData) {
   return this.findOne({
     publicAddress,
   }).exec()
@@ -79,7 +79,7 @@ User.statics.addHostedCampaign = function (publicAddress) {
       if (!user) {
         throw new te.TypedError(404, 'unknown publicAddress');
       } else {
-        return Campaign.createHostedDomain(user._id);
+        return Campaign.createHostedDomain(user._id, onChainData);
       }
     });
 };

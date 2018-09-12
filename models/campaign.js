@@ -353,6 +353,7 @@ Campaign.statics.createHostedDomain = function (owner, onChainData) {
     onChainData: onChainData || {},
     offChainData: {},
   };
+  console.log(onChainData, hostedCampaign);
   const campaign = this({
     _id: new mongoose.Types.ObjectId(),
     hostedCampaign: hostedCampaign,
@@ -469,7 +470,6 @@ Campaign.statics.submitForReview = function (userId, campaignId) {
             'INVALID_DATA',
             { offChainValidationErrors: offChainErrs });
         } else {
-          campaign.hostedCampaign.offChainData = draft;
           campaign.hostedCampaign.campaignStatus = 'PENDING_OFF_CHAIN_REVIEW';
           campaign.updatedAt = Date.now();
           return campaign.save();
@@ -627,7 +627,7 @@ Campaign.statics.deploymentTransaction = async function (userId, userAddress, ca
   }
   if (config.dev) {
     campaign.hostedCampaign.onChainData.startingTime = new Date(1000 * ((new Date().getTime()) / 1000 + 5 * 60));
-    await campaign.save();
+    campaign = await campaign.save();
   }
   const out = campaign.makeDeployment(userAddress);
   campaign.hostedCampaign.campaignStatus = 'PENDING_DEPLOYMENT';

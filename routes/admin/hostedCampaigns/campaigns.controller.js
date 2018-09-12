@@ -5,22 +5,21 @@ import views from '../../../views/adminCampaign';
 import * as s3 from '../../../models/s3';
 
 // Create an empty post for the logged in user
-export const post = (req, res) => {
-  if (!req.decoded || !req.decoded.publicAddress) {
-    res.status(400).send({ message: 'missing public address' });
-    return;
-  }
+export const post = async (req, res) => {
+  try {
+    if (!req.decoded || !req.decoded.publicAddress) {
+      res.status(400).send({ message: 'missing public address' });
+      return;
+    }
 
-  User.addHostedCampaign(req.decoded.publicAddress)
-    .then(campaign => {
-      return Campaign.putOnChainData(req.decoded.id, campaign._id, req.body);
-    })
-    .then(campaign => {
-      res.status(201).send({ 'campaign_id': campaign.id });
-    })
-    .catch(err => {
-      te.handleError(err, res);
-    });
+    let campaign = await User.addHostedCampaign(
+      req.decoded.publicAddress,
+      req.body,
+    );
+    res.status(201).send({ 'campaign_id': campaign.id });
+  } catch (err) {
+    te.handleError(err, res);
+  };
 };
 
 // Get a campaign
@@ -188,7 +187,7 @@ export const submitForReview = async (req, res) => {
     res.status(201).send({ message: 'submitted' });
     setTimeout(() => {
       Campaign.acceptReview(userId, campaignId);
-    }, 10 * 1000);
+    }, 5 * 60 * 1000);
   } catch (err) {
     te.handleError(err, res);
   }
