@@ -1,42 +1,3 @@
-#---
-#apiVersion: extensions/v1beta1
-#kind: Deployment
-#metadata:
-#    name: tokenadmin-mongo
-#spec:
-#    replicas: 1
-#    strategy:
-#        type: RollingUpdate
-#    template:
-#        metadata:
-#            labels: 
-#                name: tokenadmin-mongo
-#        spec:
-#            containers:
-#                - name: tokenadmin-mongo
-#                  image: mongo:4
-#                  ports:
-#                      - containerPort: 27017
-#                  env:
-#                      - name: MONGO_INITDB_ROOT_USERNAME
-#                        value: test
-#                      - name: MONGO_INITDB_ROOT_PASSWORD
-#                        value: test
-#---
-#apiVersion: v1
-#kind: Service
-#metadata:
-#    name: tokenadmin-mongo
-#    labels:
-#        name: tokenadmin-mongo
-#spec:
-#  ports:
-#  - port:       27017
-#    targetPort: 27017
-#  selector:
-#    name: tokenadmin-mongo
-#  type: ClusterIP
-
 ---
 apiVersion: extensions/v1beta1
 kind: Deployment
@@ -58,9 +19,9 @@ spec:
                       - containerPort: 8080
                   env:
                       - name: MONGO_HOST
-                        value: 'ip-10-240-37-138.ap-northeast-2.compute.internal'
+                        value: ip-10-240-37-138.ap-northeast-2.compute.internal
                       - name: MONGO_PORT
-                        value: 27017
+                        value: "27017"
                       - name: TRUSTFEED_ADDRESS
                         value: 0x3aa9ce734dd21fa5e6962978e2ccc7f4ac513348
                       - name: RINKEBY_LIGHT_NODE
