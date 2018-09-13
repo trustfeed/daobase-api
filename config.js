@@ -18,6 +18,9 @@ const config = {
   frontendHost: process.env.FRONTEND_HOST || 'http://localhost:3000',
 
   dev: process.env.NODE_ENV !== 'production',
+
+  coinPaymentsKey: process.env.COIN_PAYMENTS_KEY,
+  coinPaymentsSecret: process.env.COIN_PAYMENTS_SECRET,
 };
 
 export default config;

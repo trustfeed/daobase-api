@@ -6,6 +6,9 @@ const router = express.Router();
 router.use('/', authMiddleware);
 router.get('/', controller.getAll);
 router.get('/:id', controller.get);
+
+router.post('/:id/alternative-payment', controller.alternativePayment);
+
 router.post('/:id/vote', controller.vote);
 router.get('/:id/vote', controller.voteGet);
 router.post('/:id/retract-vote', controller.retractVote);
