@@ -58,7 +58,7 @@ spec:
                       - containerPort: 8080
                   env:
                       - name: MONGO_HOST
-                        value: ip-10-240-37-138.ap-northeast-2.compute.internal
+                        value: 'ip-10-240-37-138.ap-northeast-2.compute.internal'
                       - name: MONGO_PORT
                         value: 27017
                       - name: TRUSTFEED_ADDRESS
