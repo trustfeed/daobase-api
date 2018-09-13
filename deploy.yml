@@ -29,9 +29,9 @@ spec:
                                   name: mongo
                                   key: password
                       - name: MONGO_HOST
-                        value: 'ip-10-240-37-138.ap-northeast-2.compute.internal'
+                        value: ip-10-240-37-138.ap-northeast-2.compute.internal
                       - name: MONGO_PORT
-                        value: 27017
+                        value: "27017"
                       - name: TRUSTFEED_ADDRESS
                         value: 0x3aa9ce734dd21fa5e6962978e2ccc7f4ac513348
                       - name: RINKEBY_LIGHT_NODE
