@@ -7,6 +7,7 @@ const options = {
 };
 
 const uri = `mongodb://${config.mongoHost}:${config.mongoPort}/crowdAdmin?authSource=admin`;
+console.log(uri, options);
 mongoose.connect(uri, options);
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
