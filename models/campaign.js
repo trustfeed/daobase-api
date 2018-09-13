@@ -622,7 +622,8 @@ Campaign.methods.makeDeployment = function (userAddress) {
 
 Campaign.statics.deploymentTransaction = async function (userId, userAddress, campaignId) {
   let campaign = await this.fetchHostedCampaign(userId, campaignId);
-  if (campaign.hostedCampaign.campaignStatus !== 'REVIEWED') {
+  const sts = campaign.hostedCampaign.campaignStatus;
+  if (sts !== 'REVIEWED' && sts !== 'PENDING_DEPLOYMENT') {
     throw new te.TypedError(400, 'the campaign is not reviewed');
   }
   if (config.dev) {
