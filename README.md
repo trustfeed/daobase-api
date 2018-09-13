@@ -1,4 +1,4 @@
-# crowdsale-api
+# daobase-io
 
 ## Sign In/Sign Up
 
@@ -336,7 +336,7 @@ There are three components;
 
 Launch MongoDB in docker with;
 ```bash
-docker run --name crowdsale-mongo-dev -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=test -e MONGO_INITDB_ROOT_PASSWORD=test -d mongo:4
+docker run --name daobase-mongo-dev -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=test -e MONGO_INITDB_ROOT_PASSWORD=test -d mongo:4
 ```
 
 ## Geth

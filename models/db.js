@@ -6,8 +6,7 @@ const options = {
   pass: config.mongoPass,
 };
 
-const uri = `mongodb://${config.mongoHost}:${config.mongoPort}/crowdAdmin?authSource=admin`;
-console.log(uri, options);
+const uri = `mongodb://${config.mongoHost}:${config.mongoPort}/daobase?authSource=admin`;
 mongoose.connect(uri, options);
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;

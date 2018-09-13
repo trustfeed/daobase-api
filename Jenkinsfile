@@ -2,7 +2,7 @@ pipeline {
   agent any
   environment {
     user = 'jpw'
-    label = 'tokenadmin-api'
+    label = 'daobase-api'
     registry = 'registry.trustfeed.io'
     registryCredential = 'registry-credentials'
   }

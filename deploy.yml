@@ -2,7 +2,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-    name: tokenadmin-api
+    name: daobase-api
 spec:
     replicas: 1
     strategy:
@@ -10,11 +10,11 @@ spec:
     template:
         metadata:
             labels: 
-                name: tokenadmin-api
+                name: daobase-api
         spec:
             containers:
-                - name: tokenadmin-api
-                  image: registry.trustfeed.io/jpw/tokenadmin-api:${BUILD_NUMBER}
+                - name: daobase-api
+                  image: registry.trustfeed.io/jpw/daobase-api:${BUILD_NUMBER}
                   ports:
                       - containerPort: 8080
                   env:
@@ -37,7 +37,7 @@ spec:
                       - name: RINKEBY_LIGHT_NODE
                         value: ws://10.240.63.49:8546
                       - name: FRONTEND_HOST
-                        value: http://test.tokenadmin.work
+                        value: http://test.daobase.io
                       - name: AWS_ACCESS_KEY_ID
                         valueFrom:
                           secretKeyRef:
@@ -75,13 +75,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-    name: tokenadmin-api
+    name: daobase-api
     labels:
-        name: tokenadmin-api
+        name: daobase-api
 spec:
   ports:
   - port:       80
     targetPort: 8080
   selector:
-    name: tokenadmin-api
+    name: daobase-api
   type: ClusterIP
