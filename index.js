@@ -13,8 +13,8 @@ const app = express();
 
 // Global middleware
 app.use(morgan('common'));
-// app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ type: 'application/json' }));
+app.use(bodyParser.urlencoded({ extended: true, type: 'application/x-www-form-urlencoded' }));
 app.use(cors());
 
 app.use((err, req, res, next) => {
