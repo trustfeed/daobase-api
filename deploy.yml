@@ -68,6 +68,16 @@ spec:
                           secretKeyRef:
                                   name: coin-payments
                                   key: secret
+                      - name: COIN_PAYMENTS_MERCHANT_ID
+                        valueFrom:
+                          secretKeyRef:
+                                  name: coin-payments
+                                  key: merchant-id
+                      - name: COIN_PAYMENTS_IPN_SECRET
+                        valueFrom:
+                          secretKeyRef:
+                                  name: coin-payments
+                                  key: ipn-secret
             imagePullSecrets:
                 - name: registry-secret
 
