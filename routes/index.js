@@ -7,6 +7,7 @@ import campaigns from './campaigns';
 import verify from './verify';
 import investments from './investments';
 import kyc from './kyc';
+import coinPayments from './coinpayments';
 
 const router = express.Router();
 router.use('/nonce', nonce);
@@ -17,5 +18,6 @@ router.use('/campaigns', campaigns);
 router.use('/verify', verify);
 router.use('/investments', investments);
 router.use('/kyc', kyc);
+router.use('/coin-payments', coinPayments);
 
 export default router;

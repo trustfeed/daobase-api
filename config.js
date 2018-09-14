@@ -21,6 +21,8 @@ const config = {
 
   coinPaymentsKey: process.env.COIN_PAYMENTS_KEY,
   coinPaymentsSecret: process.env.COIN_PAYMENTS_SECRET,
+  coinPaymentsIPNSecret: process.env.COIN_PAYMENTS_IPN_SECRET,
+  coinPaymentsMerchantID: process.env.COIN_PAYMENTS_MERCHANT_ID,
 };
 
 export default config;
