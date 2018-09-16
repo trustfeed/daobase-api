@@ -152,17 +152,16 @@ OnChainData.methods.generateReport = function () {
     errs = {};
   }
 
-  // const tomorrow = Date.now(); // + 1000 * 60 * 60 * 24;
-  // if (this.startingTime && this.startingTime.getTime() * 1000 < tomorrow) {
-  //  console.log(this.startingTime);
-  //  console.log(this.startingTime.getTime(), Date.now() + 1000 * 60 * 60 * 24);
-  //  const msg = 'Starting time must be at least one day into the future';
-  //  if (errs.startingTime) {
-  //    errs.startingTime.push(msg);
-  //  } else {
-  //    errs.startingTime = [msg];
-  //  }
-  // }
+  const tomorrow = Date.now() + 1000 * 60 * 60 * 24;
+  const startingTime = this.startingTime;
+  if (startingTime && startingTime.getTime() < tomorrow) {
+    const msg = 'Starting time must be at least one day into the future';
+    if (errs.startingTime) {
+      errs.startingTime.push(msg);
+    } else {
+      errs.startingTime = [msg];
+    }
+  }
 
   const softCap = stringToBNOrUndefined(this.softCap);
   if (!softCap || softCap < 1) {
@@ -346,14 +345,13 @@ Campaign.index({ 'hostedCampaign.onChainData.tokenContract.address': 1 });
 // Create a hosted campaign with the given on-chain data
 Campaign.statics.createHostedDomain = function (owner, onChainData) {
   if (onChainData && onChainData.startingTime) {
-    onChainData.startingTime = Date(onChainData.startingTime * 1000);
+    onChainData.startingTime = new Date(onChainData.startingTime * 1000);
   }
   let hostedCampaign = {
     owner,
     onChainData: onChainData || {},
     offChainData: {},
   };
-  console.log(onChainData, hostedCampaign);
   const campaign = this({
     _id: new mongoose.Types.ObjectId(),
     hostedCampaign: hostedCampaign,
@@ -538,6 +536,8 @@ Campaign.statics.putOnChainData = async function (userId, campaignId, data) {
   if (data && data.startingTime) {
     campaign.hostedCampaign.onChainData.startingTime = data.startingTime * 1000;
   }
+  console.log(data);
+  console.log(campaign.hostedCampaign.onChainData);
   campaign.updatedAt = Date.now();
   const errs = campaign.hostedCampaign.onChainData.generateReport();
   if (Object.keys(errs).length > 0) {
@@ -628,7 +628,6 @@ Campaign.statics.deploymentTransaction = async function (userId, userAddress, ca
   }
   if (config.dev) {
     campaign.hostedCampaign.onChainData.startingTime = new Date(1000 * ((new Date().getTime()) / 1000 + 5 * 60));
-    campaign = await campaign.save();
   }
   const out = campaign.makeDeployment(userAddress);
   campaign.hostedCampaign.campaignStatus = 'PENDING_DEPLOYMENT';
