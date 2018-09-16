@@ -7,6 +7,8 @@ const options = {
 };
 let client = new Coinpayments(options);
 
+client.getCallbackAddress('BTC', (err, data) => { console.log(err, data); });
+
 const supportedCurrencies = ['BTC', 'LTC', 'EOS'];
 
 let coinpayments = {
@@ -22,6 +24,7 @@ let coinpayments = {
       amount: etherAmount,
       buyer_name: userId,
       item_name: campaignId,
+      ipn_url: 'https://api-test.daobase.io/coin-payments',
     };
     // wrap this in a promise
     return new Promise((resolve, reject) => {
