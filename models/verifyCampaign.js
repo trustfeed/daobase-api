@@ -26,7 +26,7 @@ const verifyRegistyEvent = async function (registryEvent) {
     throw new Error('invalid user id');
   }
   const deployment = await campaign.makeDeployment(user.publicAddress);
-  const fastNode = await Networks.fastestNode(campaign.hostedCampaign.onChainData.network);
+  const fastNode = await Networks.node(campaign.hostedCampaign.onChainData.network);
   const transaction = fastNode.eth.getTransactionFromBlock(
     registryEvent.blockNumber,
     registryEvent.transactionIndex,
@@ -54,7 +54,7 @@ const listen = async function () {
     });
 
   const listenToContract = async (network) => {
-    const w3 = await Networks.lightNode(network);
+    const w3 = await Networks.node(network);
     const contract = new w3.eth.Contract(abi, Networks.registry(network));
     contract.events.NewCampaign(
       { fromBlock: 2902678 },

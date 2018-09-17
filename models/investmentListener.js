@@ -33,7 +33,7 @@ const publicAddresses = new Set([]);
 export default {
   listenForERC20: () => {
     const listenToEvent = async (network) => {
-      const w3 = await Networks.lightNode(network);
+      const w3 = await Networks.node(network);
       w3.eth.subscribe(
         'logs',
         {

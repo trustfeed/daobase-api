@@ -84,7 +84,7 @@ Contract.statics.migrateAll = async function () {
 };
 
 Contract.methods.makeDeployment = async function (network, args) {
-  const web3 = await Networks.fastestNode(network);
+  const web3 = await Networks.node(network);
   const contract = new web3.eth.Contract(JSON.parse(this.abi));
   const deploy = contract.deploy({ data: this.bytecode, arguments: args });
   return { transaction: deploy.encodeABI() };
