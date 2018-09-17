@@ -339,18 +339,6 @@ Launch MongoDB in docker with;
 docker run --name daobase-mongo-dev -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=test -e MONGO_INITDB_ROOT_PASSWORD=test -d mongo:4
 ```
 
-## Geth
-
-Launch a geth node for rinkeby with (substitute GETH_DATA_DIR with some place to store the blockchain state).
-```bash
-docker run -p 8545:8545 -p 8546:8546 -d -v ${GETH_DATA_DIR}:/root/.ethereum --name geth ethereum/client-go:stable  --cache=256 --rinkeby --syncmode light --ws --wsaddr "0.0.0.0" --wsorigins "*" --wsapi="db,eth,net,web3,personal,web3" --rpc --rpcaddr "0.0.0.0"  --rpcapi="db,eth,net,web3,personal,web3"
-```
-
-This may take time to sink (20 minutes or more). Check with 
-```bash
-docker logs geth
-```
-
 ## Launch API Server
 
 You need to set some environment variables;
@@ -359,7 +347,6 @@ You need to set some environment variables;
 3. MONGO_HOST=localhost
 4. MONGO_PORT=27017
 5. TRUSTFEED_ADDRESS=0x3aa9ce734dd21fa5e6962978e2ccc7f4ac513348
-6. RINKEBY_LIGHT_NODE=ws://localhost:8546
 7. AWS_ACCESS_KEY_ID
 8. AWS_SECRET_ACCESS_KEY
 9. AWS_REGION
