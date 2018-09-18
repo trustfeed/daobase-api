@@ -26,11 +26,11 @@ const getProvider = (network) => {
   provider.on('connect', () => console.log('WS Connected'));
   provider.on('error', e => {
     console.error('WS Error', e);
-    updateProvider(network, getProvider());
+    updateProvider(network, getProvider(network));
   });
   provider.on('end', e => {
     console.error('WS End', e);
-    updateProvider(network, getProvider());
+    updateProvider(network, getProvider(network));
   });
 
   return provider;
@@ -39,6 +39,20 @@ const getProvider = (network) => {
 // Initialise all web3 providers
 let w3s = {};
 w3s.rinkeby = new Web3(getProvider('rinkeby'));
+
+// This should not be needed but the above code doesn't always catch the error
+const periodicCheck = () => {
+  Networks.supported.map(async network => {
+    try {
+      await w3s.rinkeby.eth.getBlockNumber();
+    } catch (err) {
+      updateProvider(network, getProvider(network));
+    }
+  });
+  setTimeout(periodicCheck, 5 * 60 * 1000);
+};
+
+periodicCheck();
 
 const Networks = {
   // The networks we support

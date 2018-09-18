@@ -22,7 +22,8 @@ class InvestmentListener extends EventWorker {
     const token = log.address;
     const from = topicToAddress(log.topics[1]);
     const to = topicToAddress(log.topics[2]);
-    Campaign.updateWeiRaised(token).catch(() => {});
+    console.log('chech wei raised');
+    Campaign.updateWeiRaised(token).catch(console.log);
     if (token && from && to) {
       if (userPublicAddresses.has(from)) {
         Investments.updateBalance(this.network, token, from).catch(() => {});
@@ -81,6 +82,7 @@ const checkUser = async (publicAddress) => {
 // Crawl all users
 let isCrawlingAllKnown = false;
 const crawlAllKnown = async () => {
+  console.log('crawling all known');
   if (isCrawlingAllKnown) {
     return;
   }

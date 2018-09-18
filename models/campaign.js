@@ -752,7 +752,9 @@ Campaign.methods.updateWeiRaisedOlderThan = async function (duration) {
   if (!duration) {
     duration = 1000 * 60 * 5;
   }
+  console.log(duration, Date.now() - this.updatedAt.getTime());
   if (Date.now() - this.updatedAt.getTime() > duration) {
+    console.log('updateing raised');
     await this.addWeiRaised();
     this.updatedAt = Date.now();
     return this.save();
