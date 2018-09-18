@@ -22,8 +22,7 @@ class InvestmentListener extends EventWorker {
     const token = log.address;
     const from = topicToAddress(log.topics[1]);
     const to = topicToAddress(log.topics[2]);
-    console.log('chech wei raised');
-    Campaign.updateWeiRaised(token).catch(console.log);
+    Campaign.updateWeiRaised(token).catch(() => {});
     if (token && from && to) {
       if (userPublicAddresses.has(from)) {
         Investments.updateBalance(this.network, token, from).catch(() => {});
