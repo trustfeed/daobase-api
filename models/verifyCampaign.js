@@ -101,7 +101,7 @@ class CampaignVerifier extends EventWorker {
   async _startWatching () {
     this._scrape();
 
-    return this.contract.events.NewCampaign({ });
+    return this.contract.events.NewCampaign({}, () => {});
   };
 
   // Process a registry event
