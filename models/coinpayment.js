@@ -7,7 +7,7 @@ const options = {
 };
 let client = new Coinpayments(options);
 
-client.getCallbackAddress('BTC', (err, data) => { console.log(err, data); });
+//client.getCallbackAddress('BTC', (err, data) => { console.log(err, data); });
 
 const supportedCurrencies = ['BTC', 'LTC', 'EOS'];
 

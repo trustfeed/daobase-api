@@ -74,6 +74,8 @@ db.once('open', async () => {
   process.exit(1);
 });
 
+VerifyCampaign.scrapeOldEvents();
+
 // const addTON = () => {
 //  const Campaign = require('./models/campaign');
 //  return Campaign.createExternalCampaign(

@@ -8,7 +8,6 @@ const verifyRegistyEvent = async function (registryEvent) {
   // (campaignId, campaignAddress, blockNumber, transactionIndex) {
   // Grab the campaign
   const campaignId = mongoose.Types.ObjectId(registryEvent.returnValues.campaignId);
-  console.log(campaignId);
   const campaign = await Campaign.findOne({ _id: campaignId });
   if (!campaign) {
     throw new Error('invalid campaign id');
@@ -41,6 +40,38 @@ const verifyRegistyEvent = async function (registryEvent) {
   return campaign.save();
 };
 
+const scrapeOldEvents = async function () {
+  const scrapeNetwork = async (network) => {
+    const w3 = await Networks.node(network);
+
+    const fnc = async (log) => {
+      const returnValues = w3.eth.abi.decodeParameters(
+        ['address', 'string'],
+        log.data,
+      );
+      log.returnValues = { campaignAddress: returnValues[0], campaignId: returnValues[1] };
+      return verifyRegistyEvent(log)
+        .catch(err => { console.log(err.message); });
+    };
+
+    //  console.log(w3.eth);
+    //  console.log(w3.eth.getPastLogs);
+    console.log('registry:', Networks.registry(network));
+    return w3.eth.getPastLogs(
+      {
+        fromBlock: w3.utils.toHex(1),
+        address: Networks.registry(network),
+      }, () => {})
+      .then(txs => {
+        return Promise.all(txs.map(fnc));
+      })
+      .catch(err => console.log('pastLogs err', err));
+  };
+
+  const ns = Networks.supported;
+  return Promise.all(ns.map(scrapeNetwork));
+};
+
 const listen = async function () {
   const abi = await Contract
     .findOne({ name: 'TrustFeedCampaignRegistry' })
@@ -55,13 +86,15 @@ const listen = async function () {
 
   const listenToContract = async (network) => {
     const w3 = await Networks.node(network);
+    w3.eth.getBlockNumber().then(x => console.log('listening now', x)).catch(console.log);
     const contract = new w3.eth.Contract(abi, Networks.registry(network));
     contract.events.NewCampaign(
-      { fromBlock: 2902678 },
+      { fromBlock: w3.utils.toHex(1) },
       (err, registryEvent) => {
         if (err) {
           console.log(err);
         } else {
+          console.log('checking event');
           verifyRegistyEvent(
             registryEvent
           ).catch(err => {
@@ -75,5 +108,5 @@ const listen = async function () {
   return Promise.all(ns.map(listenToContract));
 };
 
-const VerifyCampaign = { listen, verifyRegistyEvent };
+const VerifyCampaign = { listen, verifyRegistyEvent, scrapeOldEvents };
 export default VerifyCampaign;
