@@ -24,7 +24,7 @@ class InvestmentListener extends EventWorker {
   }
 
   // Handle a new log event
-  async _processLog (log) {
+  async _processEvent (log) {
     const token = log.address;
     const from = this.topicToAddress(log.topics[1]);
     const to = this.topicToAddress(log.topics[2]);
