@@ -5,7 +5,7 @@ import Networks from './networks';
 import Contract from './contract';
 import EventWorker from './eventWorker';
 
-// This verifies campaigns. It should handle infura server crashes.
+// This verifies campaigns on a single network. It should handle infura server crashes.
 class CampaignVerifier extends EventWorker {
   constructor (network, abi) {
     // Make the event worker that will handle disconnects
@@ -18,6 +18,7 @@ class CampaignVerifier extends EventWorker {
     this.contract = new this.web3.eth.Contract(abi, Networks.registry(network));
   }
 
+  // Fetch the abi needed for the events
   static async loadABI (network) {
     const abi = await Contract
       .findOne({ name: 'TrustFeedCampaignRegistry' })
@@ -69,6 +70,7 @@ class CampaignVerifier extends EventWorker {
   };
 
   // Scrap old events in chuncks.
+  // TODO: Use event.getPastEvents not all logs.
   async _scrape () {
     const decodeReturnValues = (log) => {
       const returnValues = this.web3.eth.abi.decodeParameters(
@@ -85,7 +87,6 @@ class CampaignVerifier extends EventWorker {
 
     while (this.scrapedTo <= await this.web3.eth.getBlockNumber()) {
       let to = this.scrapedTo + this.chunckSize;
-      console.log(this.scrapedTo, to);
       let logs = await this.web3.eth.getPastLogs({
         fromBlock: this.web3.utils.toHex(this.scrapedTo),
         toBlock: this.web3.utils.toHex(to),
@@ -97,7 +98,7 @@ class CampaignVerifier extends EventWorker {
     }
   };
 
-  // Start watching for new events
+  // After network outage, crawl unknown blocks and start watching for new events
   async _startWatching () {
     this._scrape();
 
@@ -106,7 +107,6 @@ class CampaignVerifier extends EventWorker {
 
   // Process a registry event
   async _processEvent (registryEvent) {
-    console.log('checking creation event');
     this._verifyRegistyEvent(
       registryEvent
     ).catch(err => {
@@ -115,6 +115,7 @@ class CampaignVerifier extends EventWorker {
   };
 };
 
+// This starts the listeners for all supported networks.
 const startCampainVerifier = async () => {
   const abi = await CampaignVerifier.loadABI();
   const listeners = Networks.supported.map(n => new CampaignVerifier(n, abi));

@@ -4,17 +4,20 @@ import Investments from './investments';
 import Campaign from './campaign';
 import EventWorker from './eventWorker';
 
+// This is a set of public address of known users.
+// This is used to drop transfer events for non-users.
 const userPublicAddresses = new Set([]);
 
+// This listens for token transfer events on a single network,
+// should handle crashes of the ethereum client
 class InvestmentListener extends EventWorker {
-  // Construct a listener that will handle network errors.
   constructor (network) {
     super(Networks.node(network));
 
     this.network = network;
   }
 
-  // Handle a new log event
+  // Handle a new log event, updating the db if needed
   async _processEvent (log) {
     const token = log.address;
     const from = topicToAddress(log.topics[1]);
@@ -30,9 +33,9 @@ class InvestmentListener extends EventWorker {
     }
   }
 
-  // After a connection is established, crawl all users + campaigns then listen for new events
+  // After a connection is established listen for new events
   async _startWatching () {
-    // TODO: scrape all
+    crawlAllKnown();
     return this.web3.eth.subscribe(
       'logs',
       {
@@ -51,6 +54,7 @@ const topicToAddress = (topic) => {
   }
 };
 
+// This starts listeners on all known networks.
 const startListner = async () => {
   const ls = Networks.supported.map(n => new InvestmentListener(n));
   return Promise.all(ls.map(l => l.watchEvents()));
@@ -75,11 +79,17 @@ const checkUser = async (publicAddress) => {
 };
 
 // Crawl all users
+let isCrawlingAllKnown = false;
 const crawlAllKnown = async () => {
-  User.find().stream().on('data', u => {
+  if (isCrawlingAllKnown) {
+    return;
+  }
+  isCrawlingAllKnown = true;
+  await User.find().stream().on('data', u => {
     checkUser(u.publicAddress);
     userPublicAddresses.add(u.publicAddress);
   });
+  isCrawlingAllKnown = false;
 };
 
 // Add new user addresses
