@@ -3,7 +3,7 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import config from './config';
 import routes from './routes';
-import VerifyCampaign from './models/verifyCampaign';
+import startCampainVerifier from './models/verifyCampaign';
 import mongoose from 'mongoose';
 import InvestmentListener from './models/investmentListener';
 import Contract from './models/contract';
@@ -66,15 +66,13 @@ db.on('error', err => {
 
 db.once('open', async () => {
   await Contract.migrateAll().catch(console.log);
-  await VerifyCampaign.listen().catch(console.log);
+  await startCampainVerifier();
   await InvestmentListener.crawlAllKnown().catch(console.log);
-  await InvestmentListener.listenForERC20().catch(console.log);
+  await InvestmentListener.startListner().catch(console.log);
 }).catch(err => {
   console.log('initialisation failed:', err);
   process.exit(1);
 });
-
-VerifyCampaign.scrapeOldEvents();
 
 // const addTON = () => {
 //  const Campaign = require('./models/campaign');

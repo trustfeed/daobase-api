@@ -15,7 +15,7 @@ export const get = (req, res) => {
           res.status(404).send({ message: 'public address not found' });
         } else {
           let out = { nonce: user.nonce };
-	  out.kycStatus = user.kycStatus;
+          out.kycStatus = user.kycStatus;
           out.id = user._id.toString();
           out.publicAddress = user.publicAddress;
           out.name = user.name;
@@ -47,7 +47,7 @@ export const post = async (req, res) => {
       throw new te.TypedError(409, 'publicAddress already registered');
     }
     user = await User.create(publicAddress);
-    InvestmentListener.addAddresses([publicAddress]);
+    InvestmentListener.addUserAddresses([publicAddress]);
     res.status(201).json({ nonce: user.nonce });
   } catch (err) {
     te.handleError(err, res);

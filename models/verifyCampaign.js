@@ -3,110 +3,123 @@ import User from './user';
 import Campaign from './campaign';
 import Networks from './networks';
 import Contract from './contract';
+import EventWorker from './eventWorker';
 
-const verifyRegistyEvent = async function (registryEvent) {
-  // (campaignId, campaignAddress, blockNumber, transactionIndex) {
-  // Grab the campaign
-  const campaignId = mongoose.Types.ObjectId(registryEvent.returnValues.campaignId);
-  const campaign = await Campaign.findOne({ _id: campaignId });
-  if (!campaign) {
-    throw new Error('invalid campaign id');
-  }
-  if (!campaign.hostedCampaign) {
-    throw new Error('not a hosted campaign');
-  }
-  const campaignStatus = campaign.hostedCampaign.campaignStatus;
-  if (campaignStatus !== 'REVIEWED' && campaignStatus !== 'PENDING_DEPLOYMENT') {
-    throw new Error('campaign status is not REVIEWED');
+// This verifies campaigns. It should handle infura server crashes.
+class CampaignVerifier extends EventWorker {
+  constructor (network, abi) {
+    // Make the event worker that will handle disconnects
+    super(Networks.node(network));
+
+    // The initial settings
+    this.scrapedTo = 2000000;
+    this.chunckSize = 10000;
+    this.registry = Networks.registry(network);
+    this.contract = new this.web3.eth.Contract(abi, Networks.registry(network));
   }
 
-  const user = await User.findOneById(campaign.hostedCampaign.owner);
-  if (!user) {
-    throw new Error('invalid user id');
+  static async loadABI (network) {
+    const abi = await Contract
+      .findOne({ name: 'TrustFeedCampaignRegistry' })
+      .exec()
+      .then(c => {
+        if (!c) {
+          throw new Error('cannot find registry');
+        } else {
+          return JSON.parse(c.abi);
+        }
+      });
+    return abi;
   }
-  const deployment = await campaign.makeDeployment(user.publicAddress);
-  const fastNode = await Networks.node(campaign.hostedCampaign.onChainData.network);
-  const transaction = fastNode.eth.getTransactionFromBlock(
-    registryEvent.blockNumber,
-    registryEvent.transactionIndex,
-  );
-  if (transaction.input !== deployment.deployment) {
-    throw new Error('transaction data doesn\'t match');
-  }
-  // Grab the reciept
-  const campaignAddress = registryEvent.returnValues.campaignAddress;
-  await campaign.fetchContracts(campaignAddress);
-  campaign.hostedCampaign.campaignStatus = 'DEPLOYED';
-  return campaign.save();
-};
 
-const scrapeOldEvents = async function () {
-  const scrapeNetwork = async (network) => {
-    const w3 = await Networks.node(network);
+  // Internal function that checks validaty of creation event
+  async _verifyRegistyEvent (registryEvent) {
+    const campaignId = mongoose.Types.ObjectId(
+      registryEvent.returnValues.campaignId,
+    );
+    const campaign = await Campaign.findOne({ _id: campaignId });
+    if (!campaign) {
+      throw new Error('invalid campaign id');
+    }
+    if (!campaign.hostedCampaign) {
+      throw new Error('not a hosted campaign');
+    }
+    const campaignStatus = campaign.hostedCampaign.campaignStatus;
+    if (campaignStatus !== 'REVIEWED' && campaignStatus !== 'PENDING_DEPLOYMENT') {
+      throw new Error('campaign status is not REVIEWED');
+    }
 
-    const fnc = async (log) => {
-      const returnValues = w3.eth.abi.decodeParameters(
+    const user = await User.findOneById(campaign.hostedCampaign.owner);
+    if (!user) {
+      throw new Error('invalid user id');
+    }
+    const deployment = await campaign.makeDeployment(user.publicAddress);
+    const transaction = this.web3.eth.getTransactionFromBlock(
+      registryEvent.blockNumber,
+      registryEvent.transactionIndex,
+    );
+    if (transaction.input !== deployment.deployment) {
+      throw new Error('transaction data doesn\'t match');
+    }
+    // Grab the reciept
+    const campaignAddress = registryEvent.returnValues.campaignAddress;
+    await campaign.fetchContracts(campaignAddress);
+    campaign.hostedCampaign.campaignStatus = 'DEPLOYED';
+    return campaign.save();
+  };
+
+  // Scrap old events in chuncks.
+  async _scrape () {
+    const decodeReturnValues = (log) => {
+      const returnValues = this.web3.eth.abi.decodeParameters(
         ['address', 'string'],
         log.data,
       );
-      log.returnValues = { campaignAddress: returnValues[0], campaignId: returnValues[1] };
-      return verifyRegistyEvent(log)
-        .catch(err => { console.log(err.message); });
+      return { campaignAddress: returnValues[0], campaignId: returnValues[1] };
     };
 
-    //  console.log(w3.eth);
-    //  console.log(w3.eth.getPastLogs);
-    console.log('registry:', Networks.registry(network));
-    return w3.eth.getPastLogs(
-      {
-        fromBlock: w3.utils.toHex(1),
-        address: Networks.registry(network),
-      }, () => {})
-      .then(txs => {
-        return Promise.all(txs.map(fnc));
-      })
-      .catch(err => console.log('pastLogs err', err));
-  };
+    const processLog = (log) => {
+      log.returnValues = decodeReturnValues(log);
+      return this._verifyRegistyEvent(log).catch(e => console.log(e.message));
+    };
 
-  const ns = Networks.supported;
-  return Promise.all(ns.map(scrapeNetwork));
-};
-
-const listen = async function () {
-  const abi = await Contract
-    .findOne({ name: 'TrustFeedCampaignRegistry' })
-    .exec()
-    .then(c => {
-      if (!c) {
-        throw new Error('cannot find registry');
-      } else {
-        return JSON.parse(c.abi);
-      }
-    });
-
-  const listenToContract = async (network) => {
-    const w3 = await Networks.node(network);
-    w3.eth.getBlockNumber().then(x => console.log('listening now', x)).catch(console.log);
-    const contract = new w3.eth.Contract(abi, Networks.registry(network));
-    contract.events.NewCampaign(
-      { fromBlock: w3.utils.toHex(1) },
-      (err, registryEvent) => {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log('checking event');
-          verifyRegistyEvent(
-            registryEvent
-          ).catch(err => {
-            console.log('registry event failed to verify:', err.message);
-          });
-        }
+    while (this.scrapedTo <= await this.web3.eth.getBlockNumber()) {
+      let to = this.scrapedTo + this.chunckSize;
+      console.log(this.scrapedTo, to);
+      let logs = await this.web3.eth.getPastLogs({
+        fromBlock: this.web3.utils.toHex(this.scrapedTo),
+        toBlock: this.web3.utils.toHex(to),
+        address: this.registry,
       });
+
+      await Promise.all(logs.map(processLog));
+      this.scrapedTo = to;
+    }
   };
 
-  const ns = Networks.supported;
-  return Promise.all(ns.map(listenToContract));
+  // Start watching for new events
+  async _startWatching () {
+    this._scrape();
+
+    return this.contract.events.NewCampaign({ });
+  };
+
+  // Process a registry event
+  async _processEvent (registryEvent) {
+    console.log('checking creation event');
+    this._verifyRegistyEvent(
+      registryEvent
+    ).catch(err => {
+      console.log('registry event failed to verify:', err.message);
+    });
+  };
 };
 
-const VerifyCampaign = { listen, verifyRegistyEvent, scrapeOldEvents };
-export default VerifyCampaign;
+const startCampainVerifier = async () => {
+  const abi = await CampaignVerifier.loadABI();
+  const listeners = Networks.supported.map(n => new CampaignVerifier(n, abi));
+
+  return Promise.all(listeners.map(l => l.watchEvents()));
+};
+
+export default startCampainVerifier;

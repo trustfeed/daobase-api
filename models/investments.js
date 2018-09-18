@@ -39,7 +39,7 @@ Investment.statics.updateBalance = async function (
   network,
   token,
   publicAddress) {
-  const w3 = await Networks.node(network);
+  const w3 = Networks.node(network);
   const abi = [
     {
       'constant': true,

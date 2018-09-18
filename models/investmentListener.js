@@ -2,16 +2,62 @@ import Networks from './networks';
 import User from './user';
 import Investments from './investments';
 import Campaign from './campaign';
+import EventWorker from './eventWorker';
 
-const topicToAddress = topic => {
-  if (topic && topic.length >= 40) {
-    return '0x' + topic.substring(topic.length - 40);
-  } else {
-    return undefined;
+const userPublicAddresses = new Set([]);
+
+class InvestmentListener extends EventWorker {
+  // Strip the extra data off the address
+  static topicToAddress (topic) {
+    if (topic && topic.length >= 40) {
+      return '0x' + topic.substring(topic.length - 40);
+    } else {
+      return undefined;
+    }
+  };
+
+  // Construct a listener that will handle network errors.
+  constructor (network) {
+    super(Networks.node(network));
+
+    this.network = network;
+  }
+
+  // Handle a new log event
+  async _processLog (log) {
+    const token = log.address;
+    const from = this.topicToAddress(log.topics[1]);
+    const to = this.topicToAddress(log.topics[2]);
+    Campaign.updateWeiRaised(token).catch(() => {});
+    if (token && from && to) {
+      if (userPublicAddresses.has(from)) {
+        Investments.updateBalance(this.network, token, from).catch(() => {});
+      }
+      if (userPublicAddresses.has(to)) {
+        Investments.updateBalance(this.network, token, to).catch(() => {});
+      }
+    }
+  }
+
+  // After a connection is established, crawl all users + campaigns then listen for new events
+  async _startWatching () {
+    // TODO: scrape all
+    return this.web3.eth.subscribe(
+      'logs',
+      {
+        fromBlock: 0,
+        topics: ['0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'],
+      });
   }
 };
 
-const checkUser = async publicAddress => {
+const startListner = async () => {
+  const ls = Networks.supported.map(n => new InvestmentListener(n));
+  return Promise.all(ls.map(l => l.watchEvents()));
+};
+
+// Check all data for a user. This needs to be called when a new user is added.
+const checkUser = async (publicAddress) => {
   const user = await User.findOne({ publicAddress }).exec();
   if (!user) {
     return;
@@ -28,47 +74,18 @@ const checkUser = async publicAddress => {
     });
 };
 
-const publicAddresses = new Set([]);
-
-export default {
-  listenForERC20: () => {
-    const listenToEvent = async (network) => {
-      const w3 = await Networks.node(network);
-      w3.eth.subscribe(
-        'logs',
-        {
-          fromBlock: 0,
-          topics: ['0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'],
-        }, () => {})
-        .on('data', tx => {
-          const token = tx.address;
-          const from = topicToAddress(tx.topics[1]);
-          const to = topicToAddress(tx.topics[2]);
-          Campaign.updateWeiRaised(token).catch(() => {});
-          if (token && from && to) {
-            if (publicAddresses.has(from)) {
-              Investments.updateBalance(network, token, from).catch(() => {});
-            }
-            if (publicAddresses.has(to)) {
-              Investments.updateBalance(network, token, to).catch(() => {});
-            }
-          }
-        });
-    };
-
-    const ns = Networks.supported;
-    return Promise.all(ns.map(listenToEvent));
-  },
-
-  addAddresses: async addresses => {
-    Promise.all(addresses.map(checkUser)).catch(err => { console.log(err); });
-    addresses.map(x => publicAddresses.add(x));
-  },
-
-  crawlAllKnown: async () => {
-    User.find().stream().on('data', u => {
-      checkUser(u.publicAddress);
-      publicAddresses.add(u.publicAddress);
-    });
-  },
+// Crawl all users
+const crawlAllKnown = async () => {
+  User.find().stream().on('data', u => {
+    checkUser(u.publicAddress);
+    userPublicAddresses.add(u.publicAddress);
+  });
 };
+
+// Add new user addresses
+const addUserAddresses = async (addresses) => {
+  Promise.all(addresses.map(checkUser)).catch(err => { console.log(err); });
+  addresses.map(a => userPublicAddresses.push(a));
+};
+
+export default { startListner, crawlAllKnown, addUserAddresses };

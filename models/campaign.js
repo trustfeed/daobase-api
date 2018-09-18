@@ -653,7 +653,7 @@ Campaign.methods.fetchContracts = async function (campaignAddress) {
   };
 
   const campaignContractJson = await this.hostedCampaign.getCampaignContract();
-  const web3 = await Networks.node(this.hostedCampaign.onChainData.network);
+  const web3 = Networks.node(this.hostedCampaign.onChainData.network);
   const campaignContract = new web3.eth.Contract(
     JSON.parse(campaignContractJson.abi),
     campaignAddress,
@@ -740,7 +740,7 @@ Campaign.methods.addWeiRaised = async function () {
     return;
   }
 
-  const w3 = await Networks.node(this.hostedCampaign.onChainData.network);
+  const w3 = Networks.node(this.hostedCampaign.onChainData.network);
 
   let contract = this.hostedCampaign.onChainData.crowdsaleContract;
   contract = new w3.eth.Contract(JSON.parse(contract.abi), contract.address);
