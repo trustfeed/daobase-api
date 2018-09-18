@@ -7,15 +7,6 @@ import EventWorker from './eventWorker';
 const userPublicAddresses = new Set([]);
 
 class InvestmentListener extends EventWorker {
-  // Strip the extra data off the address
-  static topicToAddress (topic) {
-    if (topic && topic.length >= 40) {
-      return '0x' + topic.substring(topic.length - 40);
-    } else {
-      return undefined;
-    }
-  };
-
   // Construct a listener that will handle network errors.
   constructor (network) {
     super(Networks.node(network));
@@ -26,8 +17,8 @@ class InvestmentListener extends EventWorker {
   // Handle a new log event
   async _processEvent (log) {
     const token = log.address;
-    const from = this.topicToAddress(log.topics[1]);
-    const to = this.topicToAddress(log.topics[2]);
+    const from = topicToAddress(log.topics[1]);
+    const to = topicToAddress(log.topics[2]);
     Campaign.updateWeiRaised(token).catch(() => {});
     if (token && from && to) {
       if (userPublicAddresses.has(from)) {
@@ -48,6 +39,15 @@ class InvestmentListener extends EventWorker {
         fromBlock: 0,
         topics: ['0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'],
       }, () => {});
+  }
+};
+
+// Strip the extra data off the address
+const topicToAddress = (topic) => {
+  if (topic && topic.length >= 40) {
+    return '0x' + topic.substring(topic.length - 40);
+  } else {
+    return undefined;
   }
 };
 
