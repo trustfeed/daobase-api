@@ -24,13 +24,12 @@ const getProvider = (network) => {
   const provider = new Web3.providers.WebsocketProvider(getProviderURL(network));
 
   provider.on('connect', () => console.log('WS Connected'));
-  provider.on('error', e => {
-    console.error('WS Error', e);
-    updateProvider(network, getProvider(network));
-  });
-  provider.on('end', e => {
-    console.error('WS End', e);
-    updateProvider(network, getProvider(network));
+  provider.on('end', () => {
+    console.error('WS End');
+    subscriptions[network].map(s => s.reportError());
+    setTimeout(() => {
+      updateProvider(network, getProvider(network));
+    }, 5 * 1000);
   });
 
   return provider;
@@ -39,6 +38,8 @@ const getProvider = (network) => {
 // Initialise all web3 providers
 let w3s = {};
 w3s.rinkeby = new Web3(getProvider('rinkeby'));
+
+let subscriptions = { 'rinkeby': [] };
 
 const Networks = {
   // The networks we support
@@ -56,6 +57,11 @@ const Networks = {
   // Get a connection to a full node on the given network
   node: (network) => {
     return w3s[network];
+  },
+
+  // Add this as a subscription
+  addSubscription: (network, sub) => {
+    subscriptions[network].push(sub);
   },
 };
 

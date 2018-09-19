@@ -10,15 +10,11 @@ class EventWorker {
       .on('error', console.error);
 
     this.isWatchingEvents = true;
+  }
 
-    this.web3._provider.on('error', () => {
-      this.isWatchingEvents = false;
-      this.restartWatchEvents();
-    });
-    this.web3._provider.on('end', () => {
-      this.isWatchingEvents = false;
-      this.restartWatchEvents();
-    });
+  reportError () {
+    this.isWatchingEvents = false;
+    this.restartWatchEvents();
   }
 
   restartWatchEvents () {

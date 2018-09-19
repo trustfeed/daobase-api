@@ -8,8 +8,9 @@ const options = {
 let client = new Coinpayments(options);
 
 //client.getCallbackAddress('BTC', (err, data) => { console.log(err, data); });
+//client.rates((err,res) => { console.log(res) });
 
-const supportedCurrencies = ['BTC', 'LTC', 'EOS'];
+const supportedCurrencies = ['BTC', 'LTC', 'XRP'];
 
 let coinpayments = {
   prepareTransaction: async (

@@ -118,9 +118,13 @@ class CampaignVerifier extends EventWorker {
 // This starts the listeners for all supported networks.
 const startCampainVerifier = async () => {
   const abi = await CampaignVerifier.loadABI();
-  const listeners = Networks.supported.map(n => new CampaignVerifier(n, abi));
+  let ps = Networks.supported.map(n => {
+    let verifier = new CampaignVerifier(n, abi);
+    Networks.addSubscription(n, verifier);
+    return verifier.watchEvents();
+  });
 
-  return Promise.all(listeners.map(l => l.watchEvents()));
+  return Promise.all(ps);
 };
 
 export default startCampainVerifier;

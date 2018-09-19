@@ -39,7 +39,7 @@ class InvestmentListener extends EventWorker {
     return this.web3.eth.subscribe(
       'logs',
       {
-        fromBlock: 0,
+        // fromBlock: 0,
         topics: ['0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'],
       }, () => {});
   }
@@ -56,8 +56,12 @@ const topicToAddress = (topic) => {
 
 // This starts listeners on all known networks.
 const startListner = async () => {
-  const ls = Networks.supported.map(n => new InvestmentListener(n));
-  return Promise.all(ls.map(l => l.watchEvents()));
+  const ps = Networks.supported.map(n => {
+    let listener = new InvestmentListener(n);
+    Networks.addSubscription(n, listener);
+    return listener.watchEvents();
+  });
+  return Promise.all(ps);
 };
 
 // Check all data for a user. This needs to be called when a new user is added.
@@ -81,7 +85,6 @@ const checkUser = async (publicAddress) => {
 // Crawl all users
 let isCrawlingAllKnown = false;
 const crawlAllKnown = async () => {
-  console.log('crawling all known');
   if (isCrawlingAllKnown) {
     return;
   }
