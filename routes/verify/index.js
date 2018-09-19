@@ -1,5 +1,5 @@
 import express from 'express';
-import * as controller from './verify.controller';
+import controller from './verify.controller';
 
 const router = express.Router();
 router.post('/email', controller.email);

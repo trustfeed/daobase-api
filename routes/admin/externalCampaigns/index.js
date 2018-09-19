@@ -1,5 +1,5 @@
 import express from 'express';
-import * as controller from './externalCampaigns.controller';
+import controller from './externalCampaigns.controller';
 
 const router = express.Router();
 router.post('/', controller.post);

@@ -5,7 +5,7 @@ import Vote from '../../models/vote';
 import coinpayments from '../../models/coinpayment';
 import Web3 from 'web3';
 
-export const getAll = async (req, res) => {
+exports.getAll = async (req, res) => {
   try {
     let data = await Campaign.allPublic(req.query.offset);
     // await Promise.all(data.campaigns.map(x => x.addWeiRaised()));
@@ -15,7 +15,7 @@ export const getAll = async (req, res) => {
   }
 };
 
-export const get = async (req, res) => {
+exports.get = async (req, res) => {
   if (!req.params.id) {
     res.status(400).send({ message: 'missing campaign id' });
     return;
@@ -35,7 +35,7 @@ export const get = async (req, res) => {
   }
 };
 
-export const voteGet = (req, res) => {
+exports.voteGet = (req, res) => {
   if (!req.params.id) {
     res.status(400).send({ message: 'missing campaign id' });
     return;
@@ -59,7 +59,7 @@ export const voteGet = (req, res) => {
     .catch(err => te.handleError(err, res));
 };
 
-export const vote = (req, res) => {
+exports.vote = (req, res) => {
   if (!req.params.id) {
     res.status(400).send({ message: 'missing campaign id' });
     return;
@@ -81,7 +81,7 @@ export const vote = (req, res) => {
     .catch(err => te.handleError(err, res));
 };
 
-export const retractVote = (req, res) => {
+exports.retractVote = (req, res) => {
   if (!req.params.id) {
     res.status(400).send({ message: 'missing campaign id' });
     return;
@@ -100,7 +100,7 @@ export const retractVote = (req, res) => {
     .catch(err => te.handleError(err, res));
 };
 
-export const votes = (req, res) => {
+exports.votes = (req, res) => {
   if (!req.params.id) {
     res.status(400).send({ message: 'missing campaign id' });
   }
@@ -110,7 +110,7 @@ export const votes = (req, res) => {
     .catch(err => te.handleError(err, res));
 };
 
-export const alternativePayment = async (req, res) => {
+exports.alternativePayment = async (req, res) => {
   try {
     if (!req.params.id) {
       throw new te.TypedError(400, 'missing campaign id');

@@ -3,7 +3,7 @@ import * as te from '../../typedError';
 import authMiddleware from '../../middleware/auth';
 import InvestmentListener from '../../models/investmentListener';
 
-export const get = (req, res) => {
+exports.get = (req, res) => {
   authMiddleware(req, res, () => {
     if (!(req.decoded) || !(req.decoded.publicAddress)) {
       return res.status(500).send({ message: 'publicAddress required in access token' });
@@ -35,7 +35,7 @@ export const get = (req, res) => {
   });
 };
 
-export const post = async (req, res) => {
+exports.post = async (req, res) => {
   try {
     const { publicAddress } = req.body;
     if (!publicAddress) {
@@ -54,7 +54,7 @@ export const post = async (req, res) => {
   }
 };
 
-export const put = (req, res) => {
+exports.put = (req, res) => {
   authMiddleware(req, res, () => {
     if (!req.decoded.id) {
       res.status(400).send({ message: 'missing user id' });

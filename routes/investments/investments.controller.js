@@ -2,7 +2,7 @@ import * as te from '../../typedError';
 import Investment from '../../models/investments';
 import view from '../../views/investments';
 
-export const get = async (req, res) => {
+exports.get = async (req, res) => {
   try {
     if (!req.decoded.id) {
       throw new te.TypedError(400, 'missing user id');

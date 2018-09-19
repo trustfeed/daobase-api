@@ -22,7 +22,7 @@ const convertTimes = (req) => {
   }
 };
 
-export const post = (req, res) => {
+exports.post = (req, res) => {
   if (!req.decoded || !req.decoded.publicAddress) {
     res.status(400).send({ message: 'missing public address' });
     return;
@@ -38,7 +38,7 @@ export const post = (req, res) => {
     });
 };
 
-export const put = (req, res) => {
+exports.put = (req, res) => {
   if (!req.decoded || !req.decoded.publicAddress) {
     res.status(400).send({ message: 'missing public address' });
     return;
@@ -59,7 +59,7 @@ export const put = (req, res) => {
     });
 };
 
-export const getAll = (req, res) => {
+exports.getAll = (req, res) => {
   Campaign.findAllExternal(req.query.offset)
     .then(cs => {
       cs.campaigns = cs.campaigns.map(views.adminBrief);
@@ -70,7 +70,7 @@ export const getAll = (req, res) => {
     );
 };
 
-export const get = (req, res) => {
+exports.get = (req, res) => {
   if (!req.params.id) {
     res.status(400).send({ message: 'missing campaign id' });
     return;

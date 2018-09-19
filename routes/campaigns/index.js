@@ -1,5 +1,5 @@
 import express from 'express';
-import * as controller from './campaigns.controller';
+import controller from './campaigns.controller';
 import authMiddleware from '../../middleware/auth';
 
 const router = express.Router();

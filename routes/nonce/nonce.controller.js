@@ -1,6 +1,6 @@
 import User from '../../models/user';
 
-export const get = (req, res) => {
+exports.get = (req, res) => {
   if (!(req.query) || !(req.query.publicAddress)) {
     return res.status(400).send({ message: 'publicAddress required' });
   }

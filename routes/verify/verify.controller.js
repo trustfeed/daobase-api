@@ -7,7 +7,7 @@ const daysBetween = (start, end) => {
   return milli / (1000 * 60 * 60 * 24);
 };
 
-export const email = (req, res) => {
+exports.email = (req, res) => {
   const { token } = req.body;
   if (!token) {
     res.status(400).send({ message: 'missing token', type: 'INVALID_TOKEN' });

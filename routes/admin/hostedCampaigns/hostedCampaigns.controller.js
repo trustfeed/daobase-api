@@ -5,7 +5,7 @@ import views from '../../../views/adminCampaign';
 import * as s3 from '../../../models/s3';
 
 // Create an empty post for the logged in user
-export const post = async (req, res) => {
+exports.post = async (req, res) => {
   try {
     if (!req.decoded || !req.decoded.publicAddress) {
       res.status(400).send({ message: 'missing public address' });
@@ -23,7 +23,7 @@ export const post = async (req, res) => {
 };
 
 // Get a campaign
-export const get = async (req, res) => {
+exports.get = async (req, res) => {
   if (!req.decoded.id) {
     res.status(400).send({ message: 'missing user id' });
     return;
@@ -47,7 +47,7 @@ export const get = async (req, res) => {
 };
 
 // A list of campaigns
-export const getAll = async (req, res) => {
+exports.getAll = async (req, res) => {
   if (!req.decoded.id) {
     res.status(400).send({ message: 'missing user id' });
     return;
@@ -63,7 +63,7 @@ export const getAll = async (req, res) => {
   }
 };
 
-export const putOnChainData = async (req, res) => {
+exports.putOnChainData = async (req, res) => {
   try {
     if (!req.decoded.id) {
       throw new te.TypedError(400, 'missing user id');
@@ -85,7 +85,7 @@ export const putOnChainData = async (req, res) => {
   }
 };
 
-export const putOffChainData = async (req, res) => {
+exports.putOffChainData = async (req, res) => {
   try {
     if (!req.decoded.id) {
       throw new te.TypedError(400, 'missing user id');
@@ -108,7 +108,7 @@ export const putOffChainData = async (req, res) => {
 };
 
 // This returns a presigned URL to upload an image
-export const coverImageURL = async (req, res) => {
+exports.coverImageURL = async (req, res) => {
   try {
     if (!req.decoded.id) {
       throw new te.TypedError(400, 'missing user id');
@@ -142,7 +142,7 @@ export const coverImageURL = async (req, res) => {
 };
 
 // This returns a presigned URL to upload a white paper pdf
-export const pdfURL = async (req, res) => {
+exports.pdfURL = async (req, res) => {
   try {
     if (!req.decoded.id) {
       throw new te.TypedError(400, 'missing user id');
@@ -169,7 +169,7 @@ export const pdfURL = async (req, res) => {
   }
 };
 
-export const submitForReview = async (req, res) => {
+exports.submitForReview = async (req, res) => {
   try {
     if (!req.decoded.id) {
       throw new te.TypedError(400, 'missing user id');
@@ -193,7 +193,7 @@ export const submitForReview = async (req, res) => {
   }
 };
 
-export const cancelReview = async (req, res) => {
+exports.cancelReview = async (req, res) => {
   try {
     if (!req.decoded.id) {
       throw new te.TypedError(400, 'missing user id');
@@ -213,7 +213,7 @@ export const cancelReview = async (req, res) => {
   };
 };
 
-export const acceptReview = async (req, res) => {
+exports.acceptReview = async (req, res) => {
   try {
     if (!req.decoded.id) {
       throw new te.TypedError(400, 'missing user id');
@@ -234,7 +234,7 @@ export const acceptReview = async (req, res) => {
   }
 };
 
-export const deploymentTransaction = async (req, res) => {
+exports.deploymentTransaction = async (req, res) => {
   try {
     if (!req.decoded.id) {
       throw new te.TypedError(400, 'missing user id');

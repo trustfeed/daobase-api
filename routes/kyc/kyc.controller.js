@@ -2,7 +2,7 @@ import * as te from '../../typedError';
 import * as s3 from '../../models/s3';
 import KYCApplication from '../../models/kycApplication.js';
 
-export const passportImage = async (req, res) => {
+exports.passportImage = async (req, res) => {
   try {
     if (!req.decoded.id) {
       throw new te.TypedError(400, 'missing user id');
@@ -25,7 +25,7 @@ export const passportImage = async (req, res) => {
   }
 };
 
-export const facialImage = async (req, res) => {
+exports.facialImage = async (req, res) => {
   try {
     if (!req.decoded.id) {
       throw new te.TypedError(400, 'missing user id');
@@ -48,7 +48,7 @@ export const facialImage = async (req, res) => {
   }
 };
 
-export const post = async (req, res) => {
+exports.post = async (req, res) => {
   try {
     if (!req.decoded.id) {
       throw new te.TypedError(400, 'missing user id');
