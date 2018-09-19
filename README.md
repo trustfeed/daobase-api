@@ -280,7 +280,7 @@ Request a transaction to be created for the given campaign, token amount and cur
 curl -XPOST ${HOST}/campaigns/${ID}/alternative-payment -H 'content-type: application/json' --data '{ "currency": "BTC", "tokensToPurchase": "2343252" }'
 ```
 
-Supported currencies; `BTC`, `LTC`, `EOS`. The `tokensToPurchase` should be a string representing an integer in the tokens decimals - like wei.
+Supported currencies; `BTC`, `LTC`. The `tokensToPurchase` should be a string representing an integer in the tokens decimals - like wei.
 
 The returned packed should include;
 
@@ -293,6 +293,8 @@ The returned packed should include;
 | timeout        | Number | The number of seconds for which the transfer can be made. |
 | statusURL      | String | Check the status via coin payments. |
 | qrCodeURL      | String | Generate a QR code (via coin payments). |
+| currency       | String | The currency to make the payment in. |
+| tokenTransferFee | String | The estimated gas cost to perform transfer (in wei). This is already included in the amount. |
 
 ## Voting
 

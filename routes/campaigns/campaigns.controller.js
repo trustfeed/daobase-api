@@ -152,6 +152,7 @@ export const alternativePayment = async (req, res) => {
       campaignId.toString(),
     );
     res.status(200).send({
+      currency: currency,
       amount: tx.amount,
       transactionID: tx.txn_id,
       address: tx.address,
@@ -159,6 +160,7 @@ export const alternativePayment = async (req, res) => {
       timeout: tx.timeout,
       statusURL: tx.status_url,
       qrCodeURL: tx.qrcode_url,
+      tokenTransferFee: transactionFee,
     });
   } catch (err) {
     te.handleError(err, res);
