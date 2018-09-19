@@ -141,7 +141,7 @@ export const alternativePayment = async (req, res) => {
 
     // TODO: Check the purchase can be made (campaign is open, not passed hardcap, amount is not too small)
     const rate = Web3.utils.toBN(campaign.hostedCampaign.onChainData.rate);
-    const tokenCost = tokens.mul(rate);
+    const tokenCost = tokens.div(rate);
     // TODO: compute this
     const transactionFee = Web3.utils.toBN('91733');
     const etherAmount = Web3.utils.fromWei(tokenCost.add(transactionFee), 'ether');
