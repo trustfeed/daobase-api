@@ -327,12 +327,57 @@ To get the vote counts for a campaign
 CURL -XGET -H 'x-access-token: fdsa' ${HOST}/campaign/${CAMPAIGN_ID}/votes
 ```
 
+# TrustFeed Admin APIs
+
+These APIs are only availalbe when logged in with `TRUSTFEED_ADDRESS`. They allow the TrustFeed to accept new campaigns, pre-validate KYC to then be forwarded to an external service, and to sign multisig operations such as finalise campaign.
+
+## Campaings to review
+
+Get a list of campaigns that need to be reviewed;
+
+```
+bash -XGET -H 'x-access-token: fdsa' ${HOST}/trustfeed/campaigns-pending-review
+```
+
+## Campaings Review Success
+
+Accept the campaign pending review;
+
+```
+bash -XPOST -H 'x-access-token: fdsa' ${HOST}/trustfeed/campaign-review-accept -H 'content-type: application/json' --data '{ "campaignID": "fdsaf" }'
+```
+
+## Campaings Review Fail
+
+Reject the campaign pending review;
+
+```
+bash -XPOST -H 'x-access-token: fdsa' ${HOST}/trustfeed/campaign-review-reject -H 'content-type: application/json' --data '{ "campaignID": "fdsaf", "note" : "Some explination of failure" }'
+```
+
+## KYC Review Success
+
+Accept the KYC pending review;
+
+```
+bash -XPOST -H 'x-access-token: fdsa' ${HOST}/trustfeed/kyc-review-accept -H 'content-type: application/json' --data '{ "kycID": "fdsaf" }'
+```
+
+This should just forward to application to some third party. For now this is the only validation that is done.
+
+## KYC Review Fail
+
+Reject the KYC pending review;
+
+```
+bash -XPOST -H 'x-access-token: fdsa' ${HOST}/trustfeed/kyc-review-reject -H 'content-type: application/json' --data '{ "kycID": "fdsaf", "note" : "Some explination of failure" }'
+```
+
 # Run a Testing Environment
 
 There are three components;
 1. MongoDB
-2. A light Geth node
-3. The api server.
+2. The api server.
 
 ## MongoDB
 

@@ -154,7 +154,7 @@ OnChainData.methods.generateReport = function () {
 
   const tomorrow = Date.now() + 1000 * 60 * 60 * 24;
   const startingTime = this.startingTime;
-  if (startingTime && startingTime.getTime() < tomorrow) {
+  if (!config.dev && startingTime && startingTime.getTime() < tomorrow) {
     const msg = 'Starting time must be at least one day into the future';
     if (errs.startingTime) {
       errs.startingTime.push(msg);
@@ -773,6 +773,30 @@ Campaign.statics.updateWeiRaised = async function (tokenAddress) {
   campaign = await campaign.addWeiRaised();
   campaign.updatedAt = Date.now();
   return campaign.save();
+};
+
+Campaign.statics.reviewPending = async function (offset) {
+  const pageSize = 20;
+  let q = {
+    $or: [
+      { 'hostedCampaign.campaignStatus': 'PENDING_REVIEW' },
+      { 'hostedCampaign.campaignStatus': 'PENDING_OFF_CHAIN_REVIEW' },
+    ],
+  };
+  if (offset) {
+    q.updatedAt = { $lt: new Date(Number(Base64.decode(offset))) };
+  }
+  let cs = await this
+    .find(q)
+    .sort({ createdAt: 1 })
+    .limit(pageSize)
+    .exec();
+
+  let nextOffset;
+  if (cs.length === pageSize) {
+    nextOffset = Base64.encode(cs[cs.length - 1].updatedAt.getTime());
+  }
+  return { campaigns: cs, next: nextOffset };
 };
 
 module.exports = mongoose.model('Campaign', Campaign);
