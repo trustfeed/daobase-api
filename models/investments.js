@@ -12,11 +12,11 @@ const OwnedToken = new Schema({
   tokensOwned: String,
   campaignId: {
     type: Schema.Types.ObjectId,
-    ref: 'Campaign',
+    ref: 'Campaign'
   },
   tokenName: String,
   tokenSymbol: String,
-  tokenDecimals: Number,
+  tokenDecimals: Number
 });
 
 // TODO: Consider normalising the collection for sorting ease.
@@ -26,45 +26,42 @@ const Investment = new Schema({
     ref: 'User',
     index: true,
     required: true,
-    unique: true,
+    unique: true
   },
   tokens: {
     type: [OwnedToken],
     default: [],
-    required: true,
-  },
+    required: true
+  }
 });
 
-Investment.statics.updateBalance = async function (
-  network,
-  token,
-  publicAddress) {
+Investment.statics.updateBalance = async function(network, token, publicAddress) {
   const w3 = Networks.node(network);
   const abi = [
     {
-      'constant': true,
-      'inputs': [
+      constant: true,
+      inputs: [
         {
-          'name': '_owner',
-          'type': 'address',
-        },
+          name: '_owner',
+          type: 'address'
+        }
       ],
-      'name': 'balanceOf',
-      'outputs': [
+      name: 'balanceOf',
+      outputs: [
         {
-          'name': '',
-          'type': 'uint256',
-        },
+          name: '',
+          type: 'uint256'
+        }
       ],
-      'payable': false,
-      'stateMutability': 'view',
-      'type': 'function',
-    },
+      payable: false,
+      stateMutability: 'view',
+      type: 'function'
+    }
   ];
   const cont = new w3.eth.Contract(abi, token);
   const balance = await cont.methods.balanceOf(publicAddress).call();
   const campaign = await Campaign.findOne({
-    'hostedCampaign.onChainData.tokenContract.address': token,
+    'hostedCampaign.onChainData.tokenContract.address': token
   });
   let ownedToken = { tokenAddress: token, tokensOwned: balance };
   if (campaign) {
@@ -85,7 +82,7 @@ Investment.statics.updateBalance = async function (
   if (!investments) {
     investments = this({
       user: user._id,
-      tokens: [],
+      tokens: []
     });
   }
   investments.tokens = investments.tokens.filter(x => x.tokenAddress !== token);
@@ -95,7 +92,7 @@ Investment.statics.updateBalance = async function (
   return investments.save();
 };
 
-Investment.statics.byUser = async function (user, order, offset) {
+Investment.statics.byUser = async function(user, order, offset) {
   const pageSize = 20;
   let investments = await this.findOne({ user });
   if (!investments) {
@@ -111,38 +108,35 @@ Investment.statics.byUser = async function (user, order, offset) {
   }
 
   switch (order) {
-  case 'symbol':
-    tokens
-      .sort((x, y) => {
+    case 'symbol':
+      tokens.sort((x, y) => {
         if (x.tokenSymbol === y.tokenSymbol) {
           return x._id > y._id;
         } else {
           return x.tokenSymbol > y.tokenSymbol;
         }
       });
-    break;
-  case 'name':
-    tokens
-      .sort((x, y) => {
+      break;
+    case 'name':
+      tokens.sort((x, y) => {
         if (x.tokenName === y.tokenName) {
           return x._id > y._id;
         } else {
           return x.tokenName > y.tokenName;
         }
       });
-    break;
-  case 'owned':
-    tokens
-      .sort((x, y) => {
+      break;
+    case 'owned':
+      tokens.sort((x, y) => {
         if (x.tokensOwned === y.tokensOwned) {
           return x._id > y._id;
         } else {
           return Web3.utils.toBN(x.tokensOwned).gt(Web3.utils.toBN(y.tokensOwned));
         }
       });
-    break;
-  default:
-    throw new utils.TypedError(401, 'unknown order');
+      break;
+    default:
+      throw new utils.TypedError(401, 'unknown order');
   }
 
   tokens = tokens.slice(offset, offset + pageSize);

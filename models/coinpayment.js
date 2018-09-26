@@ -3,7 +3,7 @@ import config from '../config';
 
 const options = {
   key: config.coinPaymentsKey,
-  secret: config.coinPaymentsSecret,
+  secret: config.coinPaymentsSecret
 };
 let client = new Coinpayments(options);
 
@@ -13,31 +13,24 @@ let client = new Coinpayments(options);
 const supportedCurrencies = ['BTC', 'LTC', 'XRP'];
 
 let coinpayments = {
-  prepareTransaction: async (
-    etherAmount,
-    paymentCurrency,
-    userId,
-    campaignId,
-  ) => {
+  prepareTransaction: async (etherAmount, paymentCurrency, userId, campaignId) => {
     const opts = {
       currency1: 'ETH',
       currency2: paymentCurrency,
       amount: etherAmount,
       buyer_name: userId,
       item_name: campaignId,
-      ipn_url: 'https://api-test.daobase.io/coin-payments',
+      ipn_url: 'https://api-test.daobase.io/coin-payments'
     };
     // wrap this in a promise
     return new Promise((resolve, reject) => {
-      client.createTransaction(
-        opts,
-        (err, data) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(data);
-          }
-        });
+      client.createTransaction(opts, (err, data) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(data);
+        }
+      });
     });
     // save this in the DB
   },
@@ -49,7 +42,7 @@ let coinpayments = {
       }
     }
     return false;
-  },
+  }
 };
 
 export default coinpayments;

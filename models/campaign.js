@@ -11,12 +11,12 @@ const Schema = mongoose.Schema;
 // A contract that is deployed on a network
 const DeployedContract = new Schema({
   address: {
-    type: String,
+    type: String
   },
   abi: {
     type: String,
-    required: true,
-  },
+    required: true
+  }
 });
 
 // The on-chain data that can only be modified during DRAFT
@@ -24,67 +24,67 @@ const OnChainData = new Schema({
   createdAt: {
     type: Date,
     required: true,
-    default: Date.now,
+    default: Date.now
   },
   network: {
     type: String,
     enum: ['rinkeby'],
     required: true,
-    default: ['rinkeby'],
+    default: ['rinkeby']
   },
   tokenName: {
-    type: String,
+    type: String
   },
   tokenSymbol: {
-    type: String,
+    type: String
   },
   numberOfDecimals: {
-    type: Number,
+    type: Number
   },
   startingTime: {
-    type: Date,
+    type: Date
   },
   duration: {
-    type: Number,
+    type: Number
   },
   rate: {
-    type: String,
+    type: String
   },
   softCap: {
-    type: String,
+    type: String
   },
   hardCap: {
-    type: String,
+    type: String
   },
   isMinted: {
     type: Boolean,
-    default: false,
+    default: false
   },
   version: {
     type: String,
     enum: ['0.0.0'],
     required: true,
-    default: ['0.0.0'],
+    default: ['0.0.0']
   },
   tokenContract: {
     type: DeployedContract,
-    required: false,
+    required: false
   },
   crowdsaleContract: {
     type: DeployedContract,
-    required: false,
+    required: false
   },
   walletContract: {
     type: DeployedContract,
-    required: false,
+    required: false
   },
   weiRaised: {
     type: String,
-    required: false,
-  },
+    required: false
+  }
 });
 
-const stringToBNOrUndefined = (s) => {
+const stringToBNOrUndefined = s => {
   try {
     return Web3.utils.toBN(s);
   } catch (err) {
@@ -92,7 +92,7 @@ const stringToBNOrUndefined = (s) => {
   }
 };
 
-const stringRoundedOrUndefined = (s) => {
+const stringRoundedOrUndefined = s => {
   try {
     return Math.round(Number(s));
   } catch (err) {
@@ -100,52 +100,52 @@ const stringRoundedOrUndefined = (s) => {
   }
 };
 
-OnChainData.methods.generateReport = function () {
+OnChainData.methods.generateReport = function() {
   const constraints = {
     network: {
       presence: true,
-      inclusion: ['rinkeby'],
+      inclusion: ['rinkeby']
     },
     tokenName: {
-      presence: true,
+      presence: true
     },
     tokenSymbol: {
-      presence: true,
+      presence: true
     },
     numberOfDecimals: {
       presence: true,
       numericality: {
         noStrings: true,
         greaterThanOrEqualTo: 0,
-        lessThanOrEqualTo: 18,
-      },
+        lessThanOrEqualTo: 18
+      }
     },
     startingTime: {
-      presence: true,
+      presence: true
     },
     duration: {
       presence: true,
       numericality: {
         noStrings: true,
-        greaterThanOrEqualTo: 1,
-      },
+        greaterThanOrEqualTo: 1
+      }
     },
     rate: {
-      presence: true,
+      presence: true
     },
     softCap: {
-      presence: true,
+      presence: true
     },
     hardCap: {
-      presence: true,
+      presence: true
     },
     isMinted: {
-      presence: true,
+      presence: true
     },
     version: {
       presence: true,
-      inclusion: ['0.0.0'],
-    },
+      inclusion: ['0.0.0']
+    }
   };
   let errs = validate(this, constraints);
   if (errs === undefined) {
@@ -199,32 +199,32 @@ OnChainData.methods.generateReport = function () {
 // The off-chain data that can be altered at other times
 const OffChainData = new Schema({
   coverImageURL: {
-    type: String,
+    type: String
   },
   whitePaperURL: {
-    type: String,
+    type: String
   },
   summary: {
-    type: String,
+    type: String
   },
   description: {
-    type: String,
+    type: String
   },
   keywords: {
-    type: [String],
-  },
+    type: [String]
+  }
 });
 
-OffChainData.methods.generateReport = function () {
+OffChainData.methods.generateReport = function() {
   const constraints = {
     coverImageURL: {
       presence: true,
-      url: true,
+      url: true
     },
     whitePaperURL: {
       presence: true,
-      url: true,
-    },
+      url: true
+    }
   };
   let errs = validate(this, constraints);
   if (errs === undefined) {
@@ -239,7 +239,7 @@ const HostedCampaign = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User',
     index: true,
-    required: true,
+    required: true
   },
   campaignStatus: {
     type: String,
@@ -249,24 +249,24 @@ const HostedCampaign = new Schema({
       'REVIEWED',
       'PENDING_DEPLOYMENT',
       'DEPLOYED',
-      'PENDING_OFF_CHAIN_REVIEW',
+      'PENDING_OFF_CHAIN_REVIEW'
     ],
     required: true,
-    default: ['DRAFT'],
+    default: ['DRAFT']
   },
   onChainData: {
     type: OnChainData,
-    required: true,
+    required: true
   },
   offChainData: {
     type: OffChainData,
-    required: true,
+    required: true
   },
-  offChainDataDraft: OffChainData,
+  offChainDataDraft: OffChainData
 });
 
 // Get the contract describing the campaign
-HostedCampaign.methods.getCampaignContract = function () {
+HostedCampaign.methods.getCampaignContract = function() {
   let name = 'TrustFeedCampaign';
   if (this.onChainData.isMinted) {
     name = 'TrustFeedMintedCampaign';
@@ -274,27 +274,27 @@ HostedCampaign.methods.getCampaignContract = function () {
 
   return Contract.findOne({
     name,
-    version: this.onChainData.version,
+    version: this.onChainData.version
   }).exec();
 };
 
 const PeriodSchema = new Schema({
   openingTime: Date,
-  closingTime: Date,
+  closingTime: Date
 });
 
 const LinkSchema = new Schema({
   type: {
     type: String,
-    required: true,
-  },
+    required: true
+  }
 });
 
 const TeamMemberSchema = new Schema({
   name: String,
   role: String,
   description: String,
-  links: [LinkSchema],
+  links: [LinkSchema]
 });
 
 const ExternalCampaign = new Schema({
@@ -302,7 +302,7 @@ const ExternalCampaign = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User',
     index: true,
-    required: true,
+    required: true
   },
   name: String,
   symbol: String,
@@ -315,7 +315,7 @@ const ExternalCampaign = new Schema({
   ico: PeriodSchema,
   links: [LinkSchema],
   location: String,
-  team: [TeamMemberSchema],
+  team: [TeamMemberSchema]
 });
 
 // The complete campaign data model
@@ -323,54 +323,53 @@ const Campaign = new Schema({
   createdAt: {
     type: Date,
     required: true,
-    default: Date.now,
+    default: Date.now
   },
   updatedAt: {
     type: Date,
     required: true,
     default: Date.now,
-    index: true,
+    index: true
   },
   hostedCampaign: {
-    type: HostedCampaign,
+    type: HostedCampaign
   },
   externalCampaign: {
-    type: ExternalCampaign,
-  },
+    type: ExternalCampaign
+  }
 });
 
 Campaign.index({ 'hostedCampaign.owner': 1 });
 Campaign.index({ 'hostedCampaign.onChainData.tokenContract.address': 1 });
 
 // Create a hosted campaign with the given on-chain data
-Campaign.statics.createHostedDomain = function (owner, onChainData) {
+Campaign.statics.createHostedDomain = function(owner, onChainData) {
   if (onChainData && onChainData.startingTime) {
     onChainData.startingTime = new Date(onChainData.startingTime * 1000);
   }
   let hostedCampaign = {
     owner,
     onChainData: onChainData || {},
-    offChainData: {},
+    offChainData: {}
   };
   const campaign = this({
     _id: new mongoose.Types.ObjectId(),
     hostedCampaign: hostedCampaign,
     createdAt: Date.now(),
-    updatedAt: Date.now(),
+    updatedAt: Date.now()
   });
 
   return campaign.save();
 };
 
-Campaign.statics.findAllExternal = function (owner, offset) {
+Campaign.statics.findAllExternal = function(owner, offset) {
   const pageSize = 20;
   let q = { externalCampaign: { $exists: true } };
   if (offset) {
     q.updatedAt = { $lt: new Date(Number(Base64.decode(offset))) };
   }
-  
-  return this
-    .find(q)
+
+  return this.find(q)
     .sort({ updatedAt: 'desc' })
     .limit(pageSize)
     .exec()
@@ -384,15 +383,14 @@ Campaign.statics.findAllExternal = function (owner, offset) {
 };
 
 // Fetch all hosted campaigns owned by the given user
-Campaign.statics.findHostedByOwner = function (owner, offset) {
+Campaign.statics.findHostedByOwner = function(owner, offset) {
   const pageSize = 20;
   let q = { 'hostedCampaign.owner': owner };
   if (offset) {
     q.updatedAt = { $lt: new Date(Number(Base64.decode(offset))) };
   }
-  
-  return this
-    .find(q)
+
+  return this.find(q)
     .sort({ updatedAt: 'desc' })
     .limit(pageSize)
     .exec()
@@ -405,23 +403,24 @@ Campaign.statics.findHostedByOwner = function (owner, offset) {
     });
 };
 
-Campaign.statics.createExternalCampaign = function (userId, data) {
+Campaign.statics.createExternalCampaign = function(userId, data) {
   data.addedBy = userId;
 
   const campaign = this({
     externalCampaign: data,
     createdAt: Date.now(),
-    updatedAt: Date.now(),
+    updatedAt: Date.now()
   });
 
   return campaign.save();
 };
 
 // This fetches a hosted campaign and checks the user matches
-Campaign.statics.fetchHostedCampaign = async function (userId, campaignId) {
+Campaign.statics.fetchHostedCampaign = async function(userId, campaignId) {
   let campaign = await this.findOne({
-    _id: campaignId,
-  }).exec()
+    _id: campaignId
+  })
+    .exec()
     .then(campaign => {
       if (!campaign) {
         throw new utils.TypedError(404, 'no such campaign');
@@ -439,46 +438,40 @@ Campaign.statics.fetchHostedCampaign = async function (userId, campaignId) {
 };
 
 // Review this hosted campaign
-Campaign.statics.submitForReview = function (userId, campaignId) {
-  return this.fetchHostedCampaign(userId, campaignId)
-    .then(campaign => {
-      if (campaign.hostedCampaign.campaignStatus === 'DRAFT') {
-        const onChainErrs = campaign.hostedCampaign.onChainData.generateReport();
-        const offChainErrs = campaign.hostedCampaign.offChainData.generateReport();
-        if (Object.keys(onChainErrs).length > 0 || Object.keys(offChainErrs).length > 0) {
-          throw new utils.TypedError(
-            400,
-            'validation error',
-            'INVALID_DATA',
-            { onChainValidationErrors: onChainErrs,
-              offChainValidationErrors: offChainErrs,
-            });
-        } else {
-          campaign.hostedCampaign.campaignStatus = 'PENDING_REVIEW';
-          campaign.updatedAt = Date.now();
-          return campaign.save();
-        }
-      } else if (campaign.hostedCampaign.campaignStatus === 'DEPLOYED') {
-        const draft = campaign.hostedCampaign.offChainDataDraft;
-        const offChainErrs = draft.generateReport();
-        if (Object.keys(offChainErrs).length > 0) {
-          throw new te.TypedError(
-            400,
-            'validation error',
-            'INVALID_DATA',
-            { offChainValidationErrors: offChainErrs });
-        } else {
-          campaign.hostedCampaign.campaignStatus = 'PENDING_OFF_CHAIN_REVIEW';
-          campaign.updatedAt = Date.now();
-          return campaign.save();
-        }
+Campaign.statics.submitForReview = function(userId, campaignId) {
+  return this.fetchHostedCampaign(userId, campaignId).then(campaign => {
+    if (campaign.hostedCampaign.campaignStatus === 'DRAFT') {
+      const onChainErrs = campaign.hostedCampaign.onChainData.generateReport();
+      const offChainErrs = campaign.hostedCampaign.offChainData.generateReport();
+      if (Object.keys(onChainErrs).length > 0 || Object.keys(offChainErrs).length > 0) {
+        throw new utils.TypedError(400, 'validation error', 'INVALID_DATA', {
+          onChainValidationErrors: onChainErrs,
+          offChainValidationErrors: offChainErrs
+        });
       } else {
-        throw new te.TypedError(400, 'the campaign is not a draft');
+        campaign.hostedCampaign.campaignStatus = 'PENDING_REVIEW';
+        campaign.updatedAt = Date.now();
+        return campaign.save();
       }
-    });
+    } else if (campaign.hostedCampaign.campaignStatus === 'DEPLOYED') {
+      const draft = campaign.hostedCampaign.offChainDataDraft;
+      const offChainErrs = draft.generateReport();
+      if (Object.keys(offChainErrs).length > 0) {
+        throw new te.TypedError(400, 'validation error', 'INVALID_DATA', {
+          offChainValidationErrors: offChainErrs
+        });
+      } else {
+        campaign.hostedCampaign.campaignStatus = 'PENDING_OFF_CHAIN_REVIEW';
+        campaign.updatedAt = Date.now();
+        return campaign.save();
+      }
+    } else {
+      throw new te.TypedError(400, 'the campaign is not a draft');
+    }
+  });
 };
 
-Campaign.statics.cancelReview = async function (userId, campaignId) {
+Campaign.statics.cancelReview = async function(userId, campaignId) {
   let campaign = await this.fetchHostedCampaign(userId, campaignId);
 
   const campaignStatus = campaign.hostedCampaign.campaignStatus;
@@ -491,30 +484,32 @@ Campaign.statics.cancelReview = async function (userId, campaignId) {
     campaign.updatedAt = Date.now();
     return campaign.save();
   } else {
-    throw new te.TypedError(400, 'the campaign is not pending review, reviewed or pending off chain review');
+    throw new te.TypedError(
+      400,
+      'the campaign is not pending review, reviewed or pending off chain review'
+    );
   }
 };
 
 // This is temporary. Allow a user to end the review stage.
-Campaign.statics.acceptReview = function (userId, campaignId) {
-  return this.fetchHostedCampaign(userId, campaignId)
-    .then(campaign => {
-      if (campaign.hostedCampaign.campaignStatus === 'PENDING_REVIEW') {
-        campaign.hostedCampaign.campaignStatus = 'REVIEWED';
-        campaign.updatedAt = Date.now();
-        return campaign.save();
-      } else if (campaign.hostedCampaign.campaignStatus === 'PENDING_OFF_CHAIN_REVIEW') {
-        campaign.hostedCampaign.campaignStatus = 'DEPLOYED';
-        campaign.hostedCampaign.offChainData = campaign.hostedCampaign.offChainDataDraft;
-        campaign.updatedAt = Date.now();
-        return campaign.save();
-      } else {
-        throw new te.TypedError(400, 'the campaign is not pending review');
-      }
-    });
+Campaign.statics.acceptReview = function(userId, campaignId) {
+  return this.fetchHostedCampaign(userId, campaignId).then(campaign => {
+    if (campaign.hostedCampaign.campaignStatus === 'PENDING_REVIEW') {
+      campaign.hostedCampaign.campaignStatus = 'REVIEWED';
+      campaign.updatedAt = Date.now();
+      return campaign.save();
+    } else if (campaign.hostedCampaign.campaignStatus === 'PENDING_OFF_CHAIN_REVIEW') {
+      campaign.hostedCampaign.campaignStatus = 'DEPLOYED';
+      campaign.hostedCampaign.offChainData = campaign.hostedCampaign.offChainDataDraft;
+      campaign.updatedAt = Date.now();
+      return campaign.save();
+    } else {
+      throw new te.TypedError(400, 'the campaign is not pending review');
+    }
+  });
 };
 
-Campaign.statics.putExternal = async function (userId, campaignId, data) {
+Campaign.statics.putExternal = async function(userId, campaignId, data) {
   const campaign = await this.findOne({ _id: campaignId }).exec();
   if (!campaign) {
     throw new te.TypedError(404, 'unknown campaign');
@@ -526,7 +521,7 @@ Campaign.statics.putExternal = async function (userId, campaignId, data) {
   return campaign.save();
 };
 
-Campaign.statics.putOnChainData = async function (userId, campaignId, data) {
+Campaign.statics.putOnChainData = async function(userId, campaignId, data) {
   const campaign = await this.fetchHostedCampaign(userId, campaignId);
   if (campaign.hostedCampaign.campaignStatus !== 'DRAFT') {
     throw new te.TypedError(403, 'the campaign is not in DRAFT status');
@@ -541,17 +536,14 @@ Campaign.statics.putOnChainData = async function (userId, campaignId, data) {
   campaign.updatedAt = Date.now();
   const errs = campaign.hostedCampaign.onChainData.generateReport();
   if (Object.keys(errs).length > 0) {
-    throw new te.TypedError(
-      400,
-      'validation error',
-      'INVALID_DATA',
-      { onChainValidationErrors: errs },
-    );
+    throw new te.TypedError(400, 'validation error', 'INVALID_DATA', {
+      onChainValidationErrors: errs
+    });
   }
   return campaign.save();
 };
 
-Campaign.statics.putOffChainData = async function (userId, campaignId, data) {
+Campaign.statics.putOffChainData = async function(userId, campaignId, data) {
   const campaign = await this.fetchHostedCampaign(userId, campaignId);
   if (campaign.hostedCampaign.campaignStatus === 'DRAFT') {
     campaign.hostedCampaign.offChainData = data;
@@ -566,68 +558,65 @@ Campaign.statics.putOffChainData = async function (userId, campaignId, data) {
   }
 };
 
-Campaign.methods.makeDeployment = function (userAddress) {
-  return this.hostedCampaign.getCampaignContract()
-    .then(contract => {
-      if (!contract) {
-        throw new te.TypedError(500, 'error finding contract');
-      }
-      const rate = stringRoundedOrUndefined(this.hostedCampaign.onChainData.rate);
-      const startTime = this.hostedCampaign.onChainData.startingTime.getTime() / 1000;
-      let args;
-      if (this.hostedCampaign.onChainData.isMinted) {
-        args = [
-          [config.trustfeedAddress, userAddress],
-          this.hostedCampaign.onChainData.tokenName,
-          this.hostedCampaign.onChainData.tokenSymbol,
-          this.hostedCampaign.onChainData.numberOfDecimals,
+Campaign.methods.makeDeployment = function(userAddress) {
+  return this.hostedCampaign.getCampaignContract().then(contract => {
+    if (!contract) {
+      throw new te.TypedError(500, 'error finding contract');
+    }
+    const rate = stringRoundedOrUndefined(this.hostedCampaign.onChainData.rate);
+    const startTime = this.hostedCampaign.onChainData.startingTime.getTime() / 1000;
+    let args;
+    if (this.hostedCampaign.onChainData.isMinted) {
+      args = [
+        [config.trustfeedAddress, userAddress],
+        this.hostedCampaign.onChainData.tokenName,
+        this.hostedCampaign.onChainData.tokenSymbol,
+        this.hostedCampaign.onChainData.numberOfDecimals,
 
-          startTime,
-          startTime + this.hostedCampaign.onChainData.duration * 60 * 60 * 24,
+        startTime,
+        startTime + this.hostedCampaign.onChainData.duration * 60 * 60 * 24,
 
-          rate,
-          (this.hostedCampaign.onChainData.hardCap),
-          (this.hostedCampaign.onChainData.softCap),
-          this._id.toString(),
-          // TODO: different networks
-          '0xB900F568D3F54b5DE594B7968e68181fC45fCAc6',
-        ];
-      } else {
-        args = [
-          [config.trustfeedAddress, userAddress],
-          this.hostedCampaign.onChainData.tokenName,
-          this.hostedCampaign.onChainData.tokenSymbol,
-          this.hostedCampaign.onChainData.numberOfDecimals,
+        rate,
+        this.hostedCampaign.onChainData.hardCap,
+        this.hostedCampaign.onChainData.softCap,
+        this._id.toString(),
+        // TODO: different networks
+        '0xB900F568D3F54b5DE594B7968e68181fC45fCAc6'
+      ];
+    } else {
+      args = [
+        [config.trustfeedAddress, userAddress],
+        this.hostedCampaign.onChainData.tokenName,
+        this.hostedCampaign.onChainData.tokenSymbol,
+        this.hostedCampaign.onChainData.numberOfDecimals,
 
-          Web3.utils.toBN(this.hostedCampaign.onChainData.hardCap)
-            .mul(Web3.utils.toBN(rate)),
+        Web3.utils.toBN(this.hostedCampaign.onChainData.hardCap).mul(Web3.utils.toBN(rate)),
 
-          startTime,
-          startTime + this.hostedCampaign.onChainData.duration * 60 * 60 * 24,
+        startTime,
+        startTime + this.hostedCampaign.onChainData.duration * 60 * 60 * 24,
 
-          rate,
-          (this.hostedCampaign.onChainData.hardCap),
-          (this.hostedCampaign.onChainData.softCap),
-          this._id.toString(),
-          // TODO: different networks
-          '0xB900F568D3F54b5DE594B7968e68181fC45fCAc6',
-        ];
-      }
-      return contract.makeDeployment(
-        this.hostedCampaign.onChainData.network,
-        args,
-      );
-    });
+        rate,
+        this.hostedCampaign.onChainData.hardCap,
+        this.hostedCampaign.onChainData.softCap,
+        this._id.toString(),
+        // TODO: different networks
+        '0xB900F568D3F54b5DE594B7968e68181fC45fCAc6'
+      ];
+    }
+    return contract.makeDeployment(this.hostedCampaign.onChainData.network, args);
+  });
 };
 
-Campaign.statics.deploymentTransaction = async function (userId, userAddress, campaignId) {
+Campaign.statics.deploymentTransaction = async function(userId, userAddress, campaignId) {
   let campaign = await this.fetchHostedCampaign(userId, campaignId);
   const sts = campaign.hostedCampaign.campaignStatus;
   if (sts !== 'REVIEWED' && sts !== 'PENDING_DEPLOYMENT') {
     throw new te.TypedError(400, 'the campaign is not reviewed');
   }
   if (config.dev) {
-    campaign.hostedCampaign.onChainData.startingTime = new Date(1000 * ((new Date().getTime()) / 1000 + 5 * 60));
+    campaign.hostedCampaign.onChainData.startingTime = new Date(
+      1000 * (new Date().getTime() / 1000 + 5 * 60)
+    );
   }
   const out = campaign.makeDeployment(userAddress);
   campaign.hostedCampaign.campaignStatus = 'PENDING_DEPLOYMENT';
@@ -635,11 +624,11 @@ Campaign.statics.deploymentTransaction = async function (userId, userAddress, ca
   return out;
 };
 
-Campaign.methods.fetchContracts = async function (campaignAddress) {
+Campaign.methods.fetchContracts = async function(campaignAddress) {
   const getInnerContract = async (innerName, func) => {
     const contractJSON = await Contract.findOne({
       name: innerName,
-      version: this.hostedCampaign.onChainData.version,
+      version: this.hostedCampaign.onChainData.version
     });
 
     if (!contractJSON) {
@@ -648,7 +637,7 @@ Campaign.methods.fetchContracts = async function (campaignAddress) {
 
     return {
       address: await func.call({}),
-      abi: contractJSON.abi,
+      abi: contractJSON.abi
     };
   };
 
@@ -656,7 +645,7 @@ Campaign.methods.fetchContracts = async function (campaignAddress) {
   const web3 = Networks.node(this.hostedCampaign.onChainData.network);
   const campaignContract = new web3.eth.Contract(
     JSON.parse(campaignContractJson.abi),
-    campaignAddress,
+    campaignAddress
   );
 
   this.hostedCampaign.onChainData.campaignContract = campaignContract;
@@ -664,48 +653,55 @@ Campaign.methods.fetchContracts = async function (campaignAddress) {
   if (this.hostedCampaign.onChainData.isMinted) {
     this.hostedCampaign.onChainData.tokenContract = await getInnerContract(
       'TrustFeedToken',
-      campaignContract.methods.token());
+      campaignContract.methods.token()
+    );
     this.hostedCampaign.onChainData.crowdsaleContract = await getInnerContract(
       'TrustFeedCrowdsale',
-      campaignContract.methods.crowdsale());
+      campaignContract.methods.crowdsale()
+    );
     this.hostedCampaign.onChainData.walletContract = await getInnerContract(
       'TrustFeedWallet',
-      campaignContract.methods.wallet());
+      campaignContract.methods.wallet()
+    );
   } else {
     this.hostedCampaign.onChainData.tokenContract = await getInnerContract(
       'TrustFeedMintableToken',
-      campaignContract.methods.token());
+      campaignContract.methods.token()
+    );
     this.hostedCampaign.onChainData.crowdsaleContract = await getInnerContract(
       'TrustFeedMintedCrowdsale',
-      campaignContract.methods.crowdsale());
+      campaignContract.methods.crowdsale()
+    );
     this.hostedCampaign.onChainData.walletContract = await getInnerContract(
       'TrustFeedWallet',
-      campaignContract.methods.wallet());
+      campaignContract.methods.wallet()
+    );
   }
   return this;
 };
 
-Campaign.statics.allPublic = async function (offset) {
+Campaign.statics.allPublic = async function(offset) {
   const pageSize = 20;
   let q = {
     $or: [
       { 'hostedCampaign.campaignStatus': 'DEPLOYED' },
       { 'hostedCampaign.campaignStatus': 'PENDING_OFF_CHAIN_REVIEW' },
-      { externalCampaign: { $exists: true } },
-    ],
+      { externalCampaign: { $exists: true } }
+    ]
   };
   if (offset) {
     q.updatedAt = { $lt: new Date(Number(Base64.decode(offset))) };
   }
-  let cs = await this
-    .find(q)
+  let cs = await this.find(q)
     .sort({ updatedAt: 'desc' })
     .limit(pageSize)
     .exec();
 
-  Promise.all(cs.map(c => {
-    return c.updateWeiRaisedOlderThan();
-  })).catch(console.log);
+  Promise.all(
+    cs.map(c => {
+      return c.updateWeiRaisedOlderThan();
+    })
+  ).catch(console.log);
 
   let nextOffset;
   if (cs.length === pageSize) {
@@ -714,15 +710,18 @@ Campaign.statics.allPublic = async function (offset) {
   return { campaigns: cs, next: nextOffset };
 };
 
-Campaign.statics.publicById = async function (campaignId) {
+Campaign.statics.publicById = async function(campaignId) {
   let campaign = await this.findOne({
     $and: [
       { _id: campaignId },
-      { $or: [
-        { 'hostedCampaign.campaignStatus': 'DEPLOYED' },
-        { 'hostedCampaign.campaignStatus': 'PENDING_OFF_CHAIN_REVIEW' },
-        { externalCampaign: { $exists: true } },
-      ] }],
+      {
+        $or: [
+          { 'hostedCampaign.campaignStatus': 'DEPLOYED' },
+          { 'hostedCampaign.campaignStatus': 'PENDING_OFF_CHAIN_REVIEW' },
+          { externalCampaign: { $exists: true } }
+        ]
+      }
+    ]
   }).exec();
   if (campaign) {
     campaign.updateWeiRaisedOlderThan().catch(console.log);
@@ -730,13 +729,15 @@ Campaign.statics.publicById = async function (campaignId) {
   return campaign;
 };
 
-Campaign.methods.addWeiRaised = async function () {
-  if (!this.hostedCampaign ||
-  !this.hostedCampaign.onChainData ||
-  !this.hostedCampaign.onChainData.network ||
-  (this.hostedCampaign.campaignStatus !== 'DEPLOYED' &&
-  this.hostedCampaign.campaignStatus !== 'PENDING_OFF_CHAIN_REVIEW') ||
-  !this.hostedCampaign.onChainData.crowdsaleContract) {
+Campaign.methods.addWeiRaised = async function() {
+  if (
+    !this.hostedCampaign ||
+    !this.hostedCampaign.onChainData ||
+    !this.hostedCampaign.onChainData.network ||
+    (this.hostedCampaign.campaignStatus !== 'DEPLOYED' &&
+      this.hostedCampaign.campaignStatus !== 'PENDING_OFF_CHAIN_REVIEW') ||
+    !this.hostedCampaign.onChainData.crowdsaleContract
+  ) {
     return;
   }
 
@@ -748,7 +749,7 @@ Campaign.methods.addWeiRaised = async function () {
   return this;
 };
 
-Campaign.methods.updateWeiRaisedOlderThan = async function (duration) {
+Campaign.methods.updateWeiRaisedOlderThan = async function(duration) {
   if (!duration) {
     duration = 1000 * 60 * 5;
   }
@@ -761,9 +762,9 @@ Campaign.methods.updateWeiRaisedOlderThan = async function (duration) {
   }
 };
 
-Campaign.statics.updateWeiRaised = async function (tokenAddress) {
+Campaign.statics.updateWeiRaised = async function(tokenAddress) {
   let campaign = await this.findOne({
-    'hostedCampaign.onChainData.tokenContract.address': tokenAddress,
+    'hostedCampaign.onChainData.tokenContract.address': tokenAddress
   }).exec();
 
   if (!campaign) {
@@ -775,19 +776,18 @@ Campaign.statics.updateWeiRaised = async function (tokenAddress) {
   return campaign.save();
 };
 
-Campaign.statics.reviewPending = async function (offset) {
+Campaign.statics.reviewPending = async function(offset) {
   const pageSize = 20;
   let q = {
     $or: [
       { 'hostedCampaign.campaignStatus': 'PENDING_REVIEW' },
-      { 'hostedCampaign.campaignStatus': 'PENDING_OFF_CHAIN_REVIEW' },
-    ],
+      { 'hostedCampaign.campaignStatus': 'PENDING_OFF_CHAIN_REVIEW' }
+    ]
   };
   if (offset) {
     q.updatedAt = { $lt: new Date(Number(Base64.decode(offset))) };
   }
-  let cs = await this
-    .find(q)
+  let cs = await this.find(q)
     .sort({ createdAt: 1 })
     .limit(pageSize)
     .exec();

@@ -9,14 +9,14 @@ const Schema = mongoose.Schema;
 const Email = new Schema({
   address: {
     type: String,
-    required: true,
+    required: true
   },
   verifiedAt: {
-    type: Date,
+    type: Date
   },
   name: {
-    type: String,
-  },
+    type: String
+  }
 });
 
 const User = new Schema({
@@ -24,57 +24,54 @@ const User = new Schema({
     type: String,
     index: true,
     unique: true,
-    required: true,
+    required: true
   },
   nonce: {
     type: String,
-    required: true,
+    required: true
   },
   currentEmail: Email,
   previousEmails: {
     type: [Email],
     default: [],
-    required: true,
+    required: true
   },
   name: {
-    type: String,
+    type: String
   },
   kycStatus: {
     type: String,
-    enum: [
-      'PENDING',
-      'VERIFIED',
-      'FAILED',
-    ],
-  },
+    enum: ['PENDING', 'VERIFIED', 'FAILED']
+  }
 });
 
-User.statics.findOneByPublicAddress = function (publicAddress) {
+User.statics.findOneByPublicAddress = function(publicAddress) {
   return this.findOne({
-    publicAddress,
+    publicAddress
   }).exec();
 };
 
-User.statics.findOneById = function (id) {
+User.statics.findOneById = function(id) {
   return this.findOne({
-    _id: id,
+    _id: id
   }).exec();
 };
 
-User.statics.create = function (publicAddress) {
+User.statics.create = function(publicAddress) {
   const nonce = Math.floor(Math.random() * 10000).toString();
   const user = this({
     publicAddress,
-    nonce,
+    nonce
   });
 
   return user.save();
 };
 
-User.statics.addHostedCampaign = function (publicAddress, onChainData) {
+User.statics.addHostedCampaign = function(publicAddress, onChainData) {
   return this.findOne({
-    publicAddress,
-  }).exec()
+    publicAddress
+  })
+    .exec()
     .then(user => {
       if (!user) {
         throw new utils.TypedError(404, 'unknown publicAddress');
@@ -84,7 +81,7 @@ User.statics.addHostedCampaign = function (publicAddress, onChainData) {
     });
 };
 
-User.statics.addExternalCampaign = async function (publicAddress, data) {
+User.statics.addExternalCampaign = async function(publicAddress, data) {
   const user = await this.findOne({ publicAddress }).exec();
   if (!user) {
     throw new utils.TypedError(404, 'unknown publicAddress');
@@ -93,7 +90,7 @@ User.statics.addExternalCampaign = async function (publicAddress, data) {
   }
 };
 
-User.methods.addEmail = function (email) {
+User.methods.addEmail = function(email) {
   if (this.currentEmail && this.currentEmail.address !== email) {
     this.previousEmails.push(this.currentEmail);
   }
@@ -106,8 +103,7 @@ User.methods.addEmail = function (email) {
       this.currentEmail.verifiedAt = Date.now();
       return this.save();
     } else {
-      return this
-        .save()
+      return this.save()
         .then(HashToEmail.create(this._id, this.currentEmail))
         .then(() => {
           return this;
@@ -118,16 +114,20 @@ User.methods.addEmail = function (email) {
   }
 };
 
-User.statics.verifyEmail = function (userId, emailId) {
+User.statics.verifyEmail = function(userId, emailId) {
   return this.findOne({
-    _id: userId,
+    _id: userId
   })
     .exec()
     .then(user => {
       if (!user) {
         throw new utils.TypedError(500, 'internal error');
       } else if (!user.currentEmail || !user.currentEmail._id.equals(emailId)) {
-        throw new utils.TypedError(400, 'a different email has been registred for that account', 'EXPIRED_TOKEN');
+        throw new utils.TypedError(
+          400,
+          'a different email has been registred for that account',
+          'EXPIRED_TOKEN'
+        );
       } else if (user.currentEmail.verifiedAt) {
         throw new utils.TypedError(400, 'the address is already verified', 'VERIFIED_TOKEN');
       } else {

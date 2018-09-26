@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 class TypedError extends Error {
-  constructor (code, message, type, data) {
+  constructor(code, message, type, data) {
     super(message);
     this.httpStatus = code;
     this.message = message;

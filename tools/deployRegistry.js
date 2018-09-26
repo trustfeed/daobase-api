@@ -26,7 +26,11 @@ const deploy = contract.deploy({ data: contractData.bytecode });
 deploy
   .estimateGas()
   .then(cost => {
-    return accnt.signTransaction({ data: deploy.encodeABI(), gas: Math.round(1.5 * cost), from: process.argv[3] });
+    return accnt.signTransaction({
+      data: deploy.encodeABI(),
+      gas: Math.round(1.5 * cost),
+      from: process.argv[3]
+    });
   })
   .then(tx => {
     console.log(tx);

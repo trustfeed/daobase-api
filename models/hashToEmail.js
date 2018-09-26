@@ -10,25 +10,25 @@ const HashToEmail = new Schema({
     type: String,
     required: true,
     unique: true,
-    index: true,
+    index: true
   },
   createdAt: {
     type: Date,
     required: true,
-    default: Date.now,
+    default: Date.now
   },
   user: {
     type: Schema.Types.ObjectId,
     ref: 'User',
-    required: true,
+    required: true
   },
   address: {
     type: Schema.Types.ObjectId,
-    required: true,
-  },
+    required: true
+  }
 });
 
-HashToEmail.statics.create = async function (user, emailObj) {
+HashToEmail.statics.create = async function(user, emailObj) {
   const hsh = sha256.create();
   hsh.update(user.toString() + emailObj._id.toString() + Math.random());
   const token = hsh.hex();
@@ -36,24 +36,24 @@ HashToEmail.statics.create = async function (user, emailObj) {
   await Mailer.sendEmailVerification(
     emailObj.address,
     user.name,
-    `${config.frontendHost}/email-verification?token=${token}`,
+    `${config.frontendHost}/email-verification?token=${token}`
   );
 
   const h2e = this({
     hash: token,
     user: user,
-    address: emailObj._id,
+    address: emailObj._id
   });
   return h2e.save();
 };
 
-HashToEmail.statics.findOneByHash = function (hash) {
+HashToEmail.statics.findOneByHash = function(hash) {
   return this.findOne({
-    hash,
+    hash
   }).exec();
 };
 
-HashToEmail.statics.findAll = function () {
+HashToEmail.statics.findAll = function() {
   return this.find().exec();
 };
 

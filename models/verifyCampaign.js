@@ -7,7 +7,7 @@ import EventWorker from './eventWorker';
 
 // This verifies campaigns on a single network. It should handle infura server crashes.
 class CampaignVerifier extends EventWorker {
-  constructor (network, abi) {
+  constructor(network, abi) {
     // Make the event worker that will handle disconnects
     super(Networks.node(network));
 
@@ -19,9 +19,8 @@ class CampaignVerifier extends EventWorker {
   }
 
   // Fetch the abi needed for the events
-  static async loadABI (network) {
-    const abi = await Contract
-      .findOne({ name: 'TrustFeedCampaignRegistry' })
+  static async loadABI(network) {
+    const abi = await Contract.findOne({ name: 'TrustFeedCampaignRegistry' })
       .exec()
       .then(c => {
         if (!c) {
@@ -34,10 +33,8 @@ class CampaignVerifier extends EventWorker {
   }
 
   // Internal function that checks validaty of creation event
-  async _verifyRegistyEvent (registryEvent) {
-    const campaignId = mongoose.Types.ObjectId(
-      registryEvent.returnValues.campaignId,
-    );
+  async _verifyRegistyEvent(registryEvent) {
+    const campaignId = mongoose.Types.ObjectId(registryEvent.returnValues.campaignId);
     const campaign = await Campaign.findOne({ _id: campaignId });
     if (!campaign) {
       throw new Error('invalid campaign id');
@@ -57,63 +54,58 @@ class CampaignVerifier extends EventWorker {
     const deployment = await campaign.makeDeployment(user.publicAddress);
     const transaction = this.web3.eth.getTransactionFromBlock(
       registryEvent.blockNumber,
-      registryEvent.transactionIndex,
+      registryEvent.transactionIndex
     );
     if (transaction.input !== deployment.deployment) {
-      throw new Error('transaction data doesn\'t match');
+      throw new Error("transaction data doesn't match");
     }
     // Grab the reciept
     const campaignAddress = registryEvent.returnValues.campaignAddress;
     await campaign.fetchContracts(campaignAddress);
     campaign.hostedCampaign.campaignStatus = 'DEPLOYED';
     return campaign.save();
-  };
+  }
 
   // Scrap old events in chuncks.
   // TODO: Use event.getPastEvents not all logs.
-  async _scrape () {
-    const decodeReturnValues = (log) => {
-      const returnValues = this.web3.eth.abi.decodeParameters(
-        ['address', 'string'],
-        log.data,
-      );
+  async _scrape() {
+    const decodeReturnValues = log => {
+      const returnValues = this.web3.eth.abi.decodeParameters(['address', 'string'], log.data);
       return { campaignAddress: returnValues[0], campaignId: returnValues[1] };
     };
 
-    const processLog = (log) => {
+    const processLog = log => {
       log.returnValues = decodeReturnValues(log);
       return this._verifyRegistyEvent(log).catch(e => console.log(e.message));
     };
 
-    while (this.scrapedTo <= await this.web3.eth.getBlockNumber()) {
+    while (this.scrapedTo <= (await this.web3.eth.getBlockNumber())) {
       let to = this.scrapedTo + this.chunckSize;
       let logs = await this.web3.eth.getPastLogs({
         fromBlock: this.web3.utils.toHex(this.scrapedTo),
         toBlock: this.web3.utils.toHex(to),
-        address: this.registry,
+        address: this.registry
       });
 
       await Promise.all(logs.map(processLog));
       this.scrapedTo = to;
     }
-  };
+  }
 
   // After network outage, crawl unknown blocks and start watching for new events
-  async _startWatching () {
+  async _startWatching() {
     this._scrape();
 
     return this.contract.events.NewCampaign({}, () => {});
-  };
+  }
 
   // Process a registry event
-  async _processEvent (registryEvent) {
-    this._verifyRegistyEvent(
-      registryEvent
-    ).catch(err => {
+  async _processEvent(registryEvent) {
+    this._verifyRegistyEvent(registryEvent).catch(err => {
       console.log('registry event failed to verify:', err.message);
     });
-  };
-};
+  }
+}
 
 // This starts the listeners for all supported networks.
 const startCampainVerifier = async () => {

@@ -1,4 +1,4 @@
-const viewDeployedContract = (c) => {
+const viewDeployedContract = c => {
   if (!c) {
     return undefined;
   } else {
@@ -6,7 +6,7 @@ const viewDeployedContract = (c) => {
   }
 };
 
-const viewOnChainData = (d) => {
+const viewOnChainData = d => {
   if (!d) {
     return undefined;
   } else {
@@ -28,12 +28,12 @@ const viewOnChainData = (d) => {
       tokenContract: viewDeployedContract(d.tokenContract),
       crowdsaleContract: viewDeployedContract(d.crowdsaleContract),
       walletContract: viewDeployedContract(d.walletContract),
-      weiRaised: d.weiRaised,
+      weiRaised: d.weiRaised
     };
   }
 };
 
-const viewOnChainDataBrief = (d) => {
+const viewOnChainDataBrief = d => {
   if (!d) {
     return undefined;
   } else {
@@ -52,12 +52,12 @@ const viewOnChainDataBrief = (d) => {
       duration: d.duration,
       rate: d.rate,
       isMinted: d.isMinted || false,
-      weiRaised: d.weiRaised,
+      weiRaised: d.weiRaised
     };
   }
 };
 
-const viewOffChainData = (d) => {
+const viewOffChainData = d => {
   if (!d) {
     return undefined;
   } else {
@@ -66,12 +66,12 @@ const viewOffChainData = (d) => {
       whitePaperURL: d.whitePaperURL,
       summary: d.summary,
       description: d.description,
-      keywords: d.keywords,
+      keywords: d.keywords
     };
   }
 };
 
-const viewOffChainDataBrief = (d) => {
+const viewOffChainDataBrief = d => {
   if (!d) {
     return undefined;
   } else {
@@ -79,12 +79,12 @@ const viewOffChainDataBrief = (d) => {
       coverImageURL: d.coverImageURL,
       whitePaperURL: d.whitePaperURL,
       summary: d.summary,
-      keywords: d.keywords,
+      keywords: d.keywords
     };
   }
 };
 
-const viewHostedAdminFull = (c) => {
+const viewHostedAdminFull = c => {
   if (!c) {
     return undefined;
   } else {
@@ -98,12 +98,12 @@ const viewHostedAdminFull = (c) => {
     return {
       campaignStatus: c.campaignStatus,
       onChainData: viewOnChainData(c.onChainData),
-      offChainData,
+      offChainData
     };
   }
 };
 
-const viewHostedAdminBrief = (c) => {
+const viewHostedAdminBrief = c => {
   if (!c) {
     return undefined;
   } else {
@@ -117,58 +117,58 @@ const viewHostedAdminBrief = (c) => {
     return {
       campaignStatus: c.campaignStatus,
       onChainData: viewOnChainDataBrief(c.onChainData),
-      offChainData,
+      offChainData
     };
   }
 };
 
-const viewHostedPublicFull = (c) => {
+const viewHostedPublicFull = c => {
   if (!c) {
     return undefined;
   } else {
     return {
       campaignStatus: c.campaignStatus,
       onChainData: viewOnChainData(c.onChainData),
-      offChainData: viewOffChainData(c.offChainData),
+      offChainData: viewOffChainData(c.offChainData)
     };
   }
 };
 
-const viewHostedPublicBrief = (c) => {
+const viewHostedPublicBrief = c => {
   if (!c) {
     return undefined;
   } else {
     return {
       campaignStatus: c.campaignStatus,
       onChainData: viewOnChainDataBrief(c.onChainData),
-      offChainData: viewOffChainDataBrief(c.offChainData),
+      offChainData: viewOffChainDataBrief(c.offChainData)
     };
   }
 };
 
-const viewPeriod = (p) => {
+const viewPeriod = p => {
   if (!p) {
     return undefined;
   } else {
     return {
       openingTime: p.openingTime,
-      closingTime: p.closingTime,
+      closingTime: p.closingTime
     };
   }
 };
 
-const viewLink = (l) => {
+const viewLink = l => {
   if (!l) {
     return undefined;
   } else {
     return {
       type: l.type,
-      url: l.url,
+      url: l.url
     };
   }
 };
 
-const viewTeam = (t) => {
+const viewTeam = t => {
   if (!t) {
     return undefined;
   } else {
@@ -176,12 +176,12 @@ const viewTeam = (t) => {
       name: t.name,
       role: t.role,
       description: t.description,
-      links: (t.links || []).map(viewLink),
+      links: (t.links || []).map(viewLink)
     };
   }
 };
 
-const viewExternalFull = (c) => {
+const viewExternalFull = c => {
   if (!c) {
     return undefined;
   } else {
@@ -197,7 +197,7 @@ const viewExternalFull = (c) => {
       ico: viewPeriod(c.ico),
       links: (c.links || []).map(viewLink),
       location: c.link,
-      team: (c.team || []).map(viewTeam),
+      team: (c.team || []).map(viewTeam)
     };
   }
 };
@@ -206,7 +206,7 @@ const viewCampaign = (c, hosted, external) => {
   let out = {
     id: c._id,
     createdAt: Math.round(c.createdAt.getTime() / 1000),
-    updatedAt: Math.round(c.updatedAt.getTime() / 1000),
+    updatedAt: Math.round(c.updatedAt.getTime() / 1000)
   };
 
   if (c.hostedCampaign) {
@@ -226,10 +226,10 @@ const viewCampaign = (c, hosted, external) => {
 };
 
 const views = {
-  adminFull: (c) => viewCampaign(c, viewHostedAdminFull, viewExternalFull),
-  adminBrief: (c) => viewCampaign(c, viewHostedAdminBrief, viewExternalFull),
-  publicFull: (c) => viewCampaign(c, viewHostedPublicFull, viewExternalFull),
-  publicBrief: (c) => viewCampaign(c, viewHostedPublicBrief, viewExternalFull),
+  adminFull: c => viewCampaign(c, viewHostedAdminFull, viewExternalFull),
+  adminBrief: c => viewCampaign(c, viewHostedAdminBrief, viewExternalFull),
+  publicFull: c => viewCampaign(c, viewHostedPublicFull, viewExternalFull),
+  publicBrief: c => viewCampaign(c, viewHostedPublicBrief, viewExternalFull)
 };
 
 export default views;

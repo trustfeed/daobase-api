@@ -8,10 +8,10 @@ const transporter = () => {
   AWS.config.update({
     accessKeyId: config.accessKeyId.trim(),
     secretAccessKey: config.secretAccessKey.trim(),
-    region: 'us-east-1',
+    region: 'us-east-1'
   });
   return nodemailer.createTransport({
-    SES: new AWS.SES({ apiVersion: '2010-12-01' }),
+    SES: new AWS.SES({ apiVersion: '2010-12-01' })
   });
 };
 
@@ -19,17 +19,17 @@ exports.sendEmailVerification = (destinationAddress, userName, link) => {
   const email = new Email({
     message: {
       to: destinationAddress,
-      from: 'noreply@trustfeed.io',
+      from: 'noreply@trustfeed.io'
     },
-    transport: transporter(),
+    transport: transporter()
   });
 
   return email.send({
     template: 'emailVerification',
     locals: {
       name: userName,
-      link: link,
-    },
+      link: link
+    }
   });
 };
 
@@ -37,16 +37,16 @@ exports.sendKYCSuccess = (destinationAddress, userName) => {
   const email = new Email({
     message: {
       to: destinationAddress,
-      from: 'noreply@trustfeed.io',
+      from: 'noreply@trustfeed.io'
     },
-    transport: transporter(),
+    transport: transporter()
   });
 
   return email.send({
     template: 'kycSuccess',
     locals: {
-      name: userName,
-    },
+      name: userName
+    }
   });
 };
 
@@ -54,17 +54,17 @@ exports.sendKYCFailure = (destinationAddress, userName, note) => {
   const email = new Email({
     message: {
       to: destinationAddress,
-      from: 'noreply@trustfeed.io',
+      from: 'noreply@trustfeed.io'
     },
-    transport: transporter(),
+    transport: transporter()
   });
 
   return email.send({
     template: 'kycFailure',
     locals: {
       name: userName,
-      note,
-    },
+      note
+    }
   });
 };
 
@@ -72,16 +72,16 @@ exports.sendCampaignReviewSuccess = (destinationAddress, userName) => {
   const email = new Email({
     message: {
       to: destinationAddress,
-      from: 'noreply@trustfeed.io',
+      from: 'noreply@trustfeed.io'
     },
-    transport: transporter(),
+    transport: transporter()
   });
 
   return email.send({
     template: 'campaignReviewSuccess',
     locals: {
-      name: userName,
-    },
+      name: userName
+    }
   });
 };
 
@@ -89,17 +89,16 @@ exports.sendCampaignReviewFailure = (destinationAddress, userName, note) => {
   const email = new Email({
     message: {
       to: destinationAddress,
-      from: 'noreply@trustfeed.io',
+      from: 'noreply@trustfeed.io'
     },
-    transport: transporter(),
+    transport: transporter()
   });
 
   return email.send({
     template: 'campaignReviewFailure',
     locals: {
       name: userName,
-      note,
-    },
+      note
+    }
   });
 };
-

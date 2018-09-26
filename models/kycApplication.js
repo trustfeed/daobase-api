@@ -11,42 +11,38 @@ const KYCApplication = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'User',
     index: true,
-    required: true,
+    required: true
   },
   passportImageURL: {
     type: String,
-    required: true,
+    required: true
   },
   facialImageURL: {
     type: String,
-    required: true,
+    required: true
   },
   status: {
     type: String,
-    enum: [
-      'PENDING',
-      'VERIFIED',
-      'FAILED',
-    ],
-    default: 'PENDING',
+    enum: ['PENDING', 'VERIFIED', 'FAILED'],
+    default: 'PENDING'
   },
   createdAt: {
     type: Date,
     required: true,
-    default: Date.now(),
+    default: Date.now()
   },
   notes: {
     type: [Note],
     required: true,
-    default: [],
-  },
+    default: []
+  }
 });
 
-KYCApplication.statics.create = async function (user, passportImageURL, facialImageURL) {
+KYCApplication.statics.create = async function(user, passportImageURL, facialImageURL) {
   const app = this({
     user,
     passportImageURL,
-    facialImageURL,
+    facialImageURL
   });
 
   let u = await User.findOneById(user);
@@ -59,16 +55,15 @@ KYCApplication.statics.create = async function (user, passportImageURL, facialIm
   return app.save();
 };
 
-KYCApplication.statics.pendingVerification = async function (offset) {
+KYCApplication.statics.pendingVerification = async function(offset) {
   const pageSize = 20;
   let q = {
-    status: 'PENDING',
+    status: 'PENDING'
   };
   if (offset) {
     q.updatedAt = { $lt: new Date(Number(Base64.decode(offset))) };
   }
-  let kycs = await this
-    .find(q)
+  let kycs = await this.find(q)
     .sort({ createdAt: 1 })
     .limit(pageSize)
     .exec();
@@ -80,7 +75,7 @@ KYCApplication.statics.pendingVerification = async function (offset) {
   return { kycs: kycs, next: nextOffset };
 };
 
-KYCApplication.methods.verify = async function () {
+KYCApplication.methods.verify = async function() {
   let user = await User.findOneById(this.user);
   if (!user) {
     throw new utils.TypedError(404, 'user not found');
@@ -91,7 +86,7 @@ KYCApplication.methods.verify = async function () {
   return user.save();
 };
 
-KYCApplication.methods.fail = async function (noteText) {
+KYCApplication.methods.fail = async function(noteText) {
   let user = await User.findOneById(this.user);
   if (!user) {
     throw new utils.TypedError(404, 'user not found');

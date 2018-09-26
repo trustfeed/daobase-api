@@ -3,11 +3,14 @@ import config from '../config';
 
 const options = {
   user: config.mongoUser,
-  pass: config.mongoPass,
+  pass: config.mongoPass
 };
 
 const uri = `mongodb://${config.mongoHost}:${config.mongoPort}/daobase?authSource=admin`;
-mongoose.connect(uri, options);
+mongoose.connect(
+  uri,
+  options
+);
 mongoose.Promise = global.Promise;
 const db = mongoose.connection;
 db.on('error', err => {

@@ -5,7 +5,7 @@ export const signUpload = (campaignId, prefix, extension, contentType) => {
   AWS.config.update({
     accessKeyId: config.accessKeyId.trim(),
     secretAccessKey: config.secretAccessKey.trim(),
-    region: config.region.trim(),
+    region: config.region.trim()
   });
   const s3 = new AWS.S3();
   let rand = (+new Date()).toString(36);
@@ -13,7 +13,7 @@ export const signUpload = (campaignId, prefix, extension, contentType) => {
     Bucket: 'tokenadmin.work',
     Key: prefix + '/' + campaignId + '-' + rand + '.' + extension,
     Expires: 60,
-    ContentType: contentType,
+    ContentType: contentType
   };
   return new Promise((resolve, reject) => {
     s3.getSignedUrl('putObject', params, (err, url) => {
