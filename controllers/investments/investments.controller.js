@@ -1,6 +1,6 @@
 import utils from '../../utils';
-import Investment from '../../models/investments';
-import view from '../../views/investments';
+import Investment from '../../models/investment';
+import view from '../../views/investment';
 
 exports.get = async (req, res, next) => {
   try {

@@ -4,319 +4,10 @@ import utils from '../utils';
 import Contract from './contract';
 import config from '../config';
 import Networks from './networks';
-import validate from 'validate.js';
 import Web3 from 'web3';
+import HostedCampaign from './hostedCampaign';
+import ExternalCampaign from './externalCampaign.js';
 const Schema = mongoose.Schema;
-
-// A contract that is deployed on a network
-const DeployedContract = new Schema({
-  address: {
-    type: String,
-  },
-  abi: {
-    type: String,
-    required: true,
-  },
-});
-
-// The on-chain data that can only be modified during DRAFT
-const OnChainData = new Schema({
-  createdAt: {
-    type: Date,
-    required: true,
-    default: Date.now,
-  },
-  network: {
-    type: String,
-    enum: ['rinkeby'],
-    required: true,
-    default: ['rinkeby'],
-  },
-  tokenName: {
-    type: String,
-  },
-  tokenSymbol: {
-    type: String,
-  },
-  numberOfDecimals: {
-    type: Number,
-  },
-  startingTime: {
-    type: Date,
-  },
-  duration: {
-    type: Number,
-  },
-  rate: {
-    type: String,
-  },
-  softCap: {
-    type: String,
-  },
-  hardCap: {
-    type: String,
-  },
-  isMinted: {
-    type: Boolean,
-    default: false,
-  },
-  version: {
-    type: String,
-    enum: ['0.0.0'],
-    required: true,
-    default: ['0.0.0'],
-  },
-  tokenContract: {
-    type: DeployedContract,
-    required: false,
-  },
-  crowdsaleContract: {
-    type: DeployedContract,
-    required: false,
-  },
-  walletContract: {
-    type: DeployedContract,
-    required: false,
-  },
-  weiRaised: {
-    type: String,
-    required: false,
-  },
-});
-
-const stringToBNOrUndefined = (s) => {
-  try {
-    return Web3.utils.toBN(s);
-  } catch (err) {
-    return undefined;
-  }
-};
-
-const stringRoundedOrUndefined = (s) => {
-  try {
-    return Math.round(Number(s));
-  } catch (err) {
-    return undefined;
-  }
-};
-
-OnChainData.methods.generateReport = function () {
-  const constraints = {
-    network: {
-      presence: true,
-      inclusion: ['rinkeby'],
-    },
-    tokenName: {
-      presence: true,
-    },
-    tokenSymbol: {
-      presence: true,
-    },
-    numberOfDecimals: {
-      presence: true,
-      numericality: {
-        noStrings: true,
-        greaterThanOrEqualTo: 0,
-        lessThanOrEqualTo: 18,
-      },
-    },
-    startingTime: {
-      presence: true,
-    },
-    duration: {
-      presence: true,
-      numericality: {
-        noStrings: true,
-        greaterThanOrEqualTo: 1,
-      },
-    },
-    rate: {
-      presence: true,
-    },
-    softCap: {
-      presence: true,
-    },
-    hardCap: {
-      presence: true,
-    },
-    isMinted: {
-      presence: true,
-    },
-    version: {
-      presence: true,
-      inclusion: ['0.0.0'],
-    },
-  };
-  let errs = validate(this, constraints);
-  if (errs === undefined) {
-    errs = {};
-  }
-
-  const tomorrow = Date.now() + 1000 * 60 * 60 * 24;
-  const startingTime = this.startingTime;
-  if (!config.dev && startingTime && startingTime.getTime() < tomorrow) {
-    const msg = 'Starting time must be at least one day into the future';
-    if (errs.startingTime) {
-      errs.startingTime.push(msg);
-    } else {
-      errs.startingTime = [msg];
-    }
-  }
-
-  const softCap = stringToBNOrUndefined(this.softCap);
-  if (!softCap || softCap < 1) {
-    const msg = 'Soft cap must be an integer larger than 0';
-    if (errs.softCap) {
-      errs.softCap.push(msg);
-    } else {
-      errs.softCap = [msg];
-    }
-  }
-
-  const hardCap = stringToBNOrUndefined(this.hardCap);
-  if (!hardCap || (softCap && hardCap.lte(softCap))) {
-    const msg = 'Hard cap must be an integer greater than soft cap';
-    if (errs.hardCap) {
-      errs.hardCap.push(msg);
-    } else {
-      errs.hardCap = [msg];
-    }
-  }
-
-  const rate = stringRoundedOrUndefined(this.rate);
-  if (!rate || rate < 1) {
-    const msg = 'rate must be larger than 0';
-    if (errs.rate) {
-      errs.rate.push(msg);
-    } else {
-      errs.rate = [msg];
-    }
-  }
-
-  return errs;
-};
-
-// The off-chain data that can be altered at other times
-const OffChainData = new Schema({
-  coverImageURL: {
-    type: String,
-  },
-  whitePaperURL: {
-    type: String,
-  },
-  summary: {
-    type: String,
-  },
-  description: {
-    type: String,
-  },
-  keywords: {
-    type: [String],
-  },
-});
-
-OffChainData.methods.generateReport = function () {
-  const constraints = {
-    coverImageURL: {
-      presence: true,
-      url: true,
-    },
-    whitePaperURL: {
-      presence: true,
-      url: true,
-    },
-  };
-  let errs = validate(this, constraints);
-  if (errs === undefined) {
-    errs = {};
-  }
-  return errs;
-};
-
-// A campaign that is hosted by TrustFeed
-const HostedCampaign = new Schema({
-  owner: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    index: true,
-    required: true,
-  },
-  campaignStatus: {
-    type: String,
-    enum: [
-      'DRAFT',
-      'PENDING_REVIEW',
-      'REVIEWED',
-      'PENDING_DEPLOYMENT',
-      'DEPLOYED',
-      'PENDING_OFF_CHAIN_REVIEW',
-    ],
-    required: true,
-    default: ['DRAFT'],
-  },
-  onChainData: {
-    type: OnChainData,
-    required: true,
-  },
-  offChainData: {
-    type: OffChainData,
-    required: true,
-  },
-  offChainDataDraft: OffChainData,
-});
-
-// Get the contract describing the campaign
-HostedCampaign.methods.getCampaignContract = function () {
-  let name = 'TrustFeedCampaign';
-  if (this.onChainData.isMinted) {
-    name = 'TrustFeedMintedCampaign';
-  }
-
-  return Contract.findOne({
-    name,
-    version: this.onChainData.version,
-  }).exec();
-};
-
-const PeriodSchema = new Schema({
-  openingTime: Date,
-  closingTime: Date,
-});
-
-const LinkSchema = new Schema({
-  type: {
-    type: String,
-    required: true,
-  },
-});
-
-const TeamMemberSchema = new Schema({
-  name: String,
-  role: String,
-  description: String,
-  links: [LinkSchema],
-});
-
-const ExternalCampaign = new Schema({
-  addedBy: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    index: true,
-    required: true,
-  },
-  name: String,
-  symbol: String,
-  summary: String,
-  description: String,
-  companyURL: String,
-  whitePaperURL: String,
-  coverImageURL: String,
-  preICO: PeriodSchema,
-  ico: PeriodSchema,
-  links: [LinkSchema],
-  location: String,
-  team: [TeamMemberSchema],
-});
 
 // The complete campaign data model
 const Campaign = new Schema({
@@ -421,61 +112,55 @@ Campaign.statics.createExternalCampaign = function (userId, data) {
 Campaign.statics.fetchHostedCampaign = async function (userId, campaignId) {
   let campaign = await this.findOne({
     _id: campaignId,
-  }).exec()
-    .then(campaign => {
-      if (!campaign) {
-        throw new utils.TypedError(404, 'no such campaign');
-      } else if (!campaign.hostedCampaign) {
-        throw new utils.TypedError(403, 'not a hosted campaign');
-      } else if (!campaign.hostedCampaign.owner.equals(userId)) {
-        throw new utils.TypedError(403, 'you do not own that campaign');
-      } else {
-        return campaign;
-      }
-    });
+  }).exec();
+
+  if (!campaign) {
+    throw new utils.TypedError(404, 'no such campaign');
+  } else if (!campaign.hostedCampaign) {
+    throw new utils.TypedError(403, 'not a hosted campaign');
+  } else if (!campaign.hostedCampaign.owner.equals(userId)) {
+    throw new utils.TypedError(403, 'you do not own that campaign');
+  }
 
   campaign.updateWeiRaisedOlderThan().catch(console.log);
   return campaign;
 };
 
 // Review this hosted campaign
-Campaign.statics.submitForReview = function (userId, campaignId) {
-  return this.fetchHostedCampaign(userId, campaignId)
-    .then(campaign => {
-      if (campaign.hostedCampaign.campaignStatus === 'DRAFT') {
-        const onChainErrs = campaign.hostedCampaign.onChainData.generateReport();
-        const offChainErrs = campaign.hostedCampaign.offChainData.generateReport();
-        if (Object.keys(onChainErrs).length > 0 || Object.keys(offChainErrs).length > 0) {
-          throw new utils.TypedError(
-            400,
-            'validation error',
-            'INVALID_DATA',
-            { onChainValidationErrors: onChainErrs,
-              offChainValidationErrors: offChainErrs,
-            });
-        } else {
-          campaign.hostedCampaign.campaignStatus = 'PENDING_REVIEW';
-          campaign.updatedAt = Date.now();
-          return campaign.save();
-        }
-      } else if (campaign.hostedCampaign.campaignStatus === 'DEPLOYED') {
-        const draft = campaign.hostedCampaign.offChainDataDraft;
-        const offChainErrs = draft.generateReport();
-        if (Object.keys(offChainErrs).length > 0) {
-          throw new te.TypedError(
-            400,
-            'validation error',
-            'INVALID_DATA',
-            { offChainValidationErrors: offChainErrs });
-        } else {
-          campaign.hostedCampaign.campaignStatus = 'PENDING_OFF_CHAIN_REVIEW';
-          campaign.updatedAt = Date.now();
-          return campaign.save();
-        }
-      } else {
-        throw new te.TypedError(400, 'the campaign is not a draft');
-      }
-    });
+Campaign.statics.submitForReview = async function (userId, campaignId) {
+  const campaign = await this.fetchHostedCampaign(userId, campaignId);
+
+  if (campaign.hostedCampaign.campaignStatus === 'DRAFT') {
+    const onChainErrs = campaign.hostedCampaign.onChainData.generateReport();
+    const offChainErrs = campaign.hostedCampaign.offChainData.generateReport();
+    if (Object.keys(onChainErrs).length > 0 || Object.keys(offChainErrs).length > 0) {
+      throw new utils.TypedError(
+        400,
+        'validation error',
+        'INVALID_DATA',
+        { onChainValidationErrors: onChainErrs,
+          offChainValidationErrors: offChainErrs,
+        });
+    }
+    campaign.hostedCampaign.campaignStatus = 'PENDING_REVIEW';
+    campaign.updatedAt = Date.now();
+    return campaign.save();
+  } else if (campaign.hostedCampaign.campaignStatus === 'DEPLOYED') {
+    const draft = campaign.hostedCampaign.offChainDataDraft;
+    const offChainErrs = draft.generateReport();
+    if (Object.keys(offChainErrs).length > 0) {
+      throw new utils.TypedError(
+        400,
+        'validation error',
+        'INVALID_DATA',
+        { offChainValidationErrors: offChainErrs });
+    }
+    campaign.hostedCampaign.campaignStatus = 'PENDING_OFF_CHAIN_REVIEW';
+    campaign.updatedAt = Date.now();
+    return campaign.save();
+  } else {
+    throw new utils.TypedError(400, 'the campaign is not a draft');
+  }
 };
 
 Campaign.statics.cancelReview = async function (userId, campaignId) {
@@ -491,35 +176,32 @@ Campaign.statics.cancelReview = async function (userId, campaignId) {
     campaign.updatedAt = Date.now();
     return campaign.save();
   } else {
-    throw new te.TypedError(400, 'the campaign is not pending review, reviewed or pending off chain review');
+    throw new utils.TypedError(400, 'the campaign is not pending review, reviewed or pending off chain review');
   }
 };
 
-// This is temporary. Allow a user to end the review stage.
-Campaign.statics.acceptReview = function (userId, campaignId) {
-  return this.fetchHostedCampaign(userId, campaignId)
-    .then(campaign => {
-      if (campaign.hostedCampaign.campaignStatus === 'PENDING_REVIEW') {
-        campaign.hostedCampaign.campaignStatus = 'REVIEWED';
-        campaign.updatedAt = Date.now();
-        return campaign.save();
-      } else if (campaign.hostedCampaign.campaignStatus === 'PENDING_OFF_CHAIN_REVIEW') {
-        campaign.hostedCampaign.campaignStatus = 'DEPLOYED';
-        campaign.hostedCampaign.offChainData = campaign.hostedCampaign.offChainDataDraft;
-        campaign.updatedAt = Date.now();
-        return campaign.save();
-      } else {
-        throw new te.TypedError(400, 'the campaign is not pending review');
-      }
-    });
+Campaign.statics.acceptReview = async function (userId, campaignId) {
+  const campaign = await this.fetchHostedCampaign(userId, campaignId);
+  if (campaign.hostedCampaign.campaignStatus === 'PENDING_REVIEW') {
+    campaign.hostedCampaign.campaignStatus = 'REVIEWED';
+    campaign.updatedAt = Date.now();
+    return campaign.save();
+  } else if (campaign.hostedCampaign.campaignStatus === 'PENDING_OFF_CHAIN_REVIEW') {
+    campaign.hostedCampaign.campaignStatus = 'DEPLOYED';
+    campaign.hostedCampaign.offChainData = campaign.hostedCampaign.offChainDataDraft;
+    campaign.updatedAt = Date.now();
+    return campaign.save();
+  } else {
+    throw new utils.TypedError(400, 'the campaign is not pending review');
+  }
 };
 
 Campaign.statics.putExternal = async function (userId, campaignId, data) {
   const campaign = await this.findOne({ _id: campaignId }).exec();
   if (!campaign) {
-    throw new te.TypedError(404, 'unknown campaign');
+    throw new utils.TypedError(404, 'unknown campaign');
   } else if (!campaign.externalCampaign) {
-    throw new te.TypedError(403, 'that is not an external campaign');
+    throw new utils.TypedError(403, 'that is not an external campaign');
   }
   data.addedBy = campaign.externalCampaign.addedBy;
   campaign.externalCampaign = data;
@@ -529,19 +211,17 @@ Campaign.statics.putExternal = async function (userId, campaignId, data) {
 Campaign.statics.putOnChainData = async function (userId, campaignId, data) {
   const campaign = await this.fetchHostedCampaign(userId, campaignId);
   if (campaign.hostedCampaign.campaignStatus !== 'DRAFT') {
-    throw new te.TypedError(403, 'the campaign is not in DRAFT status');
+    throw new utils.TypedError(403, 'the campaign is not in DRAFT status');
   }
 
   campaign.hostedCampaign.onChainData = data;
   if (data && data.startingTime) {
     campaign.hostedCampaign.onChainData.startingTime = data.startingTime * 1000;
   }
-  console.log(data);
-  console.log(campaign.hostedCampaign.onChainData);
   campaign.updatedAt = Date.now();
   const errs = campaign.hostedCampaign.onChainData.generateReport();
   if (Object.keys(errs).length > 0) {
-    throw new te.TypedError(
+    throw new utils.TypedError(
       400,
       'validation error',
       'INVALID_DATA',
@@ -562,7 +242,7 @@ Campaign.statics.putOffChainData = async function (userId, campaignId, data) {
     campaign.updatedAt = Date.now();
     return campaign.save();
   } else {
-    throw new te.TypedError(403, 'the campaign is not in DRAFT or DEPLOYED status');
+    throw new utils.TypedError(403, 'the campaign is not in DRAFT or DEPLOYED status');
   }
 };
 
@@ -570,9 +250,9 @@ Campaign.methods.makeDeployment = function (userAddress) {
   return this.hostedCampaign.getCampaignContract()
     .then(contract => {
       if (!contract) {
-        throw new te.TypedError(500, 'error finding contract');
+        throw new this.TypedError(500, 'error finding contract');
       }
-      const rate = stringRoundedOrUndefined(this.hostedCampaign.onChainData.rate);
+      const rate = utils.stringRoundedOrUndefined(this.hostedCampaign.onChainData.rate);
       const startTime = this.hostedCampaign.onChainData.startingTime.getTime() / 1000;
       let args;
       if (this.hostedCampaign.onChainData.isMinted) {
@@ -624,7 +304,7 @@ Campaign.statics.deploymentTransaction = async function (userId, userAddress, ca
   let campaign = await this.fetchHostedCampaign(userId, campaignId);
   const sts = campaign.hostedCampaign.campaignStatus;
   if (sts !== 'REVIEWED' && sts !== 'PENDING_DEPLOYMENT') {
-    throw new te.TypedError(400, 'the campaign is not reviewed');
+    throw new utils.TypedError(400, 'the campaign is not reviewed');
   }
   if (config.dev) {
     campaign.hostedCampaign.onChainData.startingTime = new Date(1000 * ((new Date().getTime()) / 1000 + 5 * 60));
@@ -643,7 +323,7 @@ Campaign.methods.fetchContracts = async function (campaignAddress) {
     });
 
     if (!contractJSON) {
-      throw new te.TypedError(500, 'cannot locate contract: ' + innerName);
+      throw new utils.TypedError(500, 'cannot locate contract: ' + innerName);
     }
 
     return {
@@ -767,7 +447,7 @@ Campaign.statics.updateWeiRaised = async function (tokenAddress) {
   }).exec();
 
   if (!campaign) {
-    throw new te.TypedError(404, 'unknown campaign');
+    throw new utils.TypedError(404, 'unknown campaign');
   }
 
   campaign = await campaign.addWeiRaised();
