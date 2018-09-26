@@ -296,37 +296,6 @@ The returned packed should include;
 | currency       | String | The currency to make the payment in. |
 | tokenTransferFee | String | The estimated gas cost to perform transfer (in wei). This is already included in the amount. |
 
-## Voting
-
-A user can upvote or downvote ongoing campaigns. In order to vote the following conditions must be met;
-
-1. The user is logged in.
-2. The user has a verified email address.
-3. The email address has not been used to vote for the campaign before.
-4. The campaign is not owned by an account with the same email address.
-
-```bash
-CURL -XPOST -H 'x-access-token: fdsa' -H 'content-type: application/json' --data '{"up": false}' ${HOST}/campaign/${CAMPAIGN_ID}/vote
-```
-
-A vote can also be retracted.
-
-```bash
-CURL -XPOST -H 'x-access-token: fdsa' ${HOST}/campaign/${CAMPAIGN_ID}/retract-vote
-```
-
-The status of a users vote for a campaign can be checked.
-
-```bash
-CURL -H 'x-access-token: fdsa' ${HOST}/campaign/${CAMPAIGN_ID}/vote
-```
-
-To get the vote counts for a campaign
-
-```bash
-CURL -XGET -H 'x-access-token: fdsa' ${HOST}/campaign/${CAMPAIGN_ID}/votes
-```
-
 # TrustFeed Admin APIs
 
 These APIs are only availalbe when logged in with `TRUSTFEED_ADDRESS`. They allow the TrustFeed to accept new campaigns, pre-validate KYC to then be forwarded to an external service, and to sign multisig operations such as finalise campaign.
@@ -402,7 +371,7 @@ You need to set some environment variables;
 12. COIN_PAYMENT_KEY
 13. COIN_PAYMENT_SECRET
 
-Then use node (or yarn) to 
+Then use node (or yarn) to
 ```bash
 npm install
 npm run start
