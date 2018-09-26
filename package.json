@@ -30,7 +30,6 @@
     "nodemailer": "^4.6.8",
     "npm-install-que": "0.0.4",
     "pug": "^2.0.3",
-    "validate": "^4.5.1",
     "validate.js": "^0.12.0",
     "web3": "1.0.0-beta.35"
   },
