@@ -1,46 +1,105 @@
 // Load the AWS SDK for Node.js
 import AWS from 'aws-sdk';
 import config from '../config';
+import nodemailer from 'nodemailer';
+import Email from 'email-templates';
 
-const sendMail = (email, subject, text, html, callback) => {
+const transporter = () => {
   AWS.config.update({
     accessKeyId: config.accessKeyId.trim(),
     secretAccessKey: config.secretAccessKey.trim(),
     region: 'us-east-1',
   });
-
-  // Create sendEmail params
-  var params = {
-    Destination: {
-      CcAddresses: [
-      ],
-      ToAddresses: [
-        email,
-      ],
-    },
-    Message: {
-      Body: {
-        Html: {
-          Charset: 'UTF-8',
-          Data: html,
-        },
-        Text: {
-          Charset: 'UTF-8',
-          Data: text,
-        },
-      },
-      Subject: {
-        Charset: 'UTF-8',
-        Data: subject,
-      },
-    },
-    Source: 'TrustFeed <noreply@trustfeed.io>',
-    ReplyToAddresses: [
-      'TrustFeed <noreply@trustfeed.io>',
-    ],
-  };
-
-  return new AWS.SES().sendEmail(params, callback);
+  return nodemailer.createTransport({
+    SES: new AWS.SES({ apiVersion: '2010-12-01' }),
+  });
 };
 
-export default sendMail;
+exports.sendEmailVerification = (destinationAddress, userName, link) => {
+  const email = new Email({
+    message: {
+      to: destinationAddress,
+      from: 'noreply@trustfeed.io',
+    },
+    transport: transporter(),
+  });
+
+  return email.send({
+    template: 'emailVerification',
+    locals: {
+      name: userName,
+      link: link,
+    },
+  });
+};
+
+exports.sendKYCSuccess = (destinationAddress, userName) => {
+  const email = new Email({
+    message: {
+      to: destinationAddress,
+      from: 'noreply@trustfeed.io',
+    },
+    transport: transporter(),
+  });
+
+  return email.send({
+    template: 'kycSuccess',
+    locals: {
+      name: userName,
+    },
+  });
+};
+
+exports.sendKYCFailure = (destinationAddress, userName, note) => {
+  const email = new Email({
+    message: {
+      to: destinationAddress,
+      from: 'noreply@trustfeed.io',
+    },
+    transport: transporter(),
+  });
+
+  return email.send({
+    template: 'kycFailure',
+    locals: {
+      name: userName,
+      note,
+    },
+  });
+};
+
+exports.sendCampaignReviewSuccess = (destinationAddress, userName) => {
+  const email = new Email({
+    message: {
+      to: destinationAddress,
+      from: 'noreply@trustfeed.io',
+    },
+    transport: transporter(),
+  });
+
+  return email.send({
+    template: 'campaignReviewSuccess',
+    locals: {
+      name: userName,
+    },
+  });
+};
+
+exports.sendCampaignReviewFailure = (destinationAddress, userName, note) => {
+  const email = new Email({
+    message: {
+      to: destinationAddress,
+      from: 'noreply@trustfeed.io',
+    },
+    transport: transporter(),
+  });
+
+  return email.send({
+    template: 'campaignReviewFailure',
+    locals: {
+      name: userName,
+      note,
+    },
+  });
+};
+

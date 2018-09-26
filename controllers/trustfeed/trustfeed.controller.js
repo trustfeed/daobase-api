@@ -3,7 +3,7 @@ import KYCApplication from '../../models/kycApplication';
 import utils from '../../utils';
 import view from '../../views/adminCampaign';
 import User from '../../models/user';
-import sendMail from '../../models/mailer';
+import Mailer from '../../models/mailer';
 
 exports.kycsToReview = async (req, res, next) => {
   try {
@@ -33,14 +33,8 @@ exports.kycReviewed = async (req, res, next) => {
       throw new utils.TypedError(404, 'user has no verified email');
     }
 
-    const body =
-`Hello,
-We are happy to inform you that your KYC application has succeeded. Please feel free to make full use of our services.
+    await Mailer.sendKYCSuccess(user.currentEmail.address, user.name);
 
-Thank you,
-The TrustFeed team`;
-
-    sendMail(user.currentEmail.address, 'DaoBase KYC Success', body, body, () => {});
     kyc.verify();
     res.status(201).send({ message: 'verified' });
   } catch (err) {
@@ -63,7 +57,6 @@ exports.kycFailed = async (req, res, next) => {
       throw new utils.TypedError(404, 'no such KYC');
     }
 
-    // TODO: localise the email text
     let user = await User.findOne({ _id: kyc.user });
     if (!user) {
       throw new utils.TypedError(404, 'no such user');
@@ -71,16 +64,7 @@ exports.kycFailed = async (req, res, next) => {
       throw new utils.TypedError(404, 'user has no verified email');
     }
 
-    const body =
-`Hello,
-We regret to inform you that your KYC application has failed. The following feedback has been provided for your application;
-
-${req.body.note}
-
-Thank you,
-The TrustFeed team`;
-
-    sendMail(user.currentEmail.address, 'DaoBase KYC failed', body, body, () => {});
+    await Mailer.sendKYCFailure(user.currentEmail.address, user.name, req.body.note);
 
     kyc.fail();
     res.status(201).send({ message: 'updated' });
@@ -132,14 +116,7 @@ exports.campaignReviewed = async (req, res, next) => {
       throw new utils.TypedError(404, 'user has no verified email');
     }
 
-    const body =
-`Hello,
-We are happy to inform you that your campaign review has succeeded. 
-
-Thank you,
-The TrustFeed team`;
-
-    sendMail(user.currentEmail.address, 'DaoBase Campaign Review Successful', body, body, () => {});
+    await Mailer.sendCampaignReviewSuccess(user.currentEmail, user.name);
     res.status(201).send({ message: 'verified' });
   } catch (err) {
     next(err);
@@ -180,16 +157,7 @@ exports.campaignFailed = async (req, res, next) => {
       throw new utils.TypedError(404, 'user has no verified email');
     }
 
-    const body =
-`Hello,
-We regret to inform you that your campaign review has failed. The following feedback has been provided for your application;
-
-${req.body.note}
-
-Thank you,
-The TrustFeed team`;
-
-    sendMail(user.currentEmail.address, 'DaoBase campaign review failed', body, body, () => {});
+    await Mailer.sendCampaignReviewFailure(user.currentEmail, user.name, req.body.note);
 
     res.status(201).send({ message: 'updated' });
   } catch (err) {
