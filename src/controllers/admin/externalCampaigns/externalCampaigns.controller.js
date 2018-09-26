@@ -39,11 +39,11 @@ export const post = async (req, res, next) => {
 export const put = async (req, res, next) => {
   try {
     if (!req.decoded || !req.decoded.publicAddress) {
-      throw new utils.TypedErro(400, 'missing publicAddress');
+      throw new utils.TypedError(400, 'missing publicAddress');
     }
 
     if (!req.params.id) {
-      throw new utils.TypedErro(400, 'missing campaign id');
+      throw new utils.TypedError(400, 'missing campaign id');
     }
 
     convertTimes(req);
