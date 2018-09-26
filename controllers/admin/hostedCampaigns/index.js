@@ -18,4 +18,4 @@ router.post('/:id/review-passed', controller.acceptReview);
 router.get('/:id/deployment-transaction', controller.deploymentTransaction);
 router.post('/:id/deployment-transaction', controller.deploymentTransaction);
 
-module.exports = router;
+export default router;

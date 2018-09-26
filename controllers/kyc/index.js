@@ -10,4 +10,4 @@ router.post('/passport-image', controller.passportImage);
 router.post('/facial-image', controller.facialImage);
 router.post('/', controller.post);
 
-module.exports = router;
+export default router;

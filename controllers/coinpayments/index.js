@@ -4,7 +4,7 @@ import config from '../../config';
 
 const middleware = [
   function (req, res, next) {
-  // Handle via middleware
+    // Handle via middleware
     console.log(req);
     next();
   },
@@ -13,7 +13,7 @@ const middleware = [
     'merchantSecret': config.coinPaymentsIPNSecret,
   }),
   function (req, res, next) {
-  // Handle via middleware
+    // Handle via middleware
     console.log(req.body);
   },
 ];
@@ -21,4 +21,4 @@ const middleware = [
 const router = express.Router();
 router.use('/', middleware);
 
-module.exports = router;
+export default router;

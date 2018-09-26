@@ -4,4 +4,4 @@ import controller from './verify.controller';
 const router = express.Router();
 router.post('/email', controller.email);
 
-module.exports = router;
+export default router;

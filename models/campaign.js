@@ -552,4 +552,4 @@ Campaign.statics.reviewPending = async function (offset) {
   };
 };
 
-module.exports = mongoose.model('Campaign', Campaign);
+export default mongoose.model('Campaign', Campaign);

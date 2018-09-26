@@ -1,7 +1,9 @@
 import mongoose from 'mongoose';
 import User from './user';
 import utils from '../utils';
-import { Base64 } from 'js-base64';
+import {
+  Base64
+} from 'js-base64';
 import Note from './note';
 
 const Schema = mongoose.Schema;
@@ -38,7 +40,7 @@ const KYCApplication = new Schema({
   }
 });
 
-KYCApplication.statics.create = async function(user, passportImageURL, facialImageURL) {
+KYCApplication.statics.create = async function (user, passportImageURL, facialImageURL) {
   const app = this({
     user,
     passportImageURL,
@@ -55,16 +57,20 @@ KYCApplication.statics.create = async function(user, passportImageURL, facialIma
   return app.save();
 };
 
-KYCApplication.statics.pendingVerification = async function(offset) {
+KYCApplication.statics.pendingVerification = async function (offset) {
   const pageSize = 20;
   let q = {
     status: 'PENDING'
   };
   if (offset) {
-    q.updatedAt = { $lt: new Date(Number(Base64.decode(offset))) };
+    q.updatedAt = {
+      $lt: new Date(Number(Base64.decode(offset)))
+    };
   }
   let kycs = await this.find(q)
-    .sort({ createdAt: 1 })
+    .sort({
+      createdAt: 1
+    })
     .limit(pageSize)
     .exec();
 
@@ -72,10 +78,13 @@ KYCApplication.statics.pendingVerification = async function(offset) {
   if (kycs.length === pageSize) {
     nextOffset = Base64.encode(kycs[kycs.length - 1].updatedAt.getTime());
   }
-  return { kycs: kycs, next: nextOffset };
+  return {
+    kycs: kycs,
+    next: nextOffset
+  };
 };
 
-KYCApplication.methods.verify = async function() {
+KYCApplication.methods.verify = async function () {
   let user = await User.findOneById(this.user);
   if (!user) {
     throw new utils.TypedError(404, 'user not found');
@@ -86,7 +95,7 @@ KYCApplication.methods.verify = async function() {
   return user.save();
 };
 
-KYCApplication.methods.fail = async function(noteText) {
+KYCApplication.methods.fail = async function (noteText) {
   let user = await User.findOneById(this.user);
   if (!user) {
     throw new utils.TypedError(404, 'user not found');
@@ -96,9 +105,11 @@ KYCApplication.methods.fail = async function(noteText) {
   if (!this.notes) {
     this.notes = [];
   }
-  this.notes.push({ content: noteText });
+  this.notes.push({
+    content: noteText
+  });
   await this.save();
   return user.save();
 };
 
-module.exports = mongoose.model('KYCApplication', KYCApplication);
+export default mongoose.model('KYCApplication', KYCApplication);

@@ -4,4 +4,4 @@ import controller from './nonce.controller';
 const router = express.Router();
 router.get('/', controller.get);
 
-module.exports = router;
+export default router;

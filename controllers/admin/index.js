@@ -10,4 +10,4 @@ router.use('/', verifiedEmail);
 router.use('/hosted-campaigns', hostedCampaigns);
 router.use('/external-campaigns', externalCampaigns);
 
-module.exports = router;
+export default router;

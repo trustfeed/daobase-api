@@ -1,7 +1,7 @@
 require('babel-register');
 require('babel-polyfill');
 
-module.exports = {
+export default {
   // See <http://truffleframework.com/docs/advanced/configuration>
   // to customize your Truffle configuration!
   networks: {

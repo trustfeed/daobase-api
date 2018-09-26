@@ -6,4 +6,4 @@ const router = express.Router();
 router.use('/', authMiddleware);
 router.get('/', controller.get);
 
-module.exports = router;
+export default router;

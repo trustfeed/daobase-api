@@ -1,5 +1,7 @@
 import Networks from './networks';
-import { Base64 } from 'js-base64';
+import {
+  Base64
+} from 'js-base64';
 import User from './user';
 import utils from '../utils';
 import Campaign from './campaign';
@@ -35,35 +37,32 @@ const Investment = new Schema({
   }
 });
 
-Investment.statics.updateBalance = async function(network, token, publicAddress) {
+Investment.statics.updateBalance = async function (network, token, publicAddress) {
   const w3 = Networks.node(network);
-  const abi = [
-    {
-      constant: true,
-      inputs: [
-        {
-          name: '_owner',
-          type: 'address'
-        }
-      ],
-      name: 'balanceOf',
-      outputs: [
-        {
-          name: '',
-          type: 'uint256'
-        }
-      ],
-      payable: false,
-      stateMutability: 'view',
-      type: 'function'
-    }
-  ];
+  const abi = [{
+    constant: true,
+    inputs: [{
+      name: '_owner',
+      type: 'address'
+    }],
+    name: 'balanceOf',
+    outputs: [{
+      name: '',
+      type: 'uint256'
+    }],
+    payable: false,
+    stateMutability: 'view',
+    type: 'function'
+  }];
   const cont = new w3.eth.Contract(abi, token);
   const balance = await cont.methods.balanceOf(publicAddress).call();
   const campaign = await Campaign.findOne({
     'hostedCampaign.onChainData.tokenContract.address': token
   });
-  let ownedToken = { tokenAddress: token, tokensOwned: balance };
+  let ownedToken = {
+    tokenAddress: token,
+    tokensOwned: balance
+  };
   if (campaign) {
     ownedToken.campaignId = campaign._id;
     ownedToken.tokenName = campaign.hostedCampaign.onChainData.tokenName;
@@ -73,12 +72,16 @@ Investment.statics.updateBalance = async function(network, token, publicAddress)
     return true;
   }
 
-  const user = await User.findOne({ publicAddress }).exec();
+  const user = await User.findOne({
+    publicAddress
+  }).exec();
   if (!user) {
     throw new utils.TypedError(404, `user not found (${publicAddress})`);
   }
 
-  let investments = await this.findOne({ user: user._id }).exec();
+  let investments = await this.findOne({
+    user: user._id
+  }).exec();
   if (!investments) {
     investments = this({
       user: user._id,
@@ -92,11 +95,15 @@ Investment.statics.updateBalance = async function(network, token, publicAddress)
   return investments.save();
 };
 
-Investment.statics.byUser = async function(user, order, offset) {
+Investment.statics.byUser = async function (user, order, offset) {
   const pageSize = 20;
-  let investments = await this.findOne({ user });
+  let investments = await this.findOne({
+    user
+  });
   if (!investments) {
-    return { tokens: [] };
+    return {
+      tokens: []
+    };
   }
 
   let tokens = investments.tokens;
@@ -145,7 +152,10 @@ Investment.statics.byUser = async function(user, order, offset) {
   if (tokens.length === pageSize) {
     nextOffset = Base64.encode(offset + pageSize);
   }
-  return { tokens, nextOffset };
+  return {
+    tokens,
+    nextOffset
+  };
 };
 
-module.exports = mongoose.model('Investment', Investment);
+export default mongoose.model('Investment', Investment);

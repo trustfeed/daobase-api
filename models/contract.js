@@ -40,7 +40,12 @@ const Contract = new Schema({
   }
 });
 
-Contract.index({ name: 1, version: 1 }, { unique: true });
+Contract.index({
+  name: 1,
+  version: 1
+}, {
+  unique: true
+});
 
 const listFilesPromise = dirname => {
   return new Promise((resolve, reject) => {
@@ -54,7 +59,7 @@ const listFilesPromise = dirname => {
   });
 };
 
-Contract.statics.addFromFile = function(fname) {
+Contract.statics.addFromFile = function (fname) {
   const obj = JSON.parse(fs.readFileSync(fname));
   return this.deleteOne({
     name: obj.contractName,
@@ -74,7 +79,7 @@ Contract.statics.addFromFile = function(fname) {
   });
 };
 
-Contract.statics.migrateAll = async function() {
+Contract.statics.migrateAll = async function () {
   const dirName = 'contracts';
   const procFile = fname => this.addFromFile(path.join(dirName, fname)).catch(console.log);
 
@@ -82,11 +87,16 @@ Contract.statics.migrateAll = async function() {
   return Promise.all(files.map(procFile));
 };
 
-Contract.methods.makeDeployment = async function(network, args) {
+Contract.methods.makeDeployment = async function (network, args) {
   const web3 = await Networks.node(network);
   const contract = new web3.eth.Contract(JSON.parse(this.abi));
-  const deploy = contract.deploy({ data: this.bytecode, arguments: args });
-  return { transaction: deploy.encodeABI() };
+  const deploy = contract.deploy({
+    data: this.bytecode,
+    arguments: args
+  });
+  return {
+    transaction: deploy.encodeABI()
+  };
   // return deploy
   // .estimateGas()
   // .then(cost => {
@@ -94,4 +104,4 @@ Contract.methods.makeDeployment = async function(network, args) {
   // });
 };
 
-module.exports = mongoose.model('Contract', Contract);
+export default mongoose.model('Contract', Contract);

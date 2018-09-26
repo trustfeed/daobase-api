@@ -45,19 +45,19 @@ const User = new Schema({
   }
 });
 
-User.statics.findOneByPublicAddress = function(publicAddress) {
+User.statics.findOneByPublicAddress = function (publicAddress) {
   return this.findOne({
     publicAddress
   }).exec();
 };
 
-User.statics.findOneById = function(id) {
+User.statics.findOneById = function (id) {
   return this.findOne({
     _id: id
   }).exec();
 };
 
-User.statics.create = function(publicAddress) {
+User.statics.create = function (publicAddress) {
   const nonce = Math.floor(Math.random() * 10000).toString();
   const user = this({
     publicAddress,
@@ -67,10 +67,10 @@ User.statics.create = function(publicAddress) {
   return user.save();
 };
 
-User.statics.addHostedCampaign = function(publicAddress, onChainData) {
+User.statics.addHostedCampaign = function (publicAddress, onChainData) {
   return this.findOne({
-    publicAddress
-  })
+      publicAddress
+    })
     .exec()
     .then(user => {
       if (!user) {
@@ -81,8 +81,10 @@ User.statics.addHostedCampaign = function(publicAddress, onChainData) {
     });
 };
 
-User.statics.addExternalCampaign = async function(publicAddress, data) {
-  const user = await this.findOne({ publicAddress }).exec();
+User.statics.addExternalCampaign = async function (publicAddress, data) {
+  const user = await this.findOne({
+    publicAddress
+  }).exec();
   if (!user) {
     throw new utils.TypedError(404, 'unknown publicAddress');
   } else {
@@ -90,13 +92,15 @@ User.statics.addExternalCampaign = async function(publicAddress, data) {
   }
 };
 
-User.methods.addEmail = function(email) {
+User.methods.addEmail = function (email) {
   if (this.currentEmail && this.currentEmail.address !== email) {
     this.previousEmails.push(this.currentEmail);
   }
 
   if (!this.currentEmail || this.currentEmail.address !== email) {
-    this.currentEmail = { address: email };
+    this.currentEmail = {
+      address: email
+    };
     this.updatedAt = new Date();
 
     if (config.dev) {
@@ -114,10 +118,10 @@ User.methods.addEmail = function(email) {
   }
 };
 
-User.statics.verifyEmail = function(userId, emailId) {
+User.statics.verifyEmail = function (userId, emailId) {
   return this.findOne({
-    _id: userId
-  })
+      _id: userId
+    })
     .exec()
     .then(user => {
       if (!user) {
@@ -138,4 +142,4 @@ User.statics.verifyEmail = function(userId, emailId) {
     });
 };
 
-module.exports = mongoose.model('User', User);
+export default mongoose.model('User', User);

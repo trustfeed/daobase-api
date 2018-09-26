@@ -8,4 +8,4 @@ router.get('/', controller.getAll);
 router.get('/:id', controller.get);
 router.put('/:id', controller.put);
 
-module.exports = router;
+export default router;

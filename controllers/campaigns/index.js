@@ -9,4 +9,4 @@ router.get('/:id', controller.get);
 
 router.post('/:id/alternative-payment', controller.alternativePayment);
 
-module.exports = router;
+export default router;
