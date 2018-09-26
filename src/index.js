@@ -14,8 +14,13 @@ const app = express();
 
 // Global middleware
 app.use(morgan('common'));
-app.use(bodyParser.json({ type: 'application/json' }));
-app.use(bodyParser.urlencoded({ extended: true, type: 'application/x-www-form-urlencoded' }));
+app.use(bodyParser.json({
+  type: 'application/json'
+}));
+app.use(bodyParser.urlencoded({
+  extended: true,
+  type: 'application/x-www-form-urlencoded'
+}));
 app.use(cors());
 
 // The standard google health check
@@ -29,8 +34,8 @@ app.use(error);
 
 // accept requests
 app.listen(
-  config.port,
-  () => console.log(`express is running on port ${config.port}`))
+    config.port,
+    () => console.log(`express is running on port ${config.port}`))
   .on('error', (err) => {
     console.log(err);
     process.exit(1);
