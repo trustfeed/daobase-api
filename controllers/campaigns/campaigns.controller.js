@@ -4,12 +4,12 @@ import views from '../../views/adminCampaign';
 import coinpayments from '../../models/coinpayment';
 import Web3 from 'web3';
 
-exports.getAll = async (req, res) => {
+export const getAll = async (req, res) => {
   let data = await Campaign.allPublic(req.query.offset);
   res.status(200).send({ campaigns: data.campaigns.map(views.publicBrief), next: data.next });
 };
 
-exports.get = async (req, res, next) => {
+export const get = async (req, res, next) => {
   try {
     if (!req.params.id) {
       throw new utils.TypedError(400, 'missing campaign id');
@@ -27,7 +27,7 @@ exports.get = async (req, res, next) => {
   }
 };
 
-exports.alternativePayment = async (req, res, next) => {
+export const alternativePayment = async (req, res, next) => {
   try {
     if (!req.params.id) {
       throw new utils.TypedError(400, 'missing campaign id');

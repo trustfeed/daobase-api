@@ -5,7 +5,7 @@ import views from '../../../views/adminCampaign';
 import * as s3 from '../../../models/s3';
 
 // Create an empty post for the logged in user
-exports.post = async (req, res, next) => {
+export const post = async (req, res, next) => {
   try {
     if (!req.decoded || !req.decoded.publicAddress) {
       throw new utils.TypedError(400, 'missing public address');
@@ -22,7 +22,7 @@ exports.post = async (req, res, next) => {
 };
 
 // Get a campaign
-exports.get = async (req, res, next) => {
+export const get = async (req, res, next) => {
   try {
     if (!req.decoded.id) {
       throw new utils.TypedError(400, 'missing user id');
@@ -44,7 +44,7 @@ exports.get = async (req, res, next) => {
 };
 
 // A list of campaigns
-exports.getAll = async (req, res, next) => {
+export const getAll = async (req, res, next) => {
   try {
     if (!req.decoded.id) {
       throw new utils.TypedError(400, 'missing user id');
@@ -59,7 +59,7 @@ exports.getAll = async (req, res, next) => {
   }
 };
 
-exports.putOnChainData = async (req, res, next) => {
+export const putOnChainData = async (req, res, next) => {
   try {
     if (!req.decoded.id) {
       throw new utils.TypedError(400, 'missing user id');
@@ -81,7 +81,7 @@ exports.putOnChainData = async (req, res, next) => {
   }
 };
 
-exports.putOffChainData = async (req, res, next) => {
+export const putOffChainData = async (req, res, next) => {
   try {
     if (!req.decoded.id) {
       throw new utils.TypedError(400, 'missing user id');
@@ -104,7 +104,7 @@ exports.putOffChainData = async (req, res, next) => {
 };
 
 // This returns a presigned URL to upload an image
-exports.coverImageURL = async (req, res, next) => {
+export const coverImageURL = async (req, res, next) => {
   try {
     if (!req.decoded.id) {
       throw new utils.TypedError(400, 'missing user id');
@@ -138,7 +138,7 @@ exports.coverImageURL = async (req, res, next) => {
 };
 
 // This returns a presigned URL to upload a white paper pdf
-exports.pdfURL = async (req, res, next) => {
+export const pdfURL = async (req, res, next) => {
   try {
     if (!req.decoded.id) {
       throw new utils.TypedError(400, 'missing user id');
@@ -165,7 +165,7 @@ exports.pdfURL = async (req, res, next) => {
   }
 };
 
-exports.submitForReview = async (req, res, next) => {
+export const submitForReview = async (req, res, next) => {
   try {
     if (!req.decoded.id) {
       throw new utils.TypedError(400, 'missing user id');
@@ -189,7 +189,7 @@ exports.submitForReview = async (req, res, next) => {
   }
 };
 
-exports.cancelReview = async (req, res, next) => {
+export const cancelReview = async (req, res, next) => {
   try {
     if (!req.decoded.id) {
       throw new utils.TypedError(400, 'missing user id');
@@ -209,7 +209,7 @@ exports.cancelReview = async (req, res, next) => {
   };
 };
 
-exports.acceptReview = async (req, res, next) => {
+export const acceptReview = async (req, res, next) => {
   try {
     if (!req.decoded.id) {
       throw new utils.TypedError(400, 'missing user id');
@@ -230,7 +230,7 @@ exports.acceptReview = async (req, res, next) => {
   }
 };
 
-exports.deploymentTransaction = async (req, res, next) => {
+export const deploymentTransaction = async (req, res, next) => {
   try {
     if (!req.decoded.id) {
       throw new utils.TypedError(400, 'missing user id');

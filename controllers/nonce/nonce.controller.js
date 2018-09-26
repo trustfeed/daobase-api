@@ -1,7 +1,7 @@
 import User from '../../models/user';
 import utils from '../../utils';
 
-exports.get = async (req, res, next) => {
+export const get = async (req, res, next) => {
   try {
     if (!(req.query) || !(req.query.publicAddress)) {
       throw new utils.TypedError(400, 'publicAddress required');

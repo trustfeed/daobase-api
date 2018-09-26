@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-class TypedError extends Error {
+class ErrorWithType extends Error {
   constructor(code, message, type, data) {
     super(message);
     this.httpStatus = code;
@@ -10,9 +10,9 @@ class TypedError extends Error {
   }
 }
 
-exports.TypedError = TypedError;
+export const TypedError = ErrorWithType;
 
-exports.stringToId = id => {
+export const stringToId = id => {
   try {
     return mongoose.Types.ObjectId(id);
   } catch (err) {
@@ -20,7 +20,7 @@ exports.stringToId = id => {
   }
 };
 
-exports.stringRoundedOrUndefined = s => {
+export const stringRoundedOrUndefined = s => {
   try {
     return Math.round(Number(s));
   } catch (err) {

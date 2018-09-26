@@ -5,7 +5,7 @@ import view from '../../views/adminCampaign';
 import User from '../../models/user';
 import Mailer from '../../models/mailer';
 
-exports.kycsToReview = async (req, res, next) => {
+export const kycsToReview = async (req, res, next) => {
   try {
     let out = await KYCApplication.pendingVerification(req.query.offset);
     res.status(200).send(out);
@@ -14,7 +14,7 @@ exports.kycsToReview = async (req, res, next) => {
   }
 };
 
-exports.kycReviewed = async (req, res, next) => {
+export const kycReviewed = async (req, res, next) => {
   try {
     if (!req.body.kycID) {
       throw new utils.TypedError(400, 'no KYC ID provided');
@@ -42,7 +42,7 @@ exports.kycReviewed = async (req, res, next) => {
   }
 };
 
-exports.kycFailed = async (req, res, next) => {
+export const kycFailed = async (req, res, next) => {
   try {
     if (!req.body.kycID) {
       throw new utils.TypedError(400, 'no KYC ID provided');
@@ -73,7 +73,7 @@ exports.kycFailed = async (req, res, next) => {
   }
 };
 
-exports.campaignsToReview = async (req, res, next) => {
+export const campaignsToReview = async (req, res, next) => {
   try {
     let out = await Campaign.reviewPending(req.query.offset);
     res.status(200).send({
@@ -85,7 +85,7 @@ exports.campaignsToReview = async (req, res, next) => {
   }
 };
 
-exports.campaignReviewed = async (req, res, next) => {
+export const campaignReviewed = async (req, res, next) => {
   try {
     if (!req.body.campaignID) {
       throw new utils.TypedError(400, 'no KYC ID provided');
@@ -123,7 +123,7 @@ exports.campaignReviewed = async (req, res, next) => {
   }
 };
 
-exports.campaignFailed = async (req, res, next) => {
+export const campaignFailed = async (req, res, next) => {
   try {
     if (!req.body.campaignID) {
       throw new utils.TypedError(400, 'no campaign ID provided');

@@ -2,7 +2,7 @@ import utils from '../../utils';
 import Investment from '../../models/investment';
 import view from '../../views/investment';
 
-exports.get = async (req, res, next) => {
+export const get = async (req, res, next) => {
   try {
     if (!req.decoded.id) {
       throw new utils.TypedError(400, 'missing user id');

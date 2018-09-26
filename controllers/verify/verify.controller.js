@@ -7,9 +7,11 @@ const daysBetween = (start, end) => {
   return milli / (1000 * 60 * 60 * 24);
 };
 
-exports.email = async (req, res, next) => {
+export const email = async (req, res, next) => {
   try {
-    const { token } = req.body;
+    const {
+      token
+    } = req.body;
     if (!token) {
       throw new utils.TypedError(400, 'missing token', 'INVALID_TOKEN');
     }
@@ -23,7 +25,10 @@ exports.email = async (req, res, next) => {
     }
 
     await User.verifyEmail(hashToEmail.user, hashToEmail.address);
-    res.status(201).send({ message: 'verified', type: 'SUCCESS' });
+    res.status(201).send({
+      message: 'verified',
+      type: 'SUCCESS'
+    });
   } catch (err) {
     next(err);
   }

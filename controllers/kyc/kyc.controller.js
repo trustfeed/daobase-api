@@ -2,7 +2,7 @@ import utils from '../../utils';
 import * as s3 from '../../models/s3';
 import KYCApplication from '../../models/kycApplication.js';
 
-exports.passportImage = async (req, res, next) => {
+export const passportImage = async (req, res, next) => {
   try {
     if (!req.decoded.id) {
       throw new utils.TypedError(400, 'missing user id');
@@ -25,7 +25,7 @@ exports.passportImage = async (req, res, next) => {
   }
 };
 
-exports.facialImage = async (req, res, next) => {
+export const facialImage = async (req, res, next) => {
   try {
     if (!req.decoded.id) {
       throw new utils.TypedError(400, 'missing user id');
@@ -48,7 +48,7 @@ exports.facialImage = async (req, res, next) => {
   }
 };
 
-exports.post = async (req, res, next) => {
+export const post = async (req, res, next) => {
   try {
     if (!req.decoded.id) {
       throw new utils.TypedError(400, 'missing user id');

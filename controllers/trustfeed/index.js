@@ -1,7 +1,7 @@
 import express from 'express';
 import trustfeedAddress from '../../middleware/trustfeedAddress';
 import auth from '../../middleware/auth';
-import controller from './trustfeed.controller';
+import * as controller from './trustfeed.controller';
 
 const router = express.Router();
 router.use('/', auth);

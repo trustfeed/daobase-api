@@ -1,5 +1,5 @@
 import express from 'express';
-import controller from './hostedCampaigns.controller';
+import * as controller from './hostedCampaigns.controller';
 
 const router = express.Router();
 router.post('/', controller.post);

@@ -17,7 +17,7 @@ const transporter = () => {
   });
 };
 
-exports.sendEmailVerification = (destinationAddress, userName, link) => {
+export const sendEmailVerification = (destinationAddress, userName, link) => {
   const email = new Email({
     message: {
       to: destinationAddress,
@@ -35,7 +35,7 @@ exports.sendEmailVerification = (destinationAddress, userName, link) => {
   });
 };
 
-exports.sendKYCSuccess = (destinationAddress, userName) => {
+export const sendKYCSuccess = (destinationAddress, userName) => {
   const email = new Email({
     message: {
       to: destinationAddress,
@@ -52,7 +52,7 @@ exports.sendKYCSuccess = (destinationAddress, userName) => {
   });
 };
 
-exports.sendKYCFailure = (destinationAddress, userName, note) => {
+export const sendKYCFailure = (destinationAddress, userName, note) => {
   const email = new Email({
     message: {
       to: destinationAddress,
@@ -70,7 +70,7 @@ exports.sendKYCFailure = (destinationAddress, userName, note) => {
   });
 };
 
-exports.sendCampaignReviewSuccess = (destinationAddress, userName) => {
+export const sendCampaignReviewSuccess = (destinationAddress, userName) => {
   const email = new Email({
     message: {
       to: destinationAddress,
@@ -87,7 +87,7 @@ exports.sendCampaignReviewSuccess = (destinationAddress, userName) => {
   });
 };
 
-exports.sendCampaignReviewFailure = (destinationAddress, userName, note) => {
+export const sendCampaignReviewFailure = (destinationAddress, userName, note) => {
   const email = new Email({
     message: {
       to: destinationAddress,

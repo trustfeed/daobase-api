@@ -41,7 +41,7 @@ const generateToken = async (payload) => {
   );
 };
 
-exports.post = async (req, res, next) => {
+export const post = async (req, res, next) => {
   try {
     const { signature, publicAddress } = req.body;
     if (!signature || !publicAddress) {

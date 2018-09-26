@@ -1,5 +1,5 @@
 import express from 'express';
-import controller from './kyc.controller';
+import * as controller from './kyc.controller';
 import authMiddleware from '../../middleware/auth';
 import verifiedEmail from '../../middleware/verifiedEmail';
 

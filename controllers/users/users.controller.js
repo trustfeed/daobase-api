@@ -4,7 +4,7 @@ import authMiddleware from '../../middleware/auth';
 import InvestmentListener from '../../models/investmentListener';
 
 // Get the user
-exports.get = (req, res, next) => {
+export const get = (req, res, next) => {
   authMiddleware(req, res, async () => {
     try {
       if (!(req.decoded) || !(req.decoded.publicAddress)) {
@@ -34,7 +34,7 @@ exports.get = (req, res, next) => {
   });
 };
 
-exports.post = async (req, res, next) => {
+export const post = async (req, res, next) => {
   try {
     const { publicAddress } = req.body;
     if (!publicAddress) {
@@ -53,7 +53,7 @@ exports.post = async (req, res, next) => {
   }
 };
 
-exports.put = (req, res, next) => {
+export const put = (req, res, next) => {
   try {
     authMiddleware(req, res, async () => {
       if (!req.decoded.id) {
