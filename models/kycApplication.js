@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import User from './user';
-import * as te from '../typedError';
+import utils from '../utils';
 import { Base64 } from 'js-base64';
 import Note from './note';
 
@@ -51,7 +51,7 @@ KYCApplication.statics.create = async function (user, passportImageURL, facialIm
 
   let u = await User.findOneById(user);
   if (!u) {
-    throw new te.TypedError(404, 'user not found');
+    throw new utils.TypedError(404, 'user not found');
   }
   u.kycStatus = 'PENDING';
   await u.save();
@@ -83,7 +83,7 @@ KYCApplication.statics.pendingVerification = async function (offset) {
 KYCApplication.methods.verify = async function () {
   let user = await User.findOneById(this.user);
   if (!user) {
-    throw new te.TypedError(404, 'user not found');
+    throw new utils.TypedError(404, 'user not found');
   }
   user.kycStatus = 'VERIFIED';
   this.status = 'VERIFIED';
@@ -94,7 +94,7 @@ KYCApplication.methods.verify = async function () {
 KYCApplication.methods.fail = async function (noteText) {
   let user = await User.findOneById(this.user);
   if (!user) {
-    throw new te.TypedError(404, 'user not found');
+    throw new utils.TypedError(404, 'user not found');
   }
   user.kycStatus = 'FAILED';
   this.status = 'FAILED';

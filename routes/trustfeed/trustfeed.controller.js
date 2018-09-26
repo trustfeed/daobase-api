@@ -1,36 +1,36 @@
 import Campaign from '../../models/campaign';
 import KYCApplication from '../../models/kycApplication';
-import * as te from '../../typedError';
+import utils from '../../utils';
 import view from '../../views/adminCampaign';
 import User from '../../models/user';
 import sendMail from '../../models/mailer';
 
-exports.kycsToReview = async (req, res) => {
+exports.kycsToReview = async (req, res, next) => {
   try {
     let out = await KYCApplication.pendingVerification(req.query.offset);
     res.status(200).send(out);
   } catch (err) {
-    te.handleError(err, res);
+    next(err);
   }
 };
 
-exports.kycReviewed = async (req, res) => {
+exports.kycReviewed = async (req, res, next) => {
   try {
     if (!req.body.kycID) {
-      throw new te.TypedError(400, 'no KYC ID provided');
+      throw new utils.TypedError(400, 'no KYC ID provided');
     }
-    const id = te.stringToId(req.body.kycID);
+    const id = utils.stringToId(req.body.kycID);
     let kyc = await KYCApplication.findOne({ _id: id }).exec();
     if (!kyc) {
-      throw new te.TypedError(404, 'no such KYC');
+      throw new utils.TypedError(404, 'no such KYC');
     }
 
     // TODO: localise the email text
     let user = await User.findOne({ _id: kyc.user });
     if (!user) {
-      throw new te.TypedError(404, 'no such user');
+      throw new utils.TypedError(404, 'no such user');
     } else if (!user.currentEmail || !user.currentEmail.verifiedAt) {
-      throw new te.TypedError(404, 'user has no verified email');
+      throw new utils.TypedError(404, 'user has no verified email');
     }
 
     const body =
@@ -44,31 +44,31 @@ The TrustFeed team`;
     kyc.verify();
     res.status(201).send({ message: 'verified' });
   } catch (err) {
-    te.handleError(err, res);
+    next(err);
   }
 };
 
-exports.kycFailed = async (req, res) => {
+exports.kycFailed = async (req, res, next) => {
   try {
     if (!req.body.kycID) {
-      throw new te.TypedError(400, 'no KYC ID provided');
+      throw new utils.TypedError(400, 'no KYC ID provided');
     }
     if (!req.body.note) {
-      throw new te.TypedError(400, 'no note provided');
+      throw new utils.TypedError(400, 'no note provided');
     }
 
-    const id = te.stringToId(req.body.kycID);
+    const id = utils.stringToId(req.body.kycID);
     let kyc = await KYCApplication.findOne({ _id: id }).exec();
     if (!kyc) {
-      throw new te.TypedError(404, 'no such KYC');
+      throw new utils.TypedError(404, 'no such KYC');
     }
 
     // TODO: localise the email text
     let user = await User.findOne({ _id: kyc.user });
     if (!user) {
-      throw new te.TypedError(404, 'no such user');
+      throw new utils.TypedError(404, 'no such user');
     } else if (!user.currentEmail || !user.currentEmail.verifiedAt) {
-      throw new te.TypedError(404, 'user has no verified email');
+      throw new utils.TypedError(404, 'user has no verified email');
     }
 
     const body =
@@ -85,11 +85,11 @@ The TrustFeed team`;
     kyc.fail();
     res.status(201).send({ message: 'updated' });
   } catch (err) {
-    te.handleError(err, res);
+    next(err);
   }
 };
 
-exports.campaignsToReview = async (req, res) => {
+exports.campaignsToReview = async (req, res, next) => {
   try {
     let out = await Campaign.reviewPending(req.query.offset);
     res.status(200).send({
@@ -97,19 +97,19 @@ exports.campaignsToReview = async (req, res) => {
       campaigns: out.campaigns.map(view.publicBrief),
     });
   } catch (err) {
-    te.handleError(err, res);
+    next(err);
   }
 };
 
-exports.campaignReviewed = async (req, res) => {
+exports.campaignReviewed = async (req, res, next) => {
   try {
     if (!req.body.campaignID) {
-      throw new te.TypedError(400, 'no KYC ID provided');
+      throw new utils.TypedError(400, 'no KYC ID provided');
     }
-    const id = te.stringToId(req.body.campaignID);
+    const id = utils.stringToId(req.body.campaignID);
     let campaign = await Campaign.findOne({ _id: id }).exec();
     if (!campaign) {
-      throw new te.TypedError(404, 'no such campaign');
+      throw new utils.TypedError(404, 'no such campaign');
     }
 
     if (campaign.hostedCampaign.campaignStatus === 'PENDING_REVIEW') {
@@ -120,16 +120,16 @@ exports.campaignReviewed = async (req, res) => {
       campaign.hostedCampaign.offChainData = campaign.hostedCampaign.offChainDataDraft;
       campaign.updatedAt = Date.now();
     } else {
-      throw new te.TypedError(400, 'the campaign is not pending review');
+      throw new utils.TypedError(400, 'the campaign is not pending review');
     }
     await campaign.save();
 
     // TODO: localise the email text
     let user = await User.findOne({ _id: campaign.hostedCampaign.user });
     if (!user) {
-      throw new te.TypedError(404, 'no such user');
+      throw new utils.TypedError(404, 'no such user');
     } else if (!user.currentEmail || !user.currentEmail.verifiedAt) {
-      throw new te.TypedError(404, 'user has no verified email');
+      throw new utils.TypedError(404, 'user has no verified email');
     }
 
     const body =
@@ -142,23 +142,23 @@ The TrustFeed team`;
     sendMail(user.currentEmail.address, 'DaoBase Campaign Review Successful', body, body, () => {});
     res.status(201).send({ message: 'verified' });
   } catch (err) {
-    te.handleError(err, res);
+    next(err);
   }
 };
 
-exports.campaignFailed = async (req, res) => {
+exports.campaignFailed = async (req, res, next) => {
   try {
     if (!req.body.campaignID) {
-      throw new te.TypedError(400, 'no campaign ID provided');
+      throw new utils.TypedError(400, 'no campaign ID provided');
     }
     if (!req.body.note) {
-      throw new te.TypedError(400, 'no note provided');
+      throw new utils.TypedError(400, 'no note provided');
     }
 
-    const id = te.stringToId(req.body.campaignID);
+    const id = utils.stringToId(req.body.campaignID);
     let campaign = await Campaign.findOne({ _id: id }).exec();
     if (!campaign) {
-      throw new te.TypedError(404, 'no such campaign');
+      throw new utils.TypedError(404, 'no such campaign');
     }
 
     if (campaign.hostedCampaign.campaignStatus === 'PENDING_REVIEW') {
@@ -168,16 +168,16 @@ exports.campaignFailed = async (req, res) => {
       campaign.hostedCampaign.campaignStatus = 'DEPLOYED';
       campaign.updatedAt = Date.now();
     } else {
-      throw new te.TypedError(400, 'the campaign is not pending review');
+      throw new utils.TypedError(400, 'the campaign is not pending review');
     }
     await campaign.save();
 
     // TODO: localise the email text
     let user = await User.findOne({ _id: campaign.hostedCampaign.owner });
     if (!user) {
-      throw new te.TypedError(404, 'no such user');
+      throw new utils.TypedError(404, 'no such user');
     } else if (!user.currentEmail || !user.currentEmail.verifiedAt) {
-      throw new te.TypedError(404, 'user has no verified email');
+      throw new utils.TypedError(404, 'user has no verified email');
     }
 
     const body =
@@ -193,6 +193,6 @@ The TrustFeed team`;
 
     res.status(201).send({ message: 'updated' });
   } catch (err) {
-    te.handleError(err, res);
+    next(err);
   }
 };

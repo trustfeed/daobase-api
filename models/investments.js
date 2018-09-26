@@ -1,7 +1,7 @@
 import Networks from './networks';
 import { Base64 } from 'js-base64';
 import User from './user';
-import * as te from '../typedError';
+import utils from '../utils';
 import Campaign from './campaign';
 import mongoose from 'mongoose';
 import Web3 from 'web3';
@@ -78,7 +78,7 @@ Investment.statics.updateBalance = async function (
 
   const user = await User.findOne({ publicAddress }).exec();
   if (!user) {
-    throw new te.TypedError(404, `user not found (${publicAddress})`);
+    throw new utils.TypedError(404, `user not found (${publicAddress})`);
   }
 
   let investments = await this.findOne({ user: user._id }).exec();
@@ -142,7 +142,7 @@ Investment.statics.byUser = async function (user, order, offset) {
       });
     break;
   default:
-    throw new te.TypedError(401, 'unknown order');
+    throw new utils.TypedError(401, 'unknown order');
   }
 
   tokens = tokens.slice(offset, offset + pageSize);

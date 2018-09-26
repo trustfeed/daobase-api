@@ -1,4 +1,4 @@
-import * as te from '../../../typedError';
+import utils from '../../../utils';
 import User from '../../../models/user';
 import Campaign from '../../../models/campaign';
 import views from '../../../views/adminCampaign';
@@ -22,73 +22,66 @@ const convertTimes = (req) => {
   }
 };
 
-exports.post = (req, res) => {
-  if (!req.decoded || !req.decoded.publicAddress) {
-    res.status(400).send({ message: 'missing public address' });
-    return;
-  }
+exports.post = async (req, res, next) => {
+  try {
+    if (!req.decoded || !req.decoded.publicAddress) {
+      throw new utils.TypedError(400, 'missing publicAddress');
+    }
 
-  convertTimes(req);
-  User.addExternalCampaign(req.decoded.publicAddress, req.body)
-    .then(campaign => {
-      res.status(201).send({ 'campaign_id': campaign.id });
-    })
-    .catch(err => {
-      te.handleError(err, res);
-    });
+    convertTimes(req);
+    const campaign = await User.addExternalCampaign(req.decoded.publicAddress, req.body);
+    res.status(201).send({ 'campaign_id': campaign.id });
+  } catch (err) {
+    next(err);
+  }
 };
 
-exports.put = (req, res) => {
-  if (!req.decoded || !req.decoded.publicAddress) {
-    res.status(400).send({ message: 'missing public address' });
-    return;
-  }
+exports.put = async (req, res, next) => {
+  try {
+    if (!req.decoded || !req.decoded.publicAddress) {
+      throw new utils.TypedErro(400, 'missing publicAddress');
+    }
 
-  if (!req.params.id) {
-    res.status(400).send({ message: 'missing campaign id' });
-    return;
-  }
+    if (!req.params.id) {
+      throw new utils.TypedErro(400, 'missing campaign id');
+    }
 
-  convertTimes(req);
-  Campaign.putExternal(req.decoded.publicAddress, req.params.id, req.body)
-    .then(campaign => {
-      res.status(201).send({ 'campaign_id': campaign.id });
-    })
-    .catch(err => {
-      te.handleError(err, res);
-    });
+    convertTimes(req);
+    const campaign = await Campaign.putExternal(req.decoded.publicAddress, req.params.id, req.body);
+    res.status(201).send({ 'campaign_id': campaign.id });
+  } catch (err) {
+    next(err);
+  }
 };
 
-exports.getAll = (req, res) => {
-  Campaign.findAllExternal(req.query.offset)
-    .then(cs => {
-      cs.campaigns = cs.campaigns.map(views.adminBrief);
-      res.status(200).send(cs);
-    })
-    .catch(err =>
-      te.handleError(err, res)
-    );
+exports.getAll = async (req, res, next) => {
+  try {
+    let cs = await Campaign.findAllExternal(req.query.offset);
+    cs.campaigns = cs.campaigns.map(views.adminBrief);
+    res.status(200).send(cs);
+  } catch (err) {
+    next(err);
+  }
 };
 
-exports.get = (req, res) => {
-  if (!req.params.id) {
-    res.status(400).send({ message: 'missing campaign id' });
-    return;
-  }
+exports.get = async (req, res, next) => {
+  try {
+    if (!req.params.id) {
+      throw new utils.TypedError(400, 'missing campaign id');
+    }
 
-  Campaign
-    .findOne({ _id: req.query.offset })
-    .exec()
-    .then(campaign => {
-      if (!campaign) {
-        throw new te.TypedError(404, 'unknown campaign id');
-      } else if (!campaign.externalCampaign) {
-        throw new te.TypedError(404, 'unknown campaign id');
-      } else {
-        res.status(200).send(views.adminFull(campaign));
-      }
-    })
-    .catch(err =>
-      te.handleError(err, res)
-    );
+    const campaign = await Campaign
+      .findOne({ _id: req.query.offset })
+      .exec();
+
+    if (!campaign) {
+      throw new utils.TypedError(404, 'unknown campaign id');
+    } else if (!campaign.externalCampaign) {
+      throw new utils.TypedError(404, 'unknown campaign id');
+    } else {
+      res.status(200).send(views.adminFull(campaign));
+    }
+  } catch (err) {
+    next(err);
+  }
 };

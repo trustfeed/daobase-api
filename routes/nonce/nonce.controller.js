@@ -1,19 +1,19 @@
 import User from '../../models/user';
+import utils from '../../utils';
 
-exports.get = (req, res) => {
-  if (!(req.query) || !(req.query.publicAddress)) {
-    return res.status(400).send({ message: 'publicAddress required' });
+exports.get = async (req, res, next) => {
+  try {
+    if (!(req.query) || !(req.query.publicAddress)) {
+      throw new utils.TypedError(400, 'publicAddress required');
+    }
+    const user = await User.findOneByPublicAddress(req.query.publicAddress);
+    if (!user) {
+      throw new utils.TypedError(404, 'publicAddress not found');
+    } else {
+      res.status(200).send({ nonce: user.nonce });
+    }
+  } catch (err) {
+    console.log('in route', err);
+    next(err);
   }
-  User.findOneByPublicAddress(req.query.publicAddress)
-    .then((user) => {
-      if (!user) {
-        res.status(404).send({ message: 'public address not found' });
-      } else {
-        res.status(200).send({ nonce: user.nonce });
-      }
-    })
-    .catch(err => {
-      console.log(err);
-      res.status(500).send({ message: 'internal error' });
-    });
 };

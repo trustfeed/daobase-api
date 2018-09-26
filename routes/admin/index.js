@@ -7,7 +7,6 @@ import verifiedEmail from '../../middleware/verifiedEmail';
 const router = express.Router();
 router.use('/', authMiddleware);
 router.use('/', verifiedEmail);
-router.use('/campaigns', hostedCampaigns);
 router.use('/hosted-campaigns', hostedCampaigns);
 router.use('/external-campaigns', externalCampaigns);
 

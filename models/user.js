@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import Campaign from './campaign';
-import * as te from '../typedError';
+import utils from '../utils';
 import HashToEmail from './hashToEmail';
 import config from '../config';
 
@@ -77,7 +77,7 @@ User.statics.addHostedCampaign = function (publicAddress, onChainData) {
   }).exec()
     .then(user => {
       if (!user) {
-        throw new te.TypedError(404, 'unknown publicAddress');
+        throw new utils.TypedError(404, 'unknown publicAddress');
       } else {
         return Campaign.createHostedDomain(user._id, onChainData);
       }
@@ -87,7 +87,7 @@ User.statics.addHostedCampaign = function (publicAddress, onChainData) {
 User.statics.addExternalCampaign = async function (publicAddress, data) {
   const user = await this.findOne({ publicAddress }).exec();
   if (!user) {
-    throw new te.TypedError(404, 'unknown publicAddress');
+    throw new utils.TypedError(404, 'unknown publicAddress');
   } else {
     return Campaign.createExternalCampaign(user._id, data);
   }
@@ -125,11 +125,11 @@ User.statics.verifyEmail = function (userId, emailId) {
     .exec()
     .then(user => {
       if (!user) {
-        throw new te.TypedError(500, 'internal error');
+        throw new utils.TypedError(500, 'internal error');
       } else if (!user.currentEmail || !user.currentEmail._id.equals(emailId)) {
-        throw new te.TypedError(400, 'a different email has been registred for that account', 'EXPIRED_TOKEN');
+        throw new utils.TypedError(400, 'a different email has been registred for that account', 'EXPIRED_TOKEN');
       } else if (user.currentEmail.verifiedAt) {
-        throw new te.TypedError(400, 'the address is already verified', 'VERIFIED_TOKEN');
+        throw new utils.TypedError(400, 'the address is already verified', 'VERIFIED_TOKEN');
       } else {
         user.currentEmail.verifiedAt = Date.now();
         user.updatedAt = Date.now();

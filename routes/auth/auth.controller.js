@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 
 import config from '../../config';
 import User from '../../models/user';
-import * as te from '../../typedError';
+import utils from '../../utils';
 
 const sign = (user, signature) => {
   try {
@@ -21,7 +21,7 @@ const sign = (user, signature) => {
     const addressBuffer = ethUtil.publicToAddress(publicKey);
     return ethUtil.bufferToHex(addressBuffer);
   } catch (err) {
-    throw new te.TypedError(401, 'signature verification failed: ' + err.message);
+    throw new utils.TypedError(401, 'signature verification failed: ' + err.message);
   }
 };
 
@@ -41,20 +41,20 @@ const generateToken = async (payload) => {
   );
 };
 
-exports.post = async (req, res) => {
+exports.post = async (req, res, next) => {
   try {
     const { signature, publicAddress } = req.body;
     if (!signature || !publicAddress) {
-      throw new te.TypedError(400, 'Request should have signature and publicAddress');
+      throw new utils.TypedError(400, 'Request should have signature and publicAddress');
     }
 
     let user = await User.findOneByPublicAddress(publicAddress);
     if (!user) {
-      throw new te.TypedError(404, 'public address not found');
+      throw new utils.TypedError(404, 'public address not found');
     }
     const signedAddress = sign(user, signature);
     if (signedAddress.toLowerCase() !== publicAddress.toLowerCase()) {
-      throw new te.TypedError(401, 'signature verification failed');
+      throw new utils.TypedError(401, 'signature verification failed');
     }
     user.nonce = Math.floor(Math.random() * 10000);
     await user.save();
@@ -64,6 +64,6 @@ exports.post = async (req, res) => {
     });
     res.status(201).send({ accessToken });
   } catch (err) {
-    te.handleError(err, res);
+    next(err);
   }
 };

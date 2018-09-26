@@ -1,11 +1,11 @@
-import * as te from '../../typedError';
+import utils from '../../utils';
 import Investment from '../../models/investments';
 import view from '../../views/investments';
 
-exports.get = async (req, res) => {
+exports.get = async (req, res, next) => {
   try {
     if (!req.decoded.id) {
-      throw new te.TypedError(400, 'missing user id');
+      throw new utils.TypedError(400, 'missing user id');
     }
 
     const order = req.query.order || 'symbol';
@@ -16,6 +16,6 @@ exports.get = async (req, res) => {
       res.status(200).send({ investments: investments.tokens.map(view) });
     }
   } catch (err) {
-    te.handleError(err, res);
+    next(err);
   };
 };

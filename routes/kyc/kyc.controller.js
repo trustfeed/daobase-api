@@ -1,11 +1,11 @@
-import * as te from '../../typedError';
+import utils from '../../utils';
 import * as s3 from '../../models/s3';
 import KYCApplication from '../../models/kycApplication.js';
 
-exports.passportImage = async (req, res) => {
+exports.passportImage = async (req, res, next) => {
   try {
     if (!req.decoded.id) {
-      throw new te.TypedError(400, 'missing user id');
+      throw new utils.TypedError(400, 'missing user id');
     }
 
     const extension = req.body.extension || 'png';
@@ -21,14 +21,14 @@ exports.passportImage = async (req, res) => {
     const viewURL = uploadURL.split(/[?#]/)[0];
     res.status(201).send({ uploadURL, viewURL });
   } catch (err) {
-    te.handleError(err, res);
+    next(err);
   }
 };
 
-exports.facialImage = async (req, res) => {
+exports.facialImage = async (req, res, next) => {
   try {
     if (!req.decoded.id) {
-      throw new te.TypedError(400, 'missing user id');
+      throw new utils.TypedError(400, 'missing user id');
     }
 
     const extension = req.body.extension || 'png';
@@ -44,18 +44,18 @@ exports.facialImage = async (req, res) => {
     const viewURL = uploadURL.split(/[?#]/)[0];
     res.status(201).send({ uploadURL, viewURL });
   } catch (err) {
-    te.handleError(err, res);
+    next(err);
   }
 };
 
-exports.post = async (req, res) => {
+exports.post = async (req, res, next) => {
   try {
     if (!req.decoded.id) {
-      throw new te.TypedError(400, 'missing user id');
+      throw new utils.TypedError(400, 'missing user id');
     }
 
     if (!req.body.passportImageURL || !req.body.facialImageURL) {
-      throw new te.TypedError(400, 'missing image URL');
+      throw new utils.TypedError(400, 'missing image URL');
     }
 
     let app = await KYCApplication.create(req.decoded.id, req.body.passportImageURL, req.body.facialImageURL);
@@ -65,6 +65,6 @@ exports.post = async (req, res) => {
       app.verify().catch(console.log);
     }, 10 * 1000);
   } catch (err) {
-    te.handleError(err, res);
+    next(err);
   }
 };

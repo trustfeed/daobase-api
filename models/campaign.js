@@ -1,6 +1,6 @@
 import { Base64 } from 'js-base64';
 import mongoose from 'mongoose';
-import * as te from '../typedError';
+import utils from '../utils';
 import Contract from './contract';
 import config from '../config';
 import Networks from './networks';
@@ -424,11 +424,11 @@ Campaign.statics.fetchHostedCampaign = async function (userId, campaignId) {
   }).exec()
     .then(campaign => {
       if (!campaign) {
-        throw new te.TypedError(404, 'no such campaign');
+        throw new utils.TypedError(404, 'no such campaign');
       } else if (!campaign.hostedCampaign) {
-        throw new te.TypedError(403, 'not a hosted campaign');
+        throw new utils.TypedError(403, 'not a hosted campaign');
       } else if (!campaign.hostedCampaign.owner.equals(userId)) {
-        throw new te.TypedError(403, 'you do not own that campaign');
+        throw new utils.TypedError(403, 'you do not own that campaign');
       } else {
         return campaign;
       }
@@ -446,7 +446,7 @@ Campaign.statics.submitForReview = function (userId, campaignId) {
         const onChainErrs = campaign.hostedCampaign.onChainData.generateReport();
         const offChainErrs = campaign.hostedCampaign.offChainData.generateReport();
         if (Object.keys(onChainErrs).length > 0 || Object.keys(offChainErrs).length > 0) {
-          throw new te.TypedError(
+          throw new utils.TypedError(
             400,
             'validation error',
             'INVALID_DATA',
