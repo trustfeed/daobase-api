@@ -11,7 +11,9 @@ const transporter = () => {
     region: 'us-east-1'
   });
   return nodemailer.createTransport({
-    SES: new AWS.SES({ apiVersion: '2010-12-01' })
+    SES: new AWS.SES({
+      apiVersion: '2010-12-01'
+    })
   });
 };
 
