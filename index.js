@@ -2,7 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import config from './config';
-import routes from './routes';
+import controllers from './controllers';
 import startCampainVerifier from './models/verifyCampaign';
 import mongoose from 'mongoose';
 import InvestmentListener from './models/investmentListener';
@@ -24,7 +24,7 @@ app.get('/healthz', (req, res) => {
 });
 
 // The apis we provide
-app.use('/', routes);
+app.use('/', controllers);
 app.use(error);
 
 // accept requests
@@ -53,8 +53,8 @@ db.on('error', err => {
 
 db.once('open', async () => {
   await Contract.migrateAll().catch(console.log);
-  // await startCampainVerifier();
-  // await InvestmentListener.startListner().catch(console.log);
+  await startCampainVerifier();
+  await InvestmentListener.startListner().catch(console.log);
 }).catch(err => {
   console.log('initialisation failed:', err);
   process.exit(1);
