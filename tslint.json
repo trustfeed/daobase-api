@@ -1,0 +1,17 @@
+{
+  "extends": "tslint-config-standard",
+  "rules": {
+    "space-before-function-paren": false,
+    "quotemark": [
+      true,
+      "single",
+      "avoid-escape"
+    ],
+    "semicolon": [
+      true,
+      "always",
+      "ignore-bound-class-methods"
+    ],
+    "noImplicitAny": false
+  }
+}
