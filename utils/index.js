@@ -19,3 +19,11 @@ exports.stringToId = id => {
     throw new TypedError(400, 'Invalid Id: ' + id);
   }
 };
+
+exports.stringRoundedOrUndefined = s => {
+  try {
+    return Math.round(Number(s));
+  } catch (err) {
+    return undefined;
+  }
+};

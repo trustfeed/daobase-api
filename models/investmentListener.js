@@ -1,6 +1,6 @@
 import Networks from './networks';
 import User from './user';
-import Investments from './investments';
+import Investment from './investment';
 import Campaign from './campaign';
 import EventWorker from './eventWorker';
 
@@ -25,10 +25,10 @@ class InvestmentListener extends EventWorker {
     Campaign.updateWeiRaised(token).catch(() => {});
     if (token && from && to) {
       if (userPublicAddresses.has(from)) {
-        Investments.updateBalance(this.network, token, from).catch(() => {});
+        Investment.updateBalance(this.network, token, from).catch(() => {});
       }
       if (userPublicAddresses.has(to)) {
-        Investments.updateBalance(this.network, token, to).catch(() => {});
+        Investment.updateBalance(this.network, token, to).catch(() => {});
       }
     }
   }
@@ -75,7 +75,7 @@ const checkUser = async publicAddress => {
   return Campaign.find({ 'hostedCampaign.onChainData.tokenContract': { $exists: true } })
     .stream()
     .on('data', campaign => {
-      return Investments.updateBalance(
+      return Investment.updateBalance(
         campaign.hostedCampaign.onChainData.network,
         campaign.hostedCampaign.onChainData.tokenContract.address,
         publicAddress
