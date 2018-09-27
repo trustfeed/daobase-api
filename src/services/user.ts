@@ -52,4 +52,17 @@ export class UserService {
       });
     });
   }
+
+  // TODO: validate the user data
+  public updateUser(user: User): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.mongoClient.update('user', user._id, user, (error, data: User) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(data);
+        }
+      });
+    });
+  }
 }

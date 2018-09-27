@@ -18,6 +18,7 @@ import { UserService } from './services/user';
 import { MongoDBClient } from './utils/mongodb/client';
 import './controllers/healthz';
 import './controllers/nonce';
+import './controllers/users';
 
 const container = new Container();
 

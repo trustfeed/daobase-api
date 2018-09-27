@@ -2,12 +2,6 @@ import { injectable } from 'inversify';
 import Email from './email';
 import config from '../config';
 
-export enum KYCStatus {
-  Pending = 0,
-  Verified = 1,
-  Failed = 2
-}
-
 interface IUser {
   publicAddress: string;
   nonce: string;
@@ -15,7 +9,7 @@ interface IUser {
   currentEmail?: Email;
   previousEmails?: Email[];
   name?: string;
-  kycStatus?: KYCStatus;
+  kycStatus?: string;
 }
 
 @injectable()
@@ -27,7 +21,7 @@ export class User implements IUser {
   public _id?: string;
   public currentEmail?: Email;
   public name?: string;
-  public kycStatus?: KYCStatus;
+  public kycStatus?: string;
 
   constructor(
     publicAddress: string
@@ -38,15 +32,17 @@ export class User implements IUser {
     this.updatedAt = new Date();
   }
 
-//  addEmail(email: string) {
-//    if (this.currentEmail && this.currentEmail.address !== email) {
-//      this.previousEmails.push(this.currentEmail);
-//    }
-//
-//    if (!this.currentEmail || this.currentEmail.address !== email) {
-//      this.currentEmail = new Email(email);
-//      this.updatedAt = new Date();
-//    }
+  addEmail(email: string) {
+    if (this.currentEmail && this.currentEmail.address !== email) {
+      this.previousEmails.push(this.currentEmail);
+    }
+
+    if (!this.currentEmail || this.currentEmail.address !== email) {
+      this.currentEmail = new Email(email);
+      this.updatedAt = new Date();
+    }
+    this.currentEmail.verifiedAt = new Date();
+  }
 //
 //    if (config.dev) {
 //      this.currentEmail.verifiedAt = new Date();
