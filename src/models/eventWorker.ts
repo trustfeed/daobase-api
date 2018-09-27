@@ -1,18 +1,23 @@
 // This listens to events and resets itself when needed.
 class EventWorker {
-  isWatchingEvents: boolean;
   web3: any;
+  protected isWatchingEvents: boolean;
+  protected async startWatching(): Promise<any> {
+    return { on: () => { return; } };
+  }
+  protected async processEvent(evt: any): Promise<void> {
+    return;
+  }
+
   // TODO: remove any types
-  _startWatching: () => any;
-  _processEvent: (evt: any) => any;
   constructor(web3) {
     this.web3 = web3;
   }
 
   async watchEvents() {
     try {
-      let w = await this._startWatching();
-      w.on('data', evt => this._processEvent(evt)).on('error', console.error);
+      let w = await this.startWatching();
+      w.on('data', evt => this.processEvent(evt)).on('error', console.error);
       this.isWatchingEvents = true;
     } catch (error) {
       console.log(error);

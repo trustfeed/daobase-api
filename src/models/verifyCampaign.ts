@@ -7,11 +7,6 @@ import EventWorker from './eventWorker';
 
 // This verifies campaigns on a single network. It should handle infura server crashes.
 class CampaignVerifier extends EventWorker {
-  scrapedTo: number;
-  chunckSize: number;
-  // TODO: remove any types
-  registry: any;
-  contract: any;
   constructor(network, abi) {
     // Make the event worker that will handle disconnects
     super(Networks.node(network));
@@ -22,6 +17,11 @@ class CampaignVerifier extends EventWorker {
     this.registry = Networks.registry(network);
     this.contract = new this.web3.eth.Contract(abi, Networks.registry(network));
   }
+
+  private scrapedTo: number;
+  private chunckSize: number;
+  private registry: any;
+  private contract: any;
 
   // Fetch the abi needed for the events
   static async loadABI(network?) {
@@ -38,7 +38,7 @@ class CampaignVerifier extends EventWorker {
   }
 
   // Internal function that checks validaty of creation event
-  async _verifyRegistyEvent(registryEvent) {
+  private async verifyRegistyEvent(registryEvent) {
     const campaignId = mongoose.Types.ObjectId(registryEvent.returnValues.campaignId);
     const campaign: any = await Campaign.findOne({ _id: campaignId });
     if (!campaign) {
@@ -73,7 +73,7 @@ class CampaignVerifier extends EventWorker {
 
   // Scrap old events in chuncks.
   // TODO: Use event.getPastEvents not all logs.
-  async _scrape() {
+  private async scrape() {
     const decodeReturnValues = log => {
       const returnValues = this.web3.eth.abi.decodeParameters(['address', 'string'], log.data);
       return { campaignAddress: returnValues[0], campaignId: returnValues[1] };
@@ -81,7 +81,7 @@ class CampaignVerifier extends EventWorker {
 
     const processLog = log => {
       log.returnValues = decodeReturnValues(log);
-      return this._verifyRegistyEvent(log).catch(e => console.log(e.message));
+      return this.verifyRegistyEvent(log).catch(e => console.log(e.message));
     };
 
     while (this.scrapedTo <= (await this.web3.eth.getBlockNumber())) {
@@ -98,8 +98,8 @@ class CampaignVerifier extends EventWorker {
   }
 
   // After network outage, crawl unknown blocks and start watching for new events
-  async startWatching() {
-    this._scrape();
+  protected async startWatching() {
+    this.scrape();
 
     return this.contract.events.NewCampaign({}, () => {
       return;
@@ -107,8 +107,8 @@ class CampaignVerifier extends EventWorker {
   }
 
   // Process a registry event
-  async processEvent(registryEvent) {
-    this._verifyRegistyEvent(registryEvent).catch(err => {
+  protected async processEvent(registryEvent) {
+    this.verifyRegistyEvent(registryEvent).catch(err => {
       console.log('registry event failed to verify:', err.message);
     });
   }

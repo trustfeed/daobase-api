@@ -65,7 +65,7 @@ db.on('error', err => {
 db.once('open', async () => {
   try {
     await Contract.migrateAll().catch(console.log);
-    await startCampainVerifier();
+    // await startCampainVerifier();
     await InvestmentListener.startListner().catch(console.log);
   } catch (error) {
     console.log('initialisation failed:', error);

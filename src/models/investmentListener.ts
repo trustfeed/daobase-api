@@ -17,15 +17,15 @@ const userPublicAddresses: any = new Set([]);
 // This listens for token transfer events on a single network,
 // should handle crashes of the ethereum client
 class InvestmentListener extends EventWorker {
-  // TOOD: remove any types
-  network: any;
-  constructor(network) {
+  constructor(network: string) {
     super(Networks.node(network));
     this.network = network;
   }
 
+  private network: string;
+
   // Handle a new log event, updating the db if needed
-  async processEvent(log) {
+  protected async processEvent(log: any): Promise<void> {
     const token = log.address;
     const from = topicToAddress(log.topics[1]);
     const to = topicToAddress(log.topics[2]);
@@ -41,7 +41,7 @@ class InvestmentListener extends EventWorker {
   }
 
   // After a connection is established listen for new events
-  async startWatching() {
+  protected async startWatching(): Promise<any> {
     crawlAllKnown();
     return this.web3.eth.subscribe(
       'logs',
