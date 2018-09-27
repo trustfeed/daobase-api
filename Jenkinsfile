@@ -8,6 +8,9 @@ pipeline {
   }
   stages {
     stage('Build image') {
+      when {
+        branch 'master'
+      }
       steps {
         script {
           dockerImage = docker.build registry + "/" + user + "/" + label + ":$BUILD_NUMBER"
@@ -16,6 +19,9 @@ pipeline {
       }
     }
     stage('Push image') {
+      when {
+        branch 'master'
+      }
       steps {
         script {
           docker.withRegistry( "https://" + registry, registryCredential ) {
@@ -25,6 +31,9 @@ pipeline {
       }
     }
    stage('Deploy') {
+      when {
+        branch 'master'
+      }
       steps {
         kubernetesDeploy(kubeconfigId: 'k8s-trustfeed', configs: 'deploy.yml', enableConfigSubstitution: true)
       }
