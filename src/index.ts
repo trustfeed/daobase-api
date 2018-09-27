@@ -1,74 +1,112 @@
+import 'reflect-metadata';
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import config from './config';
 import controllers from './controllers';
-import startCampainVerifier from './models/verifyCampaign';
-import mongoose from 'mongoose';
-import InvestmentListener from './models/investmentListener';
-import Contract from './models/contract';
+// import startCampainVerifier from './models/verifyCampaign';
+// import mongoose from 'mongoose';
+// import InvestmentListener from './models/investmentListener';
+// import Contract from './models/contract';
 import morgan from 'morgan';
 import error from './middleware/error';
+import { Container } from 'inversify';
+import TYPES from './constant/types';
+import { InversifyExpressServer } from 'inversify-express-utils';
 
-const app = express();
+import { UserService } from './services/user';
+import { MongoDBClient } from './utils/mongodb/client';
+import './controllers/healthz';
+import './controllers/nonce';
 
-// Global middleware
-app.use(morgan('common'));
-app.use(
-  bodyParser.json({
-    type: 'application/json'
-  })
-);
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-    type: 'application/x-www-form-urlencoded'
-  })
-);
-app.use(cors());
+const container = new Container();
 
-// The standard google health check
-app.get('/healthz', (req, res) => {
-  res.status(200).send('ok');
+container.bind<MongoDBClient>(TYPES.MongoDBClient).to(MongoDBClient);
+container.bind<UserService>(TYPES.UserService).to(UserService);
+
+const server = new InversifyExpressServer(container);
+server.setConfig((app) => {
+  app.use(morgan('common'));
+  app.use(
+    bodyParser.json({
+      type: 'application/json'
+    })
+  );
+  app.use(
+    bodyParser.urlencoded({
+      extended: true,
+      type: 'application/x-www-form-urlencoded'
+    })
+  );
+  app.use(cors());
+});
+server.setErrorConfig((app) => {
+  app.use(error);
 });
 
-// The apis we provide
-app.use('/', controllers);
-app.use(error);
+const app = server.build();
+app.listen(config.port);
 
-// accept requests
-app
-  .listen(config.port, () => console.log(`express is running on port ${config.port}`))
-  .on('error', err => {
-    console.log(err);
-    process.exit(1);
-  });
-
-// Initialise the database
-const options = {
-  user: config.mongoUser,
-  pass: config.mongoPass
-};
-
-const uri = `mongodb://${config.mongoHost}:${config.mongoPort}/crowdAdmin?authSource=admin`;
-mongoose.connect(
-  uri,
-  options
-);
-mongoose.Promise = global.Promise;
-const db = mongoose.connection;
-db.on('error', err => {
-  console.error(err);
-  process.exit(1);
-});
-
-db.once('open', async () => {
-  try {
-    await Contract.migrateAll().catch(console.log);
-    // await startCampainVerifier();
-    await InvestmentListener.startListner().catch(console.log);
-  } catch (error) {
-    console.log('initialisation failed:', error);
-    process.exit(1);
-  }
-});
+exports = module.exports = app;
+// const app = express();
+//
+//// Global middleware
+// app.use(morgan('common'));
+// app.use(
+//  bodyParser.json({
+//    type: 'application/json'
+//  })
+// );
+// app.use(
+//  bodyParser.urlencoded({
+//    extended: true,
+//    type: 'application/x-www-form-urlencoded'
+//  })
+// );
+// app.use(cors());
+//
+//// The standard google health check
+// app.get('/healthz', (req, res) => {
+//  res.status(200).send('ok');
+// });
+//
+//// The apis we provide
+// app.use('/', controllers);
+// app.use(error);
+//
+//// accept requests
+// app
+//  .listen(config.port, () => console.log(`express is running on port ${config.port}`))
+//  .on('error', err => {
+//    console.log(err);
+//    process.exit(1);
+//  });
+//
+////// Initialise the database
+//// const options = {
+////  user: config.mongoUser,
+////  pass: config.mongoPass
+//// };
+////
+//// const uri = `mongodb://${config.mongoHost}:${config.mongoPort}/crowdAdmin?authSource=admin`;
+//// mongoose.connect(
+////  uri,
+////  options
+//// );
+//// mongoose.Promise = global.Promise;
+//// const db = mongoose.connection;
+//// db.on('error', err => {
+////  console.error(err);
+////  process.exit(1);
+//// });
+//
+//// db.once('open', async () => {
+////  try {
+////    await Contract.migrateAll().catch(console.log);
+////    // await startCampainVerifier();
+////    await InvestmentListener.startListner().catch(console.log);
+////  } catch (error) {
+////    console.log('initialisation failed:', error);
+////    process.exit(1);
+////  }
+//// });

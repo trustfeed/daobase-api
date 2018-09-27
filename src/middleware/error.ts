@@ -11,7 +11,7 @@ const error = async (err, req, res, next) => {
       data: err.data
     });
   }
-  next(err);
+  // next(err);
 };
 
 export default error;

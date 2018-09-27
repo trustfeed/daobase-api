@@ -15,13 +15,13 @@ class ErrorWithType extends Error {
 
 export const TypedError = ErrorWithType;
 
-export const stringToId = id => {
-  try {
-    return mongoose.Types.ObjectId(id);
-  } catch (err) {
-    throw new TypedError(400, 'Invalid Id: ' + id);
-  }
-};
+// export const stringToId = id => {
+//  try {
+//    return mongoose.Types.ObjectId(id);
+//  } catch (err) {
+//    throw new TypedError(400, 'Invalid Id: ' + id);
+//  }
+// };
 
 export const stringRoundedOrUndefined = s => {
   try {
