@@ -1,34 +1,26 @@
 import config from '../config';
 import jwt from 'jsonwebtoken';
+import { TypedError } from '../utils';
 
-const decodeToken = token => {
-  return new Promise((resolve, reject) => {
-    jwt.verify(token, config.secret, (err, decoded) => {
-      if (err) reject(err);
-      resolve(decoded);
-    });
-  });
+export const authMiddleware = async (req, res, next) => {
+  req.decoded = decodeToken(req);
+  next();
 };
 
-const authMiddleware = async (req, res, next) => {
+export const decodeToken = (req) => {
   const token = req.headers['x-access-token'] || req.query.token;
 
   if (!token) {
-    return res.status(403).json({
+    throw new TypedError(403, {
       message: 'not logged in'
     });
   }
 
   try {
-    await decodeToken(token).then(decoded => {
-      req.decoded = decoded;
-    });
-    next();
+    return jwt.verify(token, config.secret);
   } catch (err) {
-    res.status(403).json({
-      message: err.message
+    throw new TypedError(403, {
+      message: 'not logged in'
     });
   }
 };
-
-export default authMiddleware;

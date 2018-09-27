@@ -1,0 +1,40 @@
+import { controller, httpGet, httpPost, httpPut, queryParam, next, request, requestBody, response } from 'inversify-express-utils';
+import { injectable, inject } from 'inversify';
+import * as express from 'express';
+import { TypedError } from '../utils';
+import { UserService } from '../services/user';
+import { checkSignature } from '../models/user';
+import TYPES from '../constant/types';
+
+@controller('/auth')
+export class AuthController {
+  constructor(@inject(TYPES.UserService) private userService: UserService) {}
+
+  @httpPost('/')
+  public async post(
+    @requestBody() body: any,
+    @response() res: express.Response,
+    @next() next: express.NextFunction) {
+    try {
+      const { signature, publicAddress } = body;
+      if (!signature || !publicAddress) {
+        throw new TypedError(400, 'Request should have signature and publicAddress');
+      }
+
+      let user = await this.userService.findByPublicAddress(publicAddress);
+      if (!user) {
+        throw new TypedError(404, 'public address not found');
+      }
+      console.log(typeof user);
+      const accessToken = checkSignature(user, signature);
+      console.log(accessToken);
+      await this.userService.update(user);
+      res.status(201).send({
+        accessToken
+      });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+}

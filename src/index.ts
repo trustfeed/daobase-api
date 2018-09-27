@@ -19,6 +19,7 @@ import { MongoDBClient } from './utils/mongodb/client';
 import './controllers/healthz';
 import './controllers/nonce';
 import './controllers/users';
+import './controllers/auth';
 
 const container = new Container();
 
