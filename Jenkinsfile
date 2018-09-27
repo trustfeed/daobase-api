@@ -9,7 +9,7 @@ pipeline {
   stages {
     stage('Build image') {
       when {
-        branch 'master'
+        branch 'use-ts'
       }
       steps {
         script {
@@ -20,7 +20,7 @@ pipeline {
     }
     stage('Push image') {
       when {
-        branch 'master'
+        branch 'use-ts'
       }
       steps {
         script {
@@ -32,7 +32,7 @@ pipeline {
     }
    stage('Deploy') {
       when {
-        branch 'master'
+        branch 'use-ts'
       }
       steps {
         kubernetesDeploy(kubeconfigId: 'k8s-trustfeed', configs: 'deploy.yml', enableConfigSubstitution: true)
