@@ -11,7 +11,7 @@ const verifiedEmail = async (req, res, next) => {
     return res.status(404).send({
       message: 'unknown user id'
     });
-  } else if (!user.currentEmail || !user.currentEmail.verifiedAt) {
+  } else if (user.currentEmail == null || user.currentEmail.verifiedAt == null) {
     return res.status(403).send({
       message: 'verified email address required'
     });

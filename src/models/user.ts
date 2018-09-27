@@ -1,9 +1,11 @@
 import { injectable } from 'inversify';
-import Email from './email';
+import { Email } from './email';
 import config from '../config';
 import { TypedError } from '../utils';
 import ethUtil from 'ethereumjs-util';
 import jwt from 'jsonwebtoken';
+import { HashToEmail } from './hashToEmail';
+import * as mailer from './mailer';
 
 interface IUser {
   publicAddress: string;
@@ -36,7 +38,7 @@ export class User implements IUser {
   }
 }
 
-export const updateEmail = (user: User, email: string): User => {
+export const updateEmail = async (user: User, email: string, hashToEmailService): Promise<User> => {
   if (user.currentEmail && user.currentEmail.address !== email) {
     user.previousEmails.push(user.currentEmail);
   }
@@ -45,20 +47,19 @@ export const updateEmail = (user: User, email: string): User => {
     user.currentEmail = new Email(email);
     user.updatedAt = new Date();
   }
-  user.currentEmail.verifiedAt = new Date();
+  if (config.dev) {
+    this.currentEmail.verifiedAt = new Date();
+  } else {
+    const h2e = new HashToEmail(user, email);
+    await hashToEmailService.insert(h2e);
+    await mailer.sendEmailVerification(
+      user.currentEmail.address,
+      user.name,
+      `${config.frontendHost}/email-verification?token=${h2e.hash}`
+    );
+  }
   return user;
 };
-//
-//    if (config.dev) {
-//      this.currentEmail.verifiedAt = new Date();
-//    } else {
-//      // TODO: send the email verification
-////        .then(HashToEmail.create(this._id, this.currentEmail))
-////        .then(() => {
-////          return this;
-////        });
-//    }
-//  }
 
 export const checkSignature = (user: User, signature: string): string => {
   const signedAddress = sign(user, signature);

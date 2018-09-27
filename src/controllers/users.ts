@@ -3,6 +3,7 @@ import { injectable, inject } from 'inversify';
 import * as express from 'express';
 import { TypedError } from '../utils';
 import { UserService } from '../services/user';
+import { HashToEmailService } from '../services/hashToEmail';
 import { updateEmail } from '../models/user';
 import TYPES from '../constant/types';
 import { decodeToken } from '../middleware/auth';
@@ -10,7 +11,8 @@ import * as view from '../views/user';
 
 @controller('/users')
 export class UsersController {
-  constructor(@inject(TYPES.UserService) private userService: UserService) {}
+  constructor(@inject(TYPES.UserService) private userService: UserService,
+	      @inject(TYPES.HashToEmailService) private hashToEmailService: HashToEmailService) {}
 
   @httpGet('/')
   public async get(
@@ -73,7 +75,6 @@ export class UsersController {
         throw new TypedError(400, 'missing user id');
       }
 
-      console.log(decoded.id);
       const user = await this.userService.findById(decoded.id);
       if (!user) {
         throw new TypedError(404, 'user not in database');
@@ -82,7 +83,7 @@ export class UsersController {
         user.name = body.name;
       }
       if (body.email) {
-        await updateEmail(user, body.email);
+        await updateEmail(user, body.email, this.hashToEmailService);
       }
       await this.userService.update(user);
       return {

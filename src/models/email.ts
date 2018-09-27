@@ -6,7 +6,7 @@ interface IEmail {
 }
 
 @injectable()
-export default class Email implements IEmail {
+export class Email implements IEmail {
   constructor(
     public address: string,
     public verifiedAt?: Date

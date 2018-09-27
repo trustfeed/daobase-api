@@ -1,62 +1,72 @@
-import mongoose from 'mongoose';
-
-import * as Mailer from './mailer';
+import { injectable } from 'inversify';
 import config from '../config';
-const sha256 = require('js-sha256');
+import { User } from './user';
+import { Email } from './email';
+import { sha256 } from 'js-sha256';
+import { TypedError } from '../utils';
 
-const Schema = mongoose.Schema;
+// const HashToEmail = new Schema({
+//  hash: {
+//    type: String,
+//    required: true,
+//    unique: true,
+//    index: true
+//  },
+//  createdAt: {
+//    type: Date,
+//    required: true,
+//    default: Date.now
+//  },
+//  user: {
+//    type: Schema.Types.ObjectId,
+//    ref: 'User',
+//    required: true
+//  },
+//  address: {
+//    type: Schema.Types.ObjectId,
+//    required: true
+//  }
+// });
 
-const HashToEmail = new Schema({
-  hash: {
-    type: String,
-    required: true,
-    unique: true,
-    index: true
-  },
-  createdAt: {
-    type: Date,
-    required: true,
-    default: Date.now
-  },
-  user: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
-  address: {
-    type: Schema.Types.ObjectId,
-    required: true
+@injectable()
+export class HashToEmail {
+  public hash: string;
+  public user: string;
+  public email: string;
+  public createdAt: Date;
+  public _id?: string;
+
+  constructor(
+    user: User,
+    email: string
+  ) {
+    this.user = user._id.toString();
+    this.email = email;
+
+    const hash = sha256.create();
+    hash.update(user.toString() + email + Math.random());
+    this.hash = hash.hex();
+
+    this.createdAt = new Date();
   }
-});
+}
 
-HashToEmail.statics.create = async function(user, emailObj) {
-  const hsh = sha256.create();
-  hsh.update(user.toString() + emailObj._id.toString() + Math.random());
-  const token = hsh.hex();
-
-  await Mailer.sendEmailVerification(
-    emailObj.address,
-    user.name,
-    `${config.frontendHost}/email-verification?token=${token}`
-  );
-
-  const h2e = this({
-    hash: token,
-    user: user,
-    address: emailObj._id
-  });
-  return h2e.save();
+export const verifyEmail = async (hashToEmail: HashToEmail, userService): Promise<boolean> => {
+  let user = await userService.findById(hashToEmail.user);
+  if (user == null) {
+    throw new TypedError(500, 'internal error');
+  } else if (user.currentEmail == null || user.currentEmail.address !== hashToEmail.email) {
+    throw new TypedError(
+          400,
+          'a different email has been registred for that account',
+          'EXPIRED_TOKEN'
+        );
+  } else if (user.currentEmail.verifiedAt) {
+    throw new TypedError(400, 'the address is already verified', 'VERIFIED_TOKEN');
+  } else {
+    user.currentEmail.verifiedAt = Date.now();
+    user.updatedAt = Date.now();
+    await userService.update(user);
+    return true;
+  }
 };
-
-HashToEmail.statics.findOneByHash = function(hash) {
-  return this.findOne({
-    hash
-  }).exec();
-};
-
-HashToEmail.statics.findAll = function() {
-  return this.find().exec();
-};
-
-const HashToEmailModel: any = mongoose.model('HashToEmail', HashToEmail);
-export default HashToEmailModel;

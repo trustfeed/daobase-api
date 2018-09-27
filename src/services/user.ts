@@ -1,5 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { MongoDBClient } from '../utils/mongodb/client';
+import { MongoDBConnection } from '../utils/mongodb/connection';
 import { stringToId } from '../utils/mongodb/stringToId';
 import { User } from '../models/user';
 import TYPES from '../constant/types';
@@ -12,6 +13,12 @@ export class UserService {
     @inject(TYPES.MongoDBClient) mongoClient: MongoDBClient
   ) {
     this.mongoClient = mongoClient;
+
+    MongoDBConnection.getConnection(result => {
+      result.collection('user').createIndex(
+	      'publicAddress',
+	      { name: 'publicAddress', unique: true });
+    });
   }
 
   public findByPublicAddress(publicAddress: string): Promise<User> {

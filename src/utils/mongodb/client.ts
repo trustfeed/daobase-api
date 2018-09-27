@@ -31,7 +31,7 @@ export class MongoDBClient {
     });
   }
 
-  public insert(collection: string, model: User, result: (error, data) => void): void {
+  public insert(collection: string, model: any, result: (error, data) => void): void {
     this.db.collection(collection).insertOne(model, (error, insert) => {
       return result(error, insert.ops[0]);
     });

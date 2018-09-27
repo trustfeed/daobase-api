@@ -13,10 +13,10 @@ export const self = (user: User) => {
   out.id = user._id.toString();
   out.publicAddress = user.publicAddress;
   out.name = user.name;
-  if (user.currentEmail) {
+  if (user.currentEmail != null) {
     out.email = {
       address: user.currentEmail.address,
-      isVerified: user.currentEmail.verifiedAt !== undefined
+      isVerified: user.currentEmail.verifiedAt != null
     };
   }
   return out;

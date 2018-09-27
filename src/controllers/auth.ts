@@ -25,9 +25,7 @@ export class AuthController {
       if (!user) {
         throw new TypedError(404, 'public address not found');
       }
-      console.log(typeof user);
       const accessToken = checkSignature(user, signature);
-      console.log(accessToken);
       await this.userService.update(user);
       res.status(201).send({
         accessToken

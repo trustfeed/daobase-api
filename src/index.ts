@@ -15,16 +15,19 @@ import TYPES from './constant/types';
 import { InversifyExpressServer } from 'inversify-express-utils';
 
 import { UserService } from './services/user';
+import { HashToEmailService } from './services/hashToEmail';
 import { MongoDBClient } from './utils/mongodb/client';
 import './controllers/healthz';
 import './controllers/nonce';
 import './controllers/users';
 import './controllers/auth';
+import './controllers/verify';
 
 const container = new Container();
 
 container.bind<MongoDBClient>(TYPES.MongoDBClient).to(MongoDBClient);
 container.bind<UserService>(TYPES.UserService).to(UserService);
+container.bind<HashToEmailService>(TYPES.HashToEmailService).to(HashToEmailService);
 
 const server = new InversifyExpressServer(container);
 server.setConfig((app) => {
