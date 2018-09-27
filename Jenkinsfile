@@ -30,13 +30,23 @@ pipeline {
         }
       }
     }
-   stage('Deploy') {
+    stage('Delete local image') {
       when {
         branch 'use-ts'
       }
       steps {
-        kubernetesDeploy(kubeconfigId: 'k8s-trustfeed', configs: 'deploy.yml', enableConfigSubstitution: true)
+        script {
+          sh 'docker rmi ' + registry + '/' + user + '/' + label + ':$BUILD_NUMBER'
+        }
       }
     }
-  }
+    stage('Deploy') {
+       when {
+         branch 'use-ts'
+       }
+       steps {
+         kubernetesDeploy(kubeconfigId: 'k8s-trustfeed', configs: 'deploy.yml', enableConfigSubstitution: true)
+       }
+     }
+   }
 }
