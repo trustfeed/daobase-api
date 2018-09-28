@@ -1,7 +1,6 @@
 import { Db, ObjectID } from 'mongodb';
 import { injectable } from 'inversify';
 import { MongoDBConnection } from './connection';
-import { User } from '../../models/user';
 
 @injectable()
 export class MongoDBClient {
@@ -37,7 +36,7 @@ export class MongoDBClient {
     });
   }
 
-  public update(collection: string, objectId: string, model: User, result: (error, data) => void): void {
+  public update(collection: string, objectId: string, model: any, result: (error, data) => void): void {
     this.db.collection(collection).updateOne(
       { _id: new ObjectID(objectId) },
       { $set: model },

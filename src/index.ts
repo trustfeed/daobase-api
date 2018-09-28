@@ -16,6 +16,7 @@ import { InversifyExpressServer } from 'inversify-express-utils';
 
 import { UserService } from './services/user';
 import { HashToEmailService } from './services/hashToEmail';
+import { ContractService } from './services/contract';
 import { MongoDBClient } from './utils/mongodb/client';
 import './controllers/healthz';
 import './controllers/nonce';
@@ -28,6 +29,7 @@ const container = new Container();
 container.bind<MongoDBClient>(TYPES.MongoDBClient).to(MongoDBClient);
 container.bind<UserService>(TYPES.UserService).to(UserService);
 container.bind<HashToEmailService>(TYPES.HashToEmailService).to(HashToEmailService);
+container.bind<ContractService>(TYPES.ContractService).to(ContractService);
 
 const server = new InversifyExpressServer(container);
 server.setConfig((app) => {

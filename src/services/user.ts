@@ -5,6 +5,8 @@ import { stringToId } from '../utils/mongodb/stringToId';
 import { User } from '../models/user';
 import TYPES from '../constant/types';
 
+const collectionName = 'user';
+
 @injectable()
 export class UserService {
   private mongoClient: MongoDBClient;
@@ -15,7 +17,7 @@ export class UserService {
     this.mongoClient = mongoClient;
 
     MongoDBConnection.getConnection(result => {
-      result.collection('user').createIndex(
+      result.collection(collectionName).createIndex(
 	      'publicAddress',
 	      { name: 'publicAddress', unique: true });
     });
@@ -23,7 +25,7 @@ export class UserService {
 
   public findByPublicAddress(publicAddress: string): Promise<User> {
     return new Promise<User>((resolve, reject) => {
-      this.mongoClient.findOne('user', { publicAddress }, (error, data: User) => {
+      this.mongoClient.findOne(collectionName, { publicAddress }, (error, data: User) => {
         if (error) {
           reject(error);
         } else {
@@ -35,7 +37,7 @@ export class UserService {
 
   public findById(id: string): Promise<User> {
     return new Promise<User>((resolve, reject) => {
-      this.mongoClient.findOne('user', { _id: stringToId(id) }, (error, data: User) => {
+      this.mongoClient.findOne(collectionName, { _id: stringToId(id) }, (error, data: User) => {
         if (error) {
           reject(error);
         } else {
@@ -51,7 +53,7 @@ export class UserService {
       const user = new User(
         publicAddress
       );
-      this.mongoClient.insert('user', user, (error, data: User) => {
+      this.mongoClient.insert(collectionName, user, (error, data: User) => {
         if (error) {
           reject(error);
         } else {
@@ -64,7 +66,7 @@ export class UserService {
   // TODO: validate the user data
   public update(user: User): Promise<any> {
     return new Promise<any>((resolve, reject) => {
-      this.mongoClient.update('user', user._id, user, (error, data: User) => {
+      this.mongoClient.update(collectionName, user._id, user, (error, data: User) => {
         if (error) {
           reject(error);
         } else {

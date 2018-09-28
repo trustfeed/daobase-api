@@ -14,9 +14,10 @@ const router = express.Router();
 // router.use('/nonce', nonce);
 // router.use('/users', users);
 // router.use('/auth', auth);
+// router.use('/verify', verify);
+
 // router.use('/admin', admin);
 // router.use('/campaigns', campaigns);
-// router.use('/verify', verify);
 // router.use('/investments', investments);
 // router.use('/kyc', kyc);
 // router.use('/coin-payments', coinPayments);
