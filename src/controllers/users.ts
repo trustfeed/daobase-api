@@ -6,7 +6,7 @@ import { UserService } from '../services/user';
 import { HashToEmailService } from '../services/hashToEmail';
 import { updateEmail } from '../models/user';
 import TYPES from '../constant/types';
-import { decodeToken } from '../middleware/auth';
+import { authMiddleware } from '../middleware/auth';
 import * as view from '../views/user';
 
 @controller('/users')
@@ -14,19 +14,18 @@ export class UsersController {
   constructor(@inject(TYPES.UserService) private userService: UserService,
 	      @inject(TYPES.HashToEmailService) private hashToEmailService: HashToEmailService) {}
 
-  @httpGet('/')
+  @httpGet('/', authMiddleware)
   public async get(
     @request() req: any,
     @requestBody() body: any,
     @next() next: express.NextFunction) {
 
     try {
-      const decoded = decodeToken(req);
-      if (!decoded || !decoded.publicAddress) {
+      if (!req.decoded || !req.decoded.publicAddress) {
         throw new TypedError(500, 'publicAddress required in access token');
       }
 
-      const user = await this.userService.findByPublicAddress(decoded.publicAddress);
+      const user = await this.userService.findByPublicAddress(req.decoded.publicAddress);
       if (!user) {
         throw new TypedError(404, 'publicAddress not found');
       }
@@ -63,19 +62,18 @@ export class UsersController {
     }
   }
 
-  @httpPut('/')
+  @httpPut('/', authMiddleware)
   public async put(
     @request() req: any,
     @requestBody() body: any,
     @next() next: express.NextFunction
   ) {
     try {
-      const decoded = decodeToken(req);
-      if (!decoded.id) {
+      if (!req.decoded.id) {
         throw new TypedError(400, 'missing user id');
       }
 
-      const user = await this.userService.findById(decoded.id);
+      const user = await this.userService.findById(req.decoded.id);
       if (!user) {
         throw new TypedError(404, 'user not in database');
       }

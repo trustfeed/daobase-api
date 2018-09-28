@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import Web3 from 'web3';
 
 class ErrorWithType extends Error {
   httpStatus: number;
@@ -26,6 +27,14 @@ export const TypedError = ErrorWithType;
 export const stringRoundedOrUndefined = s => {
   try {
     return Math.round(Number(s));
+  } catch (err) {
+    return undefined;
+  }
+};
+
+export const stringToBNOrUndefined = s => {
+  try {
+    return Web3.utils.toBN(s);
   } catch (err) {
     return undefined;
   }

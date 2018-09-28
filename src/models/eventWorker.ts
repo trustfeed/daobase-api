@@ -1,4 +1,6 @@
 // This listens to events and resets itself when needed.
+// It should not be instansiated, but derived from with the functions
+// startWatching and processEvent overwritten.
 class EventWorker {
   web3: any;
   protected isWatchingEvents: boolean;

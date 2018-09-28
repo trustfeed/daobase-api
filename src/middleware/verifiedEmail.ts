@@ -1,4 +1,4 @@
-import User from '../models/user';
+import { User } from '../models/user';
 
 const verifiedEmail = async (req, res, next) => {
   if (!req.decoded || !req.decoded.publicAddress) {

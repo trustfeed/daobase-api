@@ -2,7 +2,7 @@ import config from '../config';
 import jwt from 'jsonwebtoken';
 import { TypedError } from '../utils';
 
-export const authMiddleware = async (req, res, next) => {
+export const authMiddleware = (req, res, next) => {
   req.decoded = decodeToken(req);
   next();
 };

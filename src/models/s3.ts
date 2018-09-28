@@ -1,7 +1,12 @@
 import AWS from 'aws-sdk';
 import config from '../config';
 
-export const signUpload = (campaignId, prefix, extension, contentType) => {
+export const signUpload = (
+  id: string,
+  prefix: string,
+  extension: string,
+  contentType: string
+): Promise<string> => {
   AWS.config.update({
     accessKeyId: config.accessKeyId.trim(),
     secretAccessKey: config.secretAccessKey.trim(),
@@ -11,7 +16,7 @@ export const signUpload = (campaignId, prefix, extension, contentType) => {
   let rand = (+new Date()).toString(36);
   const params = {
     Bucket: 'tokenadmin.work',
-    Key: prefix + '/' + campaignId + '-' + rand + '.' + extension,
+    Key: prefix + '/' + id + '-' + rand + '.' + extension,
     Expires: 60,
     ContentType: contentType
   };

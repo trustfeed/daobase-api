@@ -16,20 +16,24 @@ import { InversifyExpressServer } from 'inversify-express-utils';
 
 import { UserService } from './services/user';
 import { HashToEmailService } from './services/hashToEmail';
-import { ContractService } from './services/contract';
+import { KYCApplicationService } from './services/kycApplication';
+import { HostedCampaignService } from './services/hostedCampaign';
 import { MongoDBClient } from './utils/mongodb/client';
 import './controllers/healthz';
 import './controllers/nonce';
 import './controllers/users';
 import './controllers/auth';
 import './controllers/verify';
+import './controllers/kyc';
+import './controllers/admin';
 
 const container = new Container();
 
 container.bind<MongoDBClient>(TYPES.MongoDBClient).to(MongoDBClient);
 container.bind<UserService>(TYPES.UserService).to(UserService);
 container.bind<HashToEmailService>(TYPES.HashToEmailService).to(HashToEmailService);
-container.bind<ContractService>(TYPES.ContractService).to(ContractService);
+container.bind<KYCApplicationService>(TYPES.KYCApplicationService).to(KYCApplicationService);
+container.bind<HostedCampaignService>(TYPES.HostedCampaignService).to(HostedCampaignService);
 
 const server = new InversifyExpressServer(container);
 server.setConfig((app) => {

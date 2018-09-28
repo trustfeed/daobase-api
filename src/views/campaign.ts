@@ -226,11 +226,8 @@ const viewCampaign = (c, hosted, external) => {
   return out;
 };
 
-const views = {
-  adminFull: c => viewCampaign(c, viewHostedAdminFull, viewExternalFull),
-  adminBrief: c => viewCampaign(c, viewHostedAdminBrief, viewExternalFull),
-  publicFull: c => viewCampaign(c, viewHostedPublicFull, viewExternalFull),
-  publicBrief: c => viewCampaign(c, viewHostedPublicBrief, viewExternalFull)
-};
-
-export default views;
+export const adminFull = c => viewCampaign(c, viewHostedAdminFull, viewExternalFull);
+export const adminBrief = c => viewCampaign(c, viewHostedAdminBrief, viewExternalFull);
+//  adminBrief: c => viewCampaign(c, viewHostedAdminBrief, viewExternalFull),
+//  publicFull: c => viewCampaign(c, viewHostedPublicFull, viewExternalFull),
+//  publicBrief: c => viewCampaign(c, viewHostedPublicBrief, viewExternalFull)

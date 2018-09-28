@@ -1,27 +1,23 @@
-import mongoose from 'mongoose';
+import { injectable } from 'inversify';
+import { DeployedContract } from './deployedContract';
+import Web3 from 'web3';
 import validate from 'validate.js';
-const Schema = mongoose.Schema;
+import config from '../config';
+import { stringToBNOrUndefined, stringRoundedOrUndefined } from '../utils';
 
-// The off-chain data that can be altered at other times
-const OffChainData = new Schema({
-  coverImageURL: {
-    type: String
-  },
-  whitePaperURL: {
-    type: String
-  },
-  summary: {
-    type: String
-  },
-  description: {
-    type: String
-  },
-  keywords: {
-    type: [String]
+@injectable()
+export class OffChainData {
+  coverImageURL?: string;
+  whitePaperURL?: string;
+  summary?: string;
+  keywords: string[];
+
+  constructor() {
+    this.keywords = [];
   }
-});
+}
 
-OffChainData.methods.generateReport = function() {
+export const generateReport = (offChainData: OffChainData): any => {
   const constraints = {
     coverImageURL: {
       presence: true,
@@ -38,5 +34,3 @@ OffChainData.methods.generateReport = function() {
   }
   return errs;
 };
-
-export default OffChainData;

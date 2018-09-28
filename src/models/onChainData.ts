@@ -1,95 +1,63 @@
-import mongoose from 'mongoose';
-import config from '../config';
+import { injectable } from 'inversify';
+import { DeployedContract } from './deployedContract';
+import Web3 from 'web3';
 import validate from 'validate.js';
-import * as utils from '../utils';
-const Web3 = require('web3');
-const Schema = mongoose.Schema;
+import config from '../config';
+import { stringToBNOrUndefined, stringRoundedOrUndefined } from '../utils';
 
-// A contract that is deployed on a network
-const DeployedContract = new Schema({
-  address: {
-    type: String
-  },
-  abi: {
-    type: String,
-    required: true
+@injectable()
+export class OnChainData {
+  public createdAt: Date;
+  public network: string;
+  public tokenName: string;
+  public tokenSymbol: string;
+  public numberOfDecimals: number;
+  public startingTime: Date;
+  public duration: number;
+  public rate: string;
+  public softCap: string;
+  public hardCap: string;
+  public isMinted: boolean;
+  public version: string;
+  public tokenContract?: DeployedContract;
+  public crowdsaleContract?: DeployedContract;
+  public walletContract?: DeployedContract;
+  public weiRaised?: string;
+  public _id?: string;
+
+  constructor(
+    network: string,
+    tokenName: string,
+    tokenSymbol: string,
+    numberOfDecimals: number,
+    startingTime: Date,
+    duration: number,
+    rate: string,
+    softCap: string,
+    hardCap: string,
+    isMinted: boolean,
+    version?: string
+  ) {
+    this.createdAt = new Date();
+    this.network = network;
+    this.tokenName = tokenName;
+    this.tokenSymbol = tokenSymbol;
+    this.numberOfDecimals = numberOfDecimals;
+    this.startingTime = startingTime;
+    this.duration = duration;
+    this.rate = rate;
+    this.softCap = softCap;
+    this.hardCap = hardCap;
+    this.isMinted = isMinted;
+    if (version != null) {
+      this.version = version;
+    } else {
+      this.version = '0.0.0';
+    }
   }
-});
+}
 
-// The on-chain data that can only be modified during DRAFT
-const OnChainData = new Schema({
-  createdAt: {
-    type: Date,
-    required: true,
-    default: Date.now
-  },
-  network: {
-    type: String,
-    enum: ['rinkeby'],
-    required: true,
-    default: ['rinkeby']
-  },
-  tokenName: {
-    type: String
-  },
-  tokenSymbol: {
-    type: String
-  },
-  numberOfDecimals: {
-    type: Number
-  },
-  startingTime: {
-    type: Date
-  },
-  duration: {
-    type: Number
-  },
-  rate: {
-    type: String
-  },
-  softCap: {
-    type: String
-  },
-  hardCap: {
-    type: String
-  },
-  isMinted: {
-    type: Boolean,
-    default: false
-  },
-  version: {
-    type: String,
-    enum: ['0.0.0'],
-    required: true,
-    default: ['0.0.0']
-  },
-  tokenContract: {
-    type: DeployedContract,
-    required: false
-  },
-  crowdsaleContract: {
-    type: DeployedContract,
-    required: false
-  },
-  walletContract: {
-    type: DeployedContract,
-    required: false
-  },
-  weiRaised: {
-    type: String,
-    required: false
-  }
-});
-
-const stringToBNOrUndefined = s => {
-  try {
-    return Web3.utils.toBN(s);
-  } catch (err) {
-    return undefined;
-  }
-};
-
-OnChainData.methods.generateReport = function() {
+export const generateReport = (onChainData: OnChainData): any => {
   const constraints = {
     network: {
       presence: true,
@@ -172,7 +140,7 @@ OnChainData.methods.generateReport = function() {
     }
   }
 
-  const rate = utils.stringRoundedOrUndefined(this.rate);
+  const rate = stringRoundedOrUndefined(this.rate);
   if (!rate || rate < 1) {
     const msg = 'rate must be larger than 0';
     if (errs.rate) {
@@ -184,5 +152,3 @@ OnChainData.methods.generateReport = function() {
 
   return errs;
 };
-
-export default OnChainData;

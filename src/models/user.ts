@@ -6,6 +6,7 @@ import ethUtil from 'ethereumjs-util';
 import jwt from 'jsonwebtoken';
 import { HashToEmail } from './hashToEmail';
 import * as mailer from './mailer';
+import { CampaignService } from '../services/campaign';
 
 interface IUser {
   publicAddress: string;
@@ -43,12 +44,12 @@ export const updateEmail = async (user: User, email: string, hashToEmailService)
     user.previousEmails.push(user.currentEmail);
   }
 
-  if (!user.currentEmail || user.currentEmail.address !== email) {
+  if (user.currentEmail == null || user.currentEmail.address !== email) {
     user.currentEmail = new Email(email);
     user.updatedAt = new Date();
   }
   if (config.dev) {
-    this.currentEmail.verifiedAt = new Date();
+    user.currentEmail.verifiedAt = new Date();
   } else {
     const h2e = new HashToEmail(user, email);
     await hashToEmailService.insert(h2e);
@@ -93,6 +94,10 @@ const sign = (user: User, signature: string): string => {
 const generateToken = (user: User): string => {
   const data = { id : user._id, publicAddress: user.publicAddress };
   return jwt.sign(data, config.secret, { expiresIn: '1d' });
+};
+
+export const isEmailVerified = (user: User): boolean => {
+  return user.currentEmail != null && user.currentEmail.verifiedAt != null;
 };
 
 // User.statics.addHostedCampaign = function(publicAddress, onChainData) {
