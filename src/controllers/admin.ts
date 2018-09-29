@@ -1,14 +1,40 @@
-import { controller, httpGet, httpPost, httpPut, queryParam, next, request, requestBody, response } from 'inversify-express-utils';
+import { controller, httpGet, httpPost, httpPut, queryParam, request, requestBody, response } from 'inversify-express-utils';
 import { injectable, inject } from 'inversify';
-import * as express from 'express';
 import { TypedError } from '../utils';
 import { UserService } from '../services/user';
-import { isEmailVerified } from '../models/user';
 import TYPES from '../constant/types';
 import { authMiddleware } from '../middleware/auth';
 import { HostedCampaignService } from '../services/hostedCampaign';
-import { HostedCampaign } from '../models/hostedCampaign';
-import { adminBrief } from '../views/campaign';
+import { HostedCampaign, submitForReview, reviewAccepted, cancelReview } from '../models/hostedCampaign';
+import * as viewCampaigns from '../views/campaign';
+import * as onChain from '../models/onChainData';
+import * as offChain from '../models/offChainData';
+import { signUpload } from '../models/s3';
+import config from '../config';
+
+// TODO: These type conversion are ugly. Also types should be input first
+const requestToOnChainData = (body) => {
+  return new onChain.OnChainData(
+          body.tokenName,
+          body.tokenSymbol,
+          parseInt(body.numberOfDecimals, 10),
+          parseInt(body.startingTime, 10),
+          Number(body.duration),
+          body.rate,
+          body.softCap,
+          body.hardCap,
+          body.isMinted
+	);
+};
+
+const requestToOffChainData = (body) => {
+  return new offChain.OffChainData(
+    body.coverImageURL,
+    body.whitePaperURL,
+    body.summary,
+    body.keywords
+  );
+};
 
 @controller('/admin', authMiddleware)
 export class AdminController {
@@ -19,75 +45,179 @@ export class AdminController {
   @httpPost('/hosted-campaigns')
   async post(
     @request() req,
-    @response() res,
-    @next() next
+    @requestBody() body: any,
+    @response() res
   ) {
-    try {
-      if (!req.decoded || !req.decoded.id) {
-        throw new TypedError(400, 'missing user id');
-      }
-      const user = await this.userService.findById(req.decoded.id);
-      if (user.kycStatus !== 'VERIFIED') {
-        throw new TypedError(400, 'KYC verification is required');
-      }
+    const user = await this.getUser(req.decoded.id);
 
-      let campaign = new HostedCampaign(user._id, req.body);
-      campaign = await this.hostedCampaignService.insert(campaign);
-      res.status(201).send({
-        campaignID: campaign._id
-      });
-    } catch (err) {
-      next(err);
-    }
+    let campaign = new HostedCampaign(
+	user._id,
+	requestToOnChainData(req.body)
+      );
+    campaign = await this.hostedCampaignService.insert(campaign);
+    res.status(201).send({
+      campaignID: campaign._id
+    });
   }
 
   @httpGet('/hosted-campaigns')
   async getAll(
     @queryParam('offset') offset,
-    @request() req,
-    @next() next
+    @request() req
   ) {
-    try {
-      if (!req.decoded || !req.decoded.id) {
-        throw new TypedError(400, 'missing user id');
-      }
-      const user = await this.userService.findById(req.decoded.id);
-      if (user.kycStatus !== 'VERIFIED') {
-        throw new TypedError(400, 'KYC verification is required');
-      }
-      const out = await this.hostedCampaignService.findByOwner(req.decoded.id, offset);
-      out.campaigns = out.campaigns.map(adminBrief);
-      return out;
-    } catch (err) {
-      next(err);
+    const user = await this.getUser(req.decoded.id);
+    const out = await this.hostedCampaignService.findByOwner(req.decoded.id, offset);
+    out.campaigns = out.campaigns.map(viewCampaigns.hostedAdminBrief);
+    return out;
+  }
+
+  @httpGet('/hosted-campaigns/:id')
+  async get(
+    @request() req
+  ) {
+    const { campaign } = await this.getUserAndCampaign(req.decoded.id, req.params.id);
+    return viewCampaigns.hostedAdminFull(campaign);
+  }
+
+  @httpPut('/hosted-campaigns/:id/on-chain-data')
+  async putOnChainData(
+    @request() req,
+    @response() res
+  ) {
+    const { campaign } = await this.getUserAndCampaign(req.decoded.id, req.params.id);
+
+    campaign.onChainData = requestToOnChainData(req.body);
+    await this.hostedCampaignService.update(campaign);
+    res.status(201).send({
+      message: 'Accepted'
+    });
+  }
+
+  @httpPut('/hosted-campaigns/:id/off-chain-data')
+  async putOffChainData(
+    @request() req,
+    @response() res
+  ) {
+    const { campaign } = await this.getUserAndCampaign(req.decoded.id, req.params.id);
+
+    campaign.offChainData = requestToOffChainData(req.body);
+    await this.hostedCampaignService.update(campaign);
+    res.status(201).send({
+      message: 'Accepted'
+    });
+  }
+
+  @httpPost('/hosted-campaigns/:id/cover-image')
+  async coverImage(
+    @request() req,
+    @response() res
+  ) {
+    const { campaign } = await this.getUserAndCampaign(req.decoded.id, req.params.id);
+
+    const extension = req.body.extension || 'png';
+    const contentType = req.body.contentType || 'image/png';
+
+    const url = await signUpload(
+        campaign._id.toString(),
+        'images',
+        extension,
+        contentType
+      );
+    const uploadURL = url;
+    const viewURL = uploadURL.split(/[?#]/)[0];
+    res.status(201).send({
+      uploadURL,
+      viewURL
+    });
+  }
+
+  @httpPost('/hosted-campaigns/:id/white-paper')
+  async whitePaper(
+    @request() req,
+    @response() res
+  ) {
+    const { campaign } = await this.getUserAndCampaign(req.decoded.id, req.params.id);
+
+    const extension = req.body.extension || 'pdf';
+    const contentType = req.body.contentType || 'application/pdf';
+
+    const url = await signUpload(
+        campaign._id.toString(),
+        'white-papers',
+        extension,
+        contentType
+      );
+    const uploadURL = url;
+    const viewURL = uploadURL.split(/[?#]/)[0];
+    res.status(201).send({
+      uploadURL,
+      viewURL
+    });
+  }
+
+  @httpPost('/hosted-campaigns/:id/submit-for-review')
+  async submitForReview(
+    @request() req,
+    @response() res
+  ) {
+    const { campaign } = await this.getUserAndCampaign(req.decoded.id, req.params.id);
+    submitForReview(campaign);
+    await this.hostedCampaignService.update(campaign);
+    res.status(201).send({ message: 'accepted' });
+
+    if (config.dev) {
+      setTimeout(async () => {
+        reviewAccepted(campaign);
+        await this.hostedCampaignService.update(campaign);
+      }, 10 * 1000);
     }
   }
-}
 
-//
-// @httpGet('/:id')
-//  async get(); { return; }
-//
-// @httpPut('/:id/on-chain-data')
-//  async putOnChainData(); {return;  }
-//
-// @httpPut('/:id/off-chain-data')
-//  async putOffChainData(); {return;  }
-//
-// @httpPost('/:id/cover-image')
-//  async coverImage(); {return;  }
-//
-// @httpPost('/:id/white-paper')
-//  async whitePaper(); {return;  }
-//
-// @httpPost('/:id/submit-for-review')
-//  async submitForReview(); {return;  }
-//
-// @httpPost('/:id/cancel-review')
-//  async cancelReview(); {return;  }
-//
-// @httpPost('/:id/deployment-transaction')
-//  async deploymentTransaction(); {return;  }
+  @httpPost('/hosted-campaigns/:id/cancel-review')
+  async cancelReview(
+    @request() req,
+    @response() res
+  ) {
+    const { campaign } = await this.getUserAndCampaign(req.decoded.id, req.params.id);
+    cancelReview(campaign);
+    await this.hostedCampaignService.update(campaign);
+    res.status(201).send({ message: 'accepted' });
+  }
+
+  // @httpPost('/hosted-campaigns/:id/deployment-transaction')
+  // async deploymentTransaction(
+  //  @request() req,
+  //  @response() res
+  // ) {
+  //  const { campaign } = await this.getUserAndCampaign(req.decoded.id, req.params.id);
+  //  // const out = await deploymentTransaction(campaign, hostedCampaignService);
+  //  // return out;
+  // }
+
+  private async getUser(userId) {
+    const user = await this.userService.findById(userId);
+    if (user === null || user === undefined) {
+      throw new TypedError(404, 'user not found');
+    }
+    if (user.kycStatus !== 'VERIFIED') {
+      throw new TypedError(400, 'KYC verification is required');
+    }
+    return user;
+  }
+
+  private async getUserAndCampaign(userId, campaignId) {
+    const user = await this.getUser(userId);
+    const campaign = await this.hostedCampaignService.findById(campaignId);
+    if (campaign === null || campaign === undefined) {
+      throw new TypedError(404, 'campaign not found');
+    }
+    if (user._id.toString() !== campaign.ownerId.toString()) {
+      throw new TypedError(403, 'not permitted');
+    }
+    return { user, campaign };
+  }
+
+}
 
 //// Create an empty post for the logged in user
 // export const post = async (req, res, next) => {

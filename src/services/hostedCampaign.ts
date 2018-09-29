@@ -41,6 +41,31 @@ export class HostedCampaignService {
     });
   }
 
+  public update(hostedCampaign: HostedCampaign): Promise<any> {
+    return new Promise<any>((resolve, reject) => {
+      this.mongoClient.update(collectionName, hostedCampaign._id, hostedCampaign, (error, data) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(data);
+        }
+      });
+    });
+  }
+
+  public findById(idString: string): Promise<HostedCampaign> {
+    const id = stringToId(idString);
+    return new Promise<HostedCampaign>((resolve, reject) => {
+      this.mongoClient.findOne(collectionName, { _id: id }, (error, data) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(data);
+        }
+      });
+    });
+  }
+
   public findByOwner(ownerId: string, offset?: string): Promise<any> {
     const pageSize = 20;
     const id = stringToId(ownerId);
@@ -55,8 +80,8 @@ export class HostedCampaignService {
     return new Promise<any>((resolve, reject) => {
       this.mongoClient.db.collection(collectionName)
       .find(query)
-      .sort({ updatedAt: -1 })
-      .limit(pageSize)
+      // .sort({ updatedAt: -1 })
+      // .limit(pageSize)
       .toArray((error, data) => {
         if (error) {
           reject(error);

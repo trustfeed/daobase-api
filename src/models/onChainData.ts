@@ -1,23 +1,13 @@
 import { injectable } from 'inversify';
 import { DeployedContract } from './deployedContract';
-import Web3 from 'web3';
 import validate from 'validate.js';
 import config from '../config';
-import { stringToBNOrUndefined, stringRoundedOrUndefined } from '../utils';
+import { TypedError, stringToBNOrUndefined, stringRoundedOrUndefined } from '../utils';
 
 @injectable()
 export class OnChainData {
   public createdAt: Date;
-  public network: string;
-  public tokenName: string;
-  public tokenSymbol: string;
-  public numberOfDecimals: number;
   public startingTime: Date;
-  public duration: number;
-  public rate: string;
-  public softCap: string;
-  public hardCap: string;
-  public isMinted: boolean;
   public version: string;
   public tokenContract?: DeployedContract;
   public crowdsaleContract?: DeployedContract;
@@ -26,43 +16,32 @@ export class OnChainData {
   public _id?: string;
 
   constructor(
-    network: string,
-    tokenName: string,
-    tokenSymbol: string,
-    numberOfDecimals: number,
-    startingTime: Date,
-    duration: number,
-    rate: string,
-    softCap: string,
-    hardCap: string,
-    isMinted: boolean,
+    public tokenName: string,
+    public tokenSymbol: string,
+    public numberOfDecimals: number,
+    startingTime: number,
+    public duration: number,
+    public rate: string,
+    public softCap: string,
+    public hardCap: string,
+    public isMinted: boolean,
     version?: string
   ) {
     this.createdAt = new Date();
-    this.network = network;
-    this.tokenName = tokenName;
-    this.tokenSymbol = tokenSymbol;
-    this.numberOfDecimals = numberOfDecimals;
-    this.startingTime = startingTime;
-    this.duration = duration;
-    this.rate = rate;
-    this.softCap = softCap;
-    this.hardCap = hardCap;
-    this.isMinted = isMinted;
+    this.startingTime = new Date(startingTime * 1000);
     if (version != null) {
       this.version = version;
     } else {
       this.version = '0.0.0';
     }
+
+    validateData(this);
   }
 }
 
-export const generateReport = (onChainData: OnChainData): any => {
+// Throws an error if data is invalid
+export const validateData = (onChainData: OnChainData) => {
   const constraints = {
-    network: {
-      presence: true,
-      inclusion: ['rinkeby']
-    },
     tokenName: {
       presence: true
     },
@@ -104,13 +83,13 @@ export const generateReport = (onChainData: OnChainData): any => {
       inclusion: ['0.0.0']
     }
   };
-  let errs = validate(this, constraints);
+  let errs = validate(onChainData, constraints);
   if (errs === undefined) {
     errs = {};
   }
 
   const tomorrow = Date.now() + 1000 * 60 * 60 * 24;
-  const startingTime = this.startingTime;
+  const startingTime = onChainData.startingTime;
   if (!config.dev && startingTime && startingTime.getTime() < tomorrow) {
     const msg = 'Starting time must be at least one day into the future';
     if (errs.startingTime) {
@@ -120,7 +99,7 @@ export const generateReport = (onChainData: OnChainData): any => {
     }
   }
 
-  const softCap = stringToBNOrUndefined(this.softCap);
+  const softCap = stringToBNOrUndefined(onChainData.softCap);
   if (!softCap || softCap < 1) {
     const msg = 'Soft cap must be an integer larger than 0';
     if (errs.softCap) {
@@ -130,7 +109,7 @@ export const generateReport = (onChainData: OnChainData): any => {
     }
   }
 
-  const hardCap = stringToBNOrUndefined(this.hardCap);
+  const hardCap = stringToBNOrUndefined(onChainData.hardCap);
   if (!hardCap || (softCap && hardCap.lte(softCap))) {
     const msg = 'Hard cap must be an integer greater than soft cap';
     if (errs.hardCap) {
@@ -140,7 +119,7 @@ export const generateReport = (onChainData: OnChainData): any => {
     }
   }
 
-  const rate = stringRoundedOrUndefined(this.rate);
+  const rate = stringRoundedOrUndefined(onChainData.rate);
   if (!rate || rate < 1) {
     const msg = 'rate must be larger than 0';
     if (errs.rate) {
@@ -150,5 +129,9 @@ export const generateReport = (onChainData: OnChainData): any => {
     }
   }
 
-  return errs;
+  if (Object.keys(errs).length > 0) {
+    throw new TypedError(400, 'validation error', 'INVALID_DATA', {
+      onChainValidationErrors: errs
+    });
+  }
 };

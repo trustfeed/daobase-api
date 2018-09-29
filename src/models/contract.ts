@@ -77,6 +77,23 @@ const listFilesPromise = dirname => {
   });
 };
 
+// export const makeDeployment = async (contract, args) => {
+//  const web3 = await Networks.node(network);
+//  const contract = new web3.eth.Contract(JSON.parse(this.abi));
+//  const deploy = contract.deploy({
+//     data: this.bytecode,
+//     arguments: args
+//   });
+//  return {
+//     transaction: deploy.encodeABI()
+//   };
+//  // return deploy
+//  // .estimateGas()
+//  // .then(cost => {
+//  //  return { estimatedGas: cost, transaction: deploy.encodeABI() };
+//  // });
+// };
+
 // import mongoose from 'mongoose';
 // import fs from 'fs';
 // import path from 'path';

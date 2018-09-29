@@ -1,23 +1,27 @@
 import { injectable } from 'inversify';
-import { DeployedContract } from './deployedContract';
-import Web3 from 'web3';
 import validate from 'validate.js';
-import config from '../config';
-import { stringToBNOrUndefined, stringRoundedOrUndefined } from '../utils';
+import { TypedError } from '../utils';
 
 @injectable()
 export class OffChainData {
-  coverImageURL?: string;
-  whitePaperURL?: string;
-  summary?: string;
+  createdAt: Date;
   keywords: string[];
 
-  constructor() {
-    this.keywords = [];
+  constructor(
+    public coverImageURL?: string,
+    public whitePaperURL?: string,
+    public summary?: string,
+    keywords?: string[]
+  ) {
+    if (keywords === null || keywords === undefined) {
+      this.keywords = [];
+    }
+    this.createdAt = new Date();
+    validateData(this);
   }
 }
 
-export const generateReport = (offChainData: OffChainData): any => {
+export const validateData = (offChainData: OffChainData) => {
   const constraints = {
     coverImageURL: {
       presence: true,
@@ -28,9 +32,14 @@ export const generateReport = (offChainData: OffChainData): any => {
       url: true
     }
   };
-  let errs = validate(this, constraints);
+  let errs = validate(offChainData, constraints);
   if (errs === undefined) {
     errs = {};
   }
-  return errs;
+
+  if (Object.keys(errs).length > 0) {
+    throw new TypedError(400, 'validation error', 'INVALID_DATA', {
+      offChainValidationErrors: errs
+    });
+  }
 };
