@@ -5,7 +5,7 @@ import { UserService } from '../services/user';
 import { isEmailVerified } from '../models/user';
 import TYPES from '../constant/types';
 import { authMiddleware } from '../middleware/auth';
-import { signUpload } from '../models/s3';
+import { S3Service } from '../services/s3';
 import { KYCApplication } from '../models/kycApplication';
 import { KYCApplicationService } from '../services/kycApplication';
 import config from '../config';
@@ -13,7 +13,9 @@ import config from '../config';
 @controller('/kyc', authMiddleware)
 export class KYCController {
   constructor(@inject(TYPES.UserService) private userService: UserService,
-              @inject(TYPES.KYCApplicationService) private kycApplicationService: KYCApplicationService) {}
+              @inject(TYPES.KYCApplicationService) private kycApplicationService: KYCApplicationService,
+              @inject(TYPES.S3Service) private s3Service: S3Service
+  ) {}
 
   private async checkUserHasEmail(
     userId: string
@@ -38,7 +40,7 @@ export class KYCController {
     const extension = req.body.extension || 'png';
     const contentType = req.body.contentType || 'image/png';
 
-    const url = await signUpload(
+    const url = await this.s3Service.signUpload(
         req.decoded.id,
         'kyc/passport-images',
         extension,
@@ -62,7 +64,7 @@ export class KYCController {
     const extension = req.body.extension || 'png';
     const contentType = req.body.contentType || 'image/png';
 
-    const url = await signUpload(
+    const url = await this.s3Service.signUpload(
         req.decoded.id,
         'kyc/facial-images',
         extension,

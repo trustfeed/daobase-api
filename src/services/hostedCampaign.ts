@@ -80,8 +80,8 @@ export class HostedCampaignService {
     return new Promise<any>((resolve, reject) => {
       this.mongoClient.db.collection(collectionName)
       .find(query)
-      // .sort({ updatedAt: -1 })
-      // .limit(pageSize)
+      .sort({ updatedAt: -1 })
+      .limit(pageSize)
       .toArray((error, data) => {
         if (error) {
           reject(error);
@@ -96,6 +96,44 @@ export class HostedCampaignService {
           });
         }
       });
+    });
+  }
+
+  public async findAllPublic(offset?: string): Promise<any> {
+    const pageSize = 20;
+    let query: any = {
+      $or: [
+        {
+          'campaignStatus': 'DEPLOYED'
+        },
+        {
+          'campaignStatus': 'PENDING_OFF_CHAIN_REVIEW'
+        }
+      ]};
+    if (offset) {
+      query.updatedAt = {
+        $lt: new Date(Number(Base64.decode(offset)))
+      };
+    }
+    return new Promise<any>((resolve, reject) => {
+      this.mongoClient.db.collection(collectionName)
+       .find(query)
+       .sort({ updatedAt: -1 })
+       .limit(pageSize)
+       .toArray((error, data) => {
+         if (error) {
+           reject(error);
+         } else {
+           let nextOffset;
+           if (data.length === pageSize) {
+             nextOffset = Base64.encode(data[data.length - 1].updatedAt.getTime());
+           }
+           resolve({
+             campaigns: data,
+             next: nextOffset
+           });
+         }
+       });
     });
   }
 }

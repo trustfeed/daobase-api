@@ -2,7 +2,6 @@ import { injectable } from 'inversify';
 import validate from 'validate.js';
 import { TypedError } from '../utils';
 
-@injectable()
 export class OffChainData {
   createdAt: Date;
   keywords: string[];
@@ -11,6 +10,7 @@ export class OffChainData {
     public coverImageURL?: string,
     public whitePaperURL?: string,
     public summary?: string,
+    public description?: string,
     keywords?: string[]
   ) {
     if (keywords === null || keywords === undefined) {

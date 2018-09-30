@@ -8,18 +8,7 @@ import { HashToEmail } from './hashToEmail';
 import * as mailer from './mailer';
 import { CampaignService } from '../services/campaign';
 
-interface IUser {
-  publicAddress: string;
-  nonce: string;
-  _id?: string;
-  currentEmail?: Email;
-  previousEmails?: Email[];
-  name?: string;
-  kycStatus?: string;
-}
-
-@injectable()
-export class User implements IUser {
+export class User {
   public publicAddress: string;
   public nonce: string;
   public updatedAt: Date;

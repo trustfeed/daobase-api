@@ -1,7 +1,6 @@
 import { injectable } from 'inversify';
 import { Note } from './note';
 
-@injectable()
 export class KYCApplication {
   public createdAt: Date;
   public notes: string[];

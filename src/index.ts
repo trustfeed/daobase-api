@@ -20,6 +20,7 @@ import { KYCApplicationService } from './services/kycApplication';
 import { HostedCampaignService } from './services/hostedCampaign';
 import { Web3Service } from './services/web3';
 import { MongoDBClient } from './utils/mongodb/client';
+import { S3Service } from './services/s3';
 import './controllers/healthz';
 import './controllers/nonce';
 import './controllers/users';
@@ -27,7 +28,9 @@ import './controllers/auth';
 import './controllers/verify';
 import './controllers/kyc';
 import './controllers/admin';
+import './controllers/campaigns';
 import { CampaignVerifier } from './services/campaignVerifier';
+import { Web3Connection } from './utils/web3/connection';
 
 const container = new Container();
 
@@ -37,27 +40,34 @@ container.bind<HashToEmailService>(TYPES.HashToEmailService).to(HashToEmailServi
 container.bind<KYCApplicationService>(TYPES.KYCApplicationService).to(KYCApplicationService);
 container.bind<HostedCampaignService>(TYPES.HostedCampaignService).to(HostedCampaignService);
 container.bind<Web3Service>(TYPES.Web3Service).to(Web3Service);
-container.bind<CampaignVerifier>(TYPES.CampaignVerifier).to(CampaignVerifier);
+container.bind<S3Service>(TYPES.S3Service).to(S3Service);
+
+const campaignVerifier = new CampaignVerifier(
+  container.get<Web3Service>(TYPES.Web3Service),
+  container.get<UserService>(TYPES.UserService),
+  container.get<HostedCampaignService>(TYPES.HostedCampaignService)
+ );
+Web3Connection.addSubscription(campaignVerifier);
 
 const server = new InversifyExpressServer(container);
 server.setConfig((app) => {
-   app.use(morgan('common'));
-   app.use(
+  app.use(morgan('common'));
+  app.use(
     bodyParser.json({
       type: 'application/json'
     })
   );
-   app.use(
+  app.use(
     bodyParser.urlencoded({
       extended: true,
       type: 'application/x-www-form-urlencoded'
     })
   );
-   app.use(cors());
- });
+  app.use(cors());
+});
 server.setErrorConfig((app) => {
-   app.use(error);
- });
+  app.use(error);
+});
 
 const app = server.build();
 app.listen(config.port);

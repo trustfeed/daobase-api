@@ -1,38 +1,37 @@
-// const viewDeployedContract = c => {
-//  if (c === null || c === undefined) {
-//    return undefined;
-//  } else {
-//    return { address: c.address, abi: JSON.parse(c.abi) };
-//  }
-// };
-//
-// const viewOnChainData = d => {
-//  if (d === null || d === undefined) {
-//    return undefined;
-//  } else {
-//    let startingTime;
-//    if (d.startingTime !== null && d.startingTime !== undefined) {
-//      startingTime = Math.round(d.startingTime.getTime() / 1000);
-//    }
-//    return {
-//      network: d.network,
-//      softCap: d.softCap,
-//      hardCap: d.hardCap,
-//      tokenName: d.tokenName,
-//      tokenSymbol: d.tokenSymbol,
-//      numberOfDecimals: d.numberOfDecimals,
-//      startingTime: startingTime,
-//      duration: d.duration,
-//      rate: d.rate,
-//      isMinted: d.isMinted || false,
-//      tokenContract: viewDeployedContract(d.tokenContract),
-//      crowdsaleContract: viewDeployedContract(d.crowdsaleContract),
-//      walletContract: viewDeployedContract(d.walletContract),
-//      weiRaised: d.weiRaised
-//    };
-//  }
-// };
-//
+ const viewDeployedContract = c => {
+  if (c === null || c === undefined) {
+    return undefined;
+  } else {
+    return { address: c.address, abi: c.abi };
+  }
+};
+
+const onChainData = d => {
+  if (d === null || d === undefined) {
+    return undefined;
+  } else {
+    let startingTime;
+    if (d.startingTime !== null && d.startingTime !== undefined) {
+      startingTime = Math.round(d.startingTime.getTime() / 1000);
+    }
+    return {
+      softCap: d.softCap,
+      hardCap: d.hardCap,
+      tokenName: d.tokenName,
+      tokenSymbol: d.tokenSymbol,
+      numberOfDecimals: d.numberOfDecimals,
+      startingTime: startingTime,
+      duration: d.duration,
+      rate: d.rate,
+      isMinted: d.isMinted || false,
+      tokenContract: viewDeployedContract(d.tokenContract),
+      crowdsaleContract: viewDeployedContract(d.crowdsaleContract),
+      walletContract: viewDeployedContract(d.walletContract),
+      weiRaised: d.weiRaised
+    };
+  }
+};
+
 const onChainDataBrief = d => {
   if (d === null || d === undefined) {
     return undefined;
@@ -201,6 +200,30 @@ const offChainData = d => {
 //  }
 // };
 
+export const hostedPublicBrief = c => {
+  return {
+    id: c._id.toString(),
+    createdAt: c.createdAt.getTime(),
+    updatedAt: c.updatedAt.getTime(),
+    campaignStatus: c.campaignStatus,
+    onChainData: onChainDataBrief(c.onChainData),
+    offChainData: offChainData(c.offChainData),
+    type: 'hostedCampaign'
+  };
+};
+
+export const hostedPublicFull = c => {
+  return {
+    id: c._id.toString(),
+    createdAt: c.createdAt.getTime(),
+    updatedAt: c.updatedAt.getTime(),
+    campaignStatus: c.campaignStatus,
+    onChainData: onChainData(c.onChainData),
+    offChainData: offChainData(c.offChainData),
+    type: 'hostedCampaign'
+  };
+};
+
 export const hostedAdminBrief = c => {
   return {
     id: c._id.toString(),
@@ -224,7 +247,7 @@ export const hostedAdminFull = c => {
     createdAt: c.createdAt,
     updatedAt: c.updatedAt,
     campaignStatus: c.campaignStatus,
-    onChainData: onChainDataBrief(c.onChainData),
+    onChainData: onChainData(c.onChainData),
     offChainData: offChain,
     type: 'hostedCampaign'
   };

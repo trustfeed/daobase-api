@@ -26,7 +26,11 @@ export class CampaignVerifier extends EventWatcher {
 
   // Internal function that checks validity of creation event
   private async verifyRegistyEvent(registryEvent) {
-    const campaign = await this.hostedCampaignService.findById(registryEvent.returnValues.campaignId);
+    const returnValues = this.web3.eth.abi.decodeParameters(['address', 'string'], registryEvent.data);
+    const campaignAddress = returnValues[0];
+    const campaignId = returnValues[1];
+
+    const campaign = await this.hostedCampaignService.findById(campaignId);
     if (campaign === null || campaign === undefined) {
       throw new Error('invalid campaign id');
     }
@@ -47,22 +51,14 @@ export class CampaignVerifier extends EventWatcher {
     if (transaction.input !== deployment.transaction) {
       throw new Error("transaction data doesn't match");
     }
-    const campaignAddress = registryEvent.returnValues.campaignAddress;
-    await fetchContracts(campaign,campaignAddress, this.web3Service);
+    await fetchContracts(campaign, campaignAddress, this.web3Service);
     campaign.campaignStatus = 'DEPLOYED';
     return this.hostedCampaignService.update(campaign);
   }
 
   // Scrap old events in chuncks.
-  // private
-  public async scrape() {
-    const decodeReturnValues = log => {
-      const returnValues = this.web3.eth.abi.decodeParameters(['address', 'string'], log.data);
-      return { campaignAddress: returnValues[0], campaignId: returnValues[1] };
-    };
-
+  private async scrape() {
     const processLog = log => {
-      log.returnValues = decodeReturnValues(log);
       return this.verifyRegistyEvent(log).catch(e => console.log(e.message));
     };
 
@@ -81,17 +77,21 @@ export class CampaignVerifier extends EventWatcher {
 
   // After network outage, crawl unknown blocks and start watching for new events
   protected async startWatching() {
-  //  this.scrape();
+    this.scrape();
 
-  //  return this.contract.events.NewCampaign({}, () => {
-  //    return;
-  //  });
+    return this.web3.eth.subscribe(
+      'logs',
+      {
+        fromBlock: this.scrapedTo,
+        topics: [this.web3.utils.sha3('NewCampaign(address,string)')]
+      }
+    );
   }
 
-  //// Process a registry event
-  // protected async processEvent(registryEvent) {
-  //  this.verifyRegistyEvent(registryEvent).catch(err => {
-  //    console.log('registry event failed to verify:', err.message);
-  //  });
-  // }
+  // Process a registry event
+  protected async processEvent(registryEvent) {
+    this.verifyRegistyEvent(registryEvent).catch(err => {
+      console.log('registry event failed to verify:', err.message);
+    });
+  }
 }

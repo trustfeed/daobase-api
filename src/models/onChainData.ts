@@ -4,7 +4,6 @@ import validate from 'validate.js';
 import config from '../config';
 import { TypedError, stringToBNOrUndefined, stringRoundedOrUndefined } from '../utils';
 
-@injectable()
 export class OnChainData {
   public createdAt: Date;
   public startingTime: Date;

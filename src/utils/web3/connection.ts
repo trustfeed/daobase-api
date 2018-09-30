@@ -10,7 +10,7 @@ export class Web3Connection {
 
   public static getConnection(result: (connection) => void) {
     if (this.isConnected) {
-	    return result(this.web3);
+      return result(this.web3);
     } else {
       const webSocketProvider = new Web3.providers.WebsocketProvider(config.infuraURL);
 
@@ -23,6 +23,7 @@ export class Web3Connection {
 
       this.web3 = new Web3(webSocketProvider);
       this.isConnected = true;
+      this.getConnection(result);
     }
   }
 
@@ -42,6 +43,7 @@ export class Web3Connection {
   }
 
   public static addSubscription(sub) {
+    sub.watchEvents();
     this.subscriptions.push(sub);
   }
 }

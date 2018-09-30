@@ -5,7 +5,7 @@ const TYPES = {
   KYCApplicationService: Symbol.for('KYCApplicationService'),
   HostedCampaignService: Symbol.for('HostedCampaignService'),
   Web3Service: Symbol.for('Web3Service'),
-  CampaignVerifier: Symbol.for('CampaignVerifier')
+  S3Service: Symbol.for('S3Service')
 
   // ContractService: Symbol.for('ContractService'),
 };

@@ -5,7 +5,6 @@ import { Email } from './email';
 import { sha256 } from 'js-sha256';
 import { TypedError } from '../utils';
 
-@injectable()
 export class HashToEmail {
   public hash: string;
   public user: string;

@@ -10,7 +10,7 @@ import { HostedCampaign, submitForReview, reviewAccepted, cancelReview, makeDepl
 import * as viewCampaigns from '../views/campaign';
 import * as onChain from '../models/onChainData';
 import * as offChain from '../models/offChainData';
-import { signUpload } from '../models/s3';
+import { S3Service } from '../services/s3';
 import config from '../config';
 
 // TODO: These type conversion are ugly. Also types should be input first
@@ -33,6 +33,7 @@ const requestToOffChainData = (body) => {
     body.coverImageURL,
     body.whitePaperURL,
     body.summary,
+    body.description,
     body.keywords
   );
 };
@@ -42,9 +43,8 @@ export class AdminController {
   constructor(@inject(TYPES.UserService) private userService: UserService,
 	      @inject(TYPES.HostedCampaignService) private hostedCampaignService: HostedCampaignService,
 	      @inject(TYPES.Web3Service) private web3Service: Web3Service,
-	      @inject(TYPES.CampaignVerifier) private campaignVerifier
+	      @inject(TYPES.S3Service) private s3Service: S3Service
 	     ) {
-    this.campaignVerifier.scrape();
   }
 
   @httpPost('/hosted-campaigns')
@@ -105,11 +105,19 @@ export class AdminController {
   ) {
     const { campaign } = await this.getUserAndCampaign(req.decoded.id, req.params.id);
 
-    campaign.offChainData = requestToOffChainData(req.body);
+    campaign.offChainDataDraft = requestToOffChainData(req.body);
+    campaign.campaignStatus = 'PENDING_OFF_CHAIN_REVIEW';
     await this.hostedCampaignService.update(campaign);
     res.status(201).send({
       message: 'Accepted'
     });
+
+    if (config.dev) {
+      setTimeout(async () => {
+        reviewAccepted(campaign);
+        await this.hostedCampaignService.update(campaign);
+      }, 10 * 1000);
+    }
   }
 
   @httpPost('/hosted-campaigns/:id/cover-image')
@@ -122,7 +130,7 @@ export class AdminController {
     const extension = req.body.extension || 'png';
     const contentType = req.body.contentType || 'image/png';
 
-    const url = await signUpload(
+    const url = await this.s3Service.signUpload(
         campaign._id.toString(),
         'images',
         extension,
@@ -146,7 +154,7 @@ export class AdminController {
     const extension = req.body.extension || 'pdf';
     const contentType = req.body.contentType || 'application/pdf';
 
-    const url = await signUpload(
+    const url = await this.s3Service.signUpload(
         campaign._id.toString(),
         'white-papers',
         extension,
@@ -195,6 +203,8 @@ export class AdminController {
   ) {
     const { campaign, user } = await this.getUserAndCampaign(req.decoded.id, req.params.id);
     const out = await makeDeployment(campaign, user.publicAddress, this.web3Service);
+    campaign.campaignStatus = 'PENDING_DEPLOYMENT';
+    await this.hostedCampaignService.update(campaign);
     return out;
   }
 

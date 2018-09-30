@@ -8,7 +8,6 @@ import Web3 from 'web3';
 import fs from 'fs';
 import { DeployedContract } from './deployedContract';
 
-@injectable()
 export class HostedCampaign {
   public ownerId: string;
   public campaignStatus: string;
@@ -205,17 +204,17 @@ export const fetchContracts = async (hostedCampaign, campaignAddress, web3Servic
     campaignJson.abi,
     campaignAddress
   );
-  hostedCampaign.onChainData.campaignContract = new DeployedContract(campaignJson.abi, campaignAddress);
+  hostedCampaign.onChainData.campaignContract = new DeployedContract(campaignAddress, campaignJson.abi);
 
   const tokenJson = await readTokenContractFromFile(hostedCampaign);
   const tokenAddress = await campaignContract.methods.token().call({});
-  hostedCampaign.onChainData.tokenContract = new DeployedContract(tokenJson.abi, tokenAddress);
+  hostedCampaign.onChainData.tokenContract = new DeployedContract(tokenAddress, tokenJson.abi);
 
   const crowdsaleJson = await readCrowdsaleContractFromFile(hostedCampaign);
   const crowdsaleAddress = await campaignContract.methods.crowdsale().call({});
-  hostedCampaign.onChainData.crowdsaleContract = new DeployedContract(crowdsaleJson.abi, crowdsaleAddress);
+  hostedCampaign.onChainData.crowdsaleContract = new DeployedContract(crowdsaleAddress, crowdsaleJson.abi);
 
   const walletJson = await readWalletContractFromFile(hostedCampaign);
   const walletAddress = await campaignContract.methods.wallet().call({});
-  hostedCampaign.onChainData.walletContract = new DeployedContract(walletJson.abi, walletAddress);
+  hostedCampaign.onChainData.walletContract = new DeployedContract(walletAddress, walletJson.abi);
 };

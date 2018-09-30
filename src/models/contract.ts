@@ -9,7 +9,6 @@ import * as mailer from './mailer';
 import fs from 'fs';
 import path from 'path';
 
-@injectable()
 export class Contract {
   createdAt: Date;
   name: string;
