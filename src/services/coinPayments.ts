@@ -1,5 +1,4 @@
 import { inject, injectable } from 'inversify';
-import { MongoDBClient } from '../utils/mongodb/client';
 import { MongoDBConnection } from '../utils/mongodb/connection';
 import { stringToId } from '../utils/mongodb/stringToId';
 import TYPES from '../constant/types';
@@ -11,14 +10,17 @@ const collectionName = 'coinPaymentsTransaction';
 @injectable()
 export class CoinPaymentsService {
   private client;
-  constructor(
-    @inject(TYPES.MongoDBClient) private mongoClient: MongoDBClient
-  ) {
+  private mongoConn;
+
+  constructor() {
     const options = {
       key: config.coinPaymentsKey,
       secret: config.coinPaymentsSecret
     };
     this.client = new Coinpayments(options);
+    MongoDBConnection.getConnection(conn => {
+      this.mongoConn = conn;
+    });
   }
 
   public supportedCurrency(currency: string): boolean {

@@ -3,7 +3,6 @@ import * as onChain from './onChainData';
 import * as offChain from './offChainData';
 import { TypedError, stringRoundedOrUndefined } from '../utils';
 import config from '../config';
-import { ContractService } from '../services/contract';
 import Web3 from 'web3';
 import fs from 'fs';
 import { DeployedContract } from './deployedContract';
@@ -90,9 +89,9 @@ export const cancelReview = (hostedCampaign: HostedCampaign): HostedCampaign => 
 };
 
 export const makeDeployment = async (
-	hostedCampaign: HostedCampaign,
-	userAddress: string,
-	web3Service: any
+        hostedCampaign: HostedCampaign,
+        userAddress: string,
+        web3Service: any
   ) => {
   const sts = hostedCampaign.campaignStatus;
   if (sts !== 'REVIEWED' && sts !== 'PENDING_DEPLOYMENT') {
@@ -132,7 +131,7 @@ const readContractFromFile = async(name: string, version: string) => {
 const readCampaignContractFromFile = async (hostedCampaign: HostedCampaign) => {
   let name = 'TrustFeedCampaign';
   if (hostedCampaign.onChainData.isMinted) {
-	  name = 'TrustFeedMintedCampaign';
+    name = 'TrustFeedMintedCampaign';
   }
   return readContractFromFile(name, hostedCampaign.onChainData.version);
 };
@@ -140,7 +139,7 @@ const readCampaignContractFromFile = async (hostedCampaign: HostedCampaign) => {
 const readTokenContractFromFile = async (hostedCampaign: HostedCampaign) => {
   let name = 'TrustFeedToken';
   if (hostedCampaign.onChainData.isMinted) {
-	  name = 'TrustFeedMintableToken';
+    name = 'TrustFeedMintableToken';
   }
   return readContractFromFile(name, hostedCampaign.onChainData.version);
 };
@@ -148,7 +147,7 @@ const readTokenContractFromFile = async (hostedCampaign: HostedCampaign) => {
 const readCrowdsaleContractFromFile = async (hostedCampaign: HostedCampaign) => {
   let name = 'TrustFeedCrowdsale';
   if (hostedCampaign.onChainData.isMinted) {
-	  name = 'TrustFeedMintedCrowdsale';
+    name = 'TrustFeedMintedCrowdsale';
   }
   return readContractFromFile(name, hostedCampaign.onChainData.version);
 };
@@ -217,4 +216,16 @@ export const fetchContracts = async (hostedCampaign, campaignAddress, web3Servic
   const walletJson = await readWalletContractFromFile(hostedCampaign);
   const walletAddress = await campaignContract.methods.wallet().call({});
   hostedCampaign.onChainData.walletContract = new DeployedContract(walletAddress, walletJson.abi);
+};
+
+export const updateWeiRaised = async (hostedCampaign, web3Service) => {
+  // Get the crowdsale contract
+  const crowdsaleContract = web3Service.createContract(
+    hostedCampaign.onChainData.crowdsaleContract.abi,
+    hostedCampaign.onChainData.crowdsaleContract.address
+  );
+  // Call wei raised
+  const weiRaised = await crowdsaleContract.methods.weiRaised().call();
+  hostedCampaign.weiRaised = weiRaised;
+  return hostedCampaign;
 };

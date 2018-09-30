@@ -1,10 +1,8 @@
-import { inject, injectable } from 'inversify';
 import Web3 from 'web3';
 import config from '../config';
 import { Web3Connection } from '../utils/web3/connection';
 import TYPES from '../constant/types';
 
-@injectable()
 export class EventWatcher {
   protected isWatchingEvents: boolean;
   protected async startWatching(): Promise<any> {

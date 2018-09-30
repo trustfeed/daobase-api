@@ -1,4 +1,4 @@
-import { inject, injectable } from 'inversify';
+import { inject } from 'inversify';
 import { EventWatcher } from './eventWatcher';
 import Web3 from 'web3';
 import config from '../config';
@@ -8,7 +8,6 @@ import { Web3Service } from '../services/web3';
 import TYPES from '../constant/types';
 import { makeDeployment, fetchContracts } from '../models/hostedCampaign';
 
-@injectable()
 export class CampaignVerifier extends EventWatcher {
   private scrapedTo: number;
   private chunckSize: number;

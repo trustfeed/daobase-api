@@ -1,4 +1,4 @@
-export default i => {
+export const investment = i => {
   return {
     tokenAddress: i.tokenAddress,
     tokensOwned: i.tokensOwned,

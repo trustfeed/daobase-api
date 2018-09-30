@@ -78,4 +78,14 @@ export class UserService {
 });
     });
   }
+
+  public forEach(func) {
+    if (MongoDBConnection.isConnected()) {
+      this.conn.collection(collectionName)
+      .find()
+      .forEach(func);
+    } else {
+      setTimeout(() => this.forEach(func), 1000);
+    }
+  }
 }

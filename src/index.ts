@@ -4,10 +4,6 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import config from './config';
 import controllers from './controllers';
-// import startCampainVerifier from './models/verifyCampaign';
-// import mongoose from 'mongoose';
-// import InvestmentListener from './models/investmentListener';
-// import Contract from './models/contract';
 import morgan from 'morgan';
 import error from './middleware/error';
 import { Container } from 'inversify';
@@ -20,6 +16,8 @@ import { KYCApplicationService } from './services/kycApplication';
 import { HostedCampaignService } from './services/hostedCampaign';
 import { Web3Service } from './services/web3';
 import { S3Service } from './services/s3';
+import { CoinPaymentsService } from './services/coinPayments';
+import { InvestmentService } from './services/investment';
 import './controllers/healthz';
 import './controllers/nonce';
 import './controllers/users';
@@ -28,7 +26,9 @@ import './controllers/verify';
 import './controllers/kyc';
 import './controllers/admin';
 import './controllers/campaigns';
-import { CampaignVerifier } from './services/campaignVerifier';
+import './controllers/investments';
+import { CampaignVerifier } from './events/campaignVerifier';
+import { InvestmentWatcher } from './events/investmentWatcher';
 import { Web3Connection } from './utils/web3/connection';
 
 const container = new Container();
@@ -39,13 +39,22 @@ container.bind<KYCApplicationService>(TYPES.KYCApplicationService).to(KYCApplica
 container.bind<HostedCampaignService>(TYPES.HostedCampaignService).to(HostedCampaignService);
 container.bind<Web3Service>(TYPES.Web3Service).to(Web3Service);
 container.bind<S3Service>(TYPES.S3Service).to(S3Service);
+container.bind<CoinPaymentsService>(TYPES.CoinPaymentsService).to(CoinPaymentsService);
+container.bind<InvestmentService>(TYPES.InvestmentService).to(InvestmentService);
 
-const campaignVerifier = new CampaignVerifier(
+// const campaignVerifier = new CampaignVerifier(
+//  container.get<Web3Service>(TYPES.Web3Service),
+//  container.get<UserService>(TYPES.UserService),
+//  container.get<HostedCampaignService>(TYPES.HostedCampaignService)
+// );
+// Web3Connection.addSubscription(campaignVerifier);
+const investmentWatcher = new InvestmentWatcher(
   container.get<Web3Service>(TYPES.Web3Service),
   container.get<UserService>(TYPES.UserService),
-  container.get<HostedCampaignService>(TYPES.HostedCampaignService)
+  container.get<HostedCampaignService>(TYPES.HostedCampaignService),
+  container.get<InvestmentService>(TYPES.InvestmentService)
  );
-Web3Connection.addSubscription(campaignVerifier);
+// Web3Connection.addSubscription(investmentWatcher);
 
 const server = new InversifyExpressServer(container);
 server.setConfig((app) => {

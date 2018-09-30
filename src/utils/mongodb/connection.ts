@@ -5,11 +5,11 @@ const uri = `mongodb://${config.mongoUser}:${config.mongoPass}@${config.mongoHos
 const dbName = config.mongoDBName;
 
 export class MongoDBConnection {
-  private static isConnected: boolean = false;
+  private static _isConnected: boolean = false;
   private static db: Db;
 
   public static getConnection(result: (connection) => void) {
-    if (this.isConnected) {
+    if (this._isConnected) {
       return result(this.db);
     } else {
       this.connect((error, db: Db) => {
@@ -18,10 +18,12 @@ export class MongoDBConnection {
     }
   }
 
+  public static isConnected(): boolean { return this._isConnected; }
+
   private static connect(result: (error, db: Db) => void) {
     MongoClient.connect(uri, (err, client) => {
       this.db = client.db(dbName);
-      this.isConnected = true;
+      this._isConnected = true;
       return result(err, this.db);
     });
   }
