@@ -1,5 +1,4 @@
 import { inject, injectable } from 'inversify';
-import { MongoDBClient } from '../utils/mongodb/client';
 import { MongoDBConnection } from '../utils/mongodb/connection';
 import { stringToId } from '../utils/mongodb/stringToId';
 import { Contract } from '../models/contract';
@@ -11,19 +10,16 @@ const collectionName = 'hostedCampaign';
 
 @injectable()
 export class HostedCampaignService {
-  private mongoClient: MongoDBClient;
+  private conn;
 
-  constructor(
-    @inject(TYPES.MongoDBClient) mongoClient: MongoDBClient
-  ) {
-    this.mongoClient = mongoClient;
-
-    MongoDBConnection.getConnection(result => {
-      result.collection(collectionName).createIndex(
+  constructor() {
+    MongoDBConnection.getConnection(conn => {
+      this.conn = conn;
+      conn.collection(collectionName).createIndex(
         'ownerId',
         { name: 'ownerId' });
 
-      result.collection(collectionName).createIndex(
+      conn.collection(collectionName).createIndex(
         'updatedAt',
         { name: 'updatedAt' });
     });
@@ -31,38 +27,44 @@ export class HostedCampaignService {
 
   public insert(hostedCampaign: HostedCampaign): Promise<HostedCampaign> {
     return new Promise<HostedCampaign>((resolve, reject) => {
-      this.mongoClient.insert(collectionName, hostedCampaign, (error, data: HostedCampaign) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(data);
-        }
-      });
+      this.conn.collection(collectionName)
+        .insert(hostedCampaign, (error, data: HostedCampaign) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(data);
+          }
+        });
     });
   }
 
   public update(hostedCampaign: HostedCampaign): Promise<any> {
     return new Promise<any>((resolve, reject) => {
-      this.mongoClient.update(collectionName, hostedCampaign._id, hostedCampaign, (error, data) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(data);
-        }
-      });
+      this.conn.collection(collectionName)
+        .update(
+          { _id: stringToId(hostedCampaign._id) },
+          { $set: hostedCampaign },
+	  (error, data) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve(data);
+    }
+  });
     });
   }
 
   public findById(idString: string): Promise<HostedCampaign> {
     const id = stringToId(idString);
     return new Promise<HostedCampaign>((resolve, reject) => {
-      this.mongoClient.findOne(collectionName, { _id: id }, (error, data) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(data);
-        }
-      });
+      this.conn.collection(collectionName)
+        .findOne({ _id: id }, (error, data) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(data);
+          }
+        });
     });
   }
 
@@ -78,7 +80,7 @@ export class HostedCampaignService {
     }
 
     return new Promise<any>((resolve, reject) => {
-      this.mongoClient.db.collection(collectionName)
+      this.conn.collection(collectionName)
       .find(query)
       .sort({ updatedAt: -1 })
       .limit(pageSize)
@@ -116,7 +118,7 @@ export class HostedCampaignService {
       };
     }
     return new Promise<any>((resolve, reject) => {
-      this.mongoClient.db.collection(collectionName)
+      this.conn.collection(collectionName)
        .find(query)
        .sort({ updatedAt: -1 })
        .limit(pageSize)

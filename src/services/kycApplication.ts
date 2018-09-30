@@ -1,5 +1,4 @@
 import { inject, injectable } from 'inversify';
-import { MongoDBClient } from '../utils/mongodb/client';
 import { MongoDBConnection } from '../utils/mongodb/connection';
 import { stringToId } from '../utils/mongodb/stringToId';
 import { Contract } from '../models/contract';
@@ -10,35 +9,40 @@ const collectionName = 'kycApplication';
 
 @injectable()
 export class KYCApplicationService {
-  private mongoClient: MongoDBClient;
+  private conn;
 
-  constructor(
-    @inject(TYPES.MongoDBClient) mongoClient: MongoDBClient
-  ) {
-    this.mongoClient = mongoClient;
+  constructor() {
+    MongoDBConnection.getConnection(conn => {
+      this.conn = conn;
+    });
   }
 
   async insert(application: KYCApplication): Promise<KYCApplication> {
     return new Promise<KYCApplication>((resolve, reject) => {
-      this.mongoClient.insert(collectionName, application, (error, data) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(data);
-        }
-      });
+      this.conn.collection(collectionName)
+        .insert(application, (error, data) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(data);
+          }
+        });
     });
   }
 
-  async update(id: string, application: KYCApplication): Promise<KYCApplication> {
+  async update(application: KYCApplication): Promise<KYCApplication> {
     return new Promise<KYCApplication>((resolve, reject) => {
-      this.mongoClient.update(collectionName, id, application, (error, data) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(data);
-        }
-      });
+      this.conn.collection(collectionName)
+        .update(
+	{ _id: application._id },
+	{ $set: application },
+	(error, data) => {
+  if (error) {
+    reject(error);
+  } else {
+    resolve(data);
+  }
+});
     });
   }
 }

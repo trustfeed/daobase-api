@@ -105,7 +105,7 @@ export class KYCController {
       setTimeout(async () => {
         app.status = 'VERIFIED';
         user.kycStatus = 'VERIFIED';
-        await this.kycApplicationService.update(app._id, app);
+        await this.kycApplicationService.update(app);
         await this.userService.update(user);
       }, 10 * 1000);
     }

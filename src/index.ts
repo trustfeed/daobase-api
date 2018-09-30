@@ -19,7 +19,6 @@ import { HashToEmailService } from './services/hashToEmail';
 import { KYCApplicationService } from './services/kycApplication';
 import { HostedCampaignService } from './services/hostedCampaign';
 import { Web3Service } from './services/web3';
-import { MongoDBClient } from './utils/mongodb/client';
 import { S3Service } from './services/s3';
 import './controllers/healthz';
 import './controllers/nonce';
@@ -34,7 +33,6 @@ import { Web3Connection } from './utils/web3/connection';
 
 const container = new Container();
 
-container.bind<MongoDBClient>(TYPES.MongoDBClient).to(MongoDBClient);
 container.bind<UserService>(TYPES.UserService).to(UserService);
 container.bind<HashToEmailService>(TYPES.HashToEmailService).to(HashToEmailService);
 container.bind<KYCApplicationService>(TYPES.KYCApplicationService).to(KYCApplicationService);

@@ -1,5 +1,4 @@
 import { inject, injectable } from 'inversify';
-import { MongoDBClient } from '../utils/mongodb/client';
 import { MongoDBConnection } from '../utils/mongodb/connection';
 import { stringToId } from '../utils/mongodb/stringToId';
 import { User } from '../models/user';
@@ -9,15 +8,12 @@ const collectionName = 'user';
 
 @injectable()
 export class UserService {
-  private mongoClient: MongoDBClient;
+  private conn;
 
-  constructor(
-    @inject(TYPES.MongoDBClient) mongoClient: MongoDBClient
-  ) {
-    this.mongoClient = mongoClient;
-
-    MongoDBConnection.getConnection(result => {
-      result.collection(collectionName).createIndex(
+  constructor() {
+    MongoDBConnection.getConnection(conn => {
+	    this.conn = conn;
+      conn.collection(collectionName).createIndex(
 	      'publicAddress',
 	      { name: 'publicAddress', unique: true });
     });
@@ -25,25 +21,27 @@ export class UserService {
 
   public findByPublicAddress(publicAddress: string): Promise<User> {
     return new Promise<User>((resolve, reject) => {
-      this.mongoClient.findOne(collectionName, { publicAddress }, (error, data: User) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(data);
-        }
-      });
+      this.conn.collection(collectionName)
+        .findOne({ publicAddress }, (error, data: User) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(data);
+          }
+        });
     });
   }
 
   public findById(id: string): Promise<User> {
     return new Promise<User>((resolve, reject) => {
-      this.mongoClient.findOne(collectionName, { _id: stringToId(id) }, (error, data: User) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(data);
-        }
-      });
+      this.conn.collection(collectionName)
+        .findOne({ _id: stringToId(id) }, (error, data: User) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(data);
+          }
+        });
     });
   }
 
@@ -53,26 +51,31 @@ export class UserService {
       const user = new User(
         publicAddress
       );
-      this.mongoClient.insert(collectionName, user, (error, data: User) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(data);
-        }
-      });
+      this.conn.collection(collectionName)
+        .insert(user, (error, data: User) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(data);
+          }
+        });
     });
   }
 
   // TODO: validate the user data
   public update(user: User): Promise<any> {
     return new Promise<any>((resolve, reject) => {
-      this.mongoClient.update(collectionName, user._id, user, (error, data: User) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(data);
-        }
-      });
+      this.conn.collection(collectionName)
+        .update(
+		{ _id: user._id },
+		{ $set: user },
+		(error, data: User) => {
+  if (error) {
+    reject(error);
+  } else {
+    resolve(data);
+  }
+});
     });
   }
 }

@@ -15,8 +15,8 @@ const router = express.Router();
 // router.use('/users', users);
 // router.use('/auth', auth);
 // router.use('/verify', verify);
-
 // router.use('/admin', admin);
+
 // router.use('/campaigns', campaigns);
 // router.use('/investments', investments);
 // router.use('/kyc', kyc);
