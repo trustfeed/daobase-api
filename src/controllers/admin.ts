@@ -2,10 +2,11 @@ import { controller, httpGet, httpPost, httpPut, queryParam, request, requestBod
 import { injectable, inject } from 'inversify';
 import { TypedError } from '../utils';
 import { UserService } from '../services/user';
+import { HostedCampaignService } from '../services/hostedCampaign';
+import { Web3Service } from '../services/web3';
 import TYPES from '../constant/types';
 import { authMiddleware } from '../middleware/auth';
-import { HostedCampaignService } from '../services/hostedCampaign';
-import { HostedCampaign, submitForReview, reviewAccepted, cancelReview } from '../models/hostedCampaign';
+import { HostedCampaign, submitForReview, reviewAccepted, cancelReview, makeDeployment } from '../models/hostedCampaign';
 import * as viewCampaigns from '../views/campaign';
 import * as onChain from '../models/onChainData';
 import * as offChain from '../models/offChainData';
@@ -39,8 +40,12 @@ const requestToOffChainData = (body) => {
 @controller('/admin', authMiddleware)
 export class AdminController {
   constructor(@inject(TYPES.UserService) private userService: UserService,
-	      @inject(TYPES.HostedCampaignService) private hostedCampaignService: HostedCampaignService
-	     ) {}
+	      @inject(TYPES.HostedCampaignService) private hostedCampaignService: HostedCampaignService,
+	      @inject(TYPES.Web3Service) private web3Service: Web3Service,
+	      @inject(TYPES.CampaignVerifier) private campaignVerifier
+	     ) {
+    this.campaignVerifier.scrape();
+  }
 
   @httpPost('/hosted-campaigns')
   async post(
@@ -184,15 +189,14 @@ export class AdminController {
     res.status(201).send({ message: 'accepted' });
   }
 
-  // @httpPost('/hosted-campaigns/:id/deployment-transaction')
-  // async deploymentTransaction(
-  //  @request() req,
-  //  @response() res
-  // ) {
-  //  const { campaign } = await this.getUserAndCampaign(req.decoded.id, req.params.id);
-  //  // const out = await deploymentTransaction(campaign, hostedCampaignService);
-  //  // return out;
-  // }
+  @httpGet('/hosted-campaigns/:id/deployment-transaction')
+  async deploymentTransaction(
+   @request() req
+  ) {
+    const { campaign, user } = await this.getUserAndCampaign(req.decoded.id, req.params.id);
+    const out = await makeDeployment(campaign, user.publicAddress, this.web3Service);
+    return out;
+  }
 
   private async getUser(userId) {
     const user = await this.userService.findById(userId);

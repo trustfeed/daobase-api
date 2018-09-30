@@ -18,6 +18,7 @@ import { UserService } from './services/user';
 import { HashToEmailService } from './services/hashToEmail';
 import { KYCApplicationService } from './services/kycApplication';
 import { HostedCampaignService } from './services/hostedCampaign';
+import { Web3Service } from './services/web3';
 import { MongoDBClient } from './utils/mongodb/client';
 import './controllers/healthz';
 import './controllers/nonce';
@@ -26,6 +27,7 @@ import './controllers/auth';
 import './controllers/verify';
 import './controllers/kyc';
 import './controllers/admin';
+import { CampaignVerifier } from './services/campaignVerifier';
 
 const container = new Container();
 
@@ -34,26 +36,28 @@ container.bind<UserService>(TYPES.UserService).to(UserService);
 container.bind<HashToEmailService>(TYPES.HashToEmailService).to(HashToEmailService);
 container.bind<KYCApplicationService>(TYPES.KYCApplicationService).to(KYCApplicationService);
 container.bind<HostedCampaignService>(TYPES.HostedCampaignService).to(HostedCampaignService);
+container.bind<Web3Service>(TYPES.Web3Service).to(Web3Service);
+container.bind<CampaignVerifier>(TYPES.CampaignVerifier).to(CampaignVerifier);
 
 const server = new InversifyExpressServer(container);
 server.setConfig((app) => {
-  app.use(morgan('common'));
-  app.use(
+   app.use(morgan('common'));
+   app.use(
     bodyParser.json({
       type: 'application/json'
     })
   );
-  app.use(
+   app.use(
     bodyParser.urlencoded({
       extended: true,
       type: 'application/x-www-form-urlencoded'
     })
   );
-  app.use(cors());
-});
+   app.use(cors());
+ });
 server.setErrorConfig((app) => {
-  app.use(error);
-});
+   app.use(error);
+ });
 
 const app = server.build();
 app.listen(config.port);

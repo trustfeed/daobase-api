@@ -5,29 +5,6 @@ import { Email } from './email';
 import { sha256 } from 'js-sha256';
 import { TypedError } from '../utils';
 
-// const HashToEmail = new Schema({
-//  hash: {
-//    type: String,
-//    required: true,
-//    unique: true,
-//    index: true
-//  },
-//  createdAt: {
-//    type: Date,
-//    required: true,
-//    default: Date.now
-//  },
-//  user: {
-//    type: Schema.Types.ObjectId,
-//    ref: 'User',
-//    required: true
-//  },
-//  address: {
-//    type: Schema.Types.ObjectId,
-//    required: true
-//  }
-// });
-
 @injectable()
 export class HashToEmail {
   public hash: string;

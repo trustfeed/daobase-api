@@ -3,13 +3,17 @@ pragma solidity ^0.4.18;
 import './TrustFeedWallet.sol';
 import './TrustFeedMintableToken.sol';
 import './TrustFeedMintedCrowdsale.sol';
-import './TrustFeedRegistry.sol';
 
 // This is a 'wrapper'. It constructs the token, then the crowdsale.
 contract TrustFeedMintedCampaign {
   TrustFeedWallet public wallet;  
   TrustFeedMintableToken public token;
   TrustFeedMintedCrowdsale public crowdsale;
+
+  event NewCampaign(
+    address campaignAddress,
+    string campaignId
+  );
 
   constructor(
     // The owners of the token
@@ -31,9 +35,7 @@ contract TrustFeedMintedCampaign {
     // The soft cap
     uint256 _goal,
     // The campaign id
-    string _campaignId,
-    // The registry to report creation to
-    TrustFeedCampaignRegistry _registry
+    string _campaignId
   ) public {
 
     require(_owners[1] == msg.sender, "sent from unexpected address");
@@ -61,6 +63,6 @@ contract TrustFeedMintedCampaign {
     // Transfer ownership of token
     token.transferOwnership(crowdsale);
 
-    _registry.register(this, _campaignId);
+    emit NewCampaign(this, _campaignId);
   }
 }

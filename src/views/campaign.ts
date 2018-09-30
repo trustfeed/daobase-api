@@ -42,7 +42,6 @@ const onChainDataBrief = d => {
       startingTime = Math.round(d.startingTime.getTime() / 1000);
     }
     return {
-      network: d.network,
       softCap: d.softCap,
       hardCap: d.hardCap,
       tokenName: d.tokenName,
@@ -205,8 +204,8 @@ const offChainData = d => {
 export const hostedAdminBrief = c => {
   return {
     id: c._id.toString(),
-    createdAt: c.createdAt,
-    updatedAt: c.updatedAt,
+    createdAt: c.createdAt.getTime(),
+    updatedAt: c.updatedAt.getTime(),
     campaignStatus: c.campaignStatus,
     onChainData: onChainDataBrief(c.onChainData),
     type: 'hostedCampaign'
