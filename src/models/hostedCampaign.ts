@@ -268,3 +268,19 @@ export const updateOffChainData = (hostedCampaign, offChainData) => {
     throw new TypedError(400, 'campaign is not DRAFT or DEPLOYED');
   }
 };
+
+export const isDeployed = (hostedCampaign: HostedCampaign): boolean => {
+  return (hostedCampaign.campaignStatus === HOSTED_CAMPAIGN_STATUS_DEPLOYED ||
+	  hostedCampaign.campaignStatus === HOSTED_CAMPAIGN_STATUS_PENDING_OFF_CHAIN_REVIEW);
+};
+
+export const isOngoing = (hostedCampaign: HostedCampaign): boolean => {
+  if (!isDeployed(hostedCampaign)) {
+	  return false;
+  }
+  const nw = new Date();
+  const startingTime = hostedCampaign.onChainData.startingTime;
+  const duration = hostedCampaign.onChainData.duration * 1000 * 60 * 60 * 24;
+  return (nw > startingTime &&
+	  nw.getTime() < startingTime.getTime() + duration);
+};

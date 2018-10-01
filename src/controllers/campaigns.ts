@@ -10,6 +10,7 @@ import { HostedCampaign, submitForReview, reviewAccepted, cancelReview, makeDepl
 import * as viewCampaigns from '../views/campaign';
 import * as onChain from '../models/onChainData';
 import * as offChain from '../models/offChainData';
+import { CoinPayments } from '../models/coinPayments';
 import config from '../config';
 import Web3 from 'web3';
 
@@ -68,29 +69,12 @@ export class CampaignsController {
       throw new TypedError(404, 'unknown campaign');
     }
 
-    // TODO: Move this into the coin payments service
-    // TODO: Check the purchase can be made (campaign is open, not passed hardcap, amount is not too small)
-    const rate = Web3.utils.toBN(campaign.onChainData.rate);
-    const tokenCost = tokens.div(rate);
-    // TODO: compute this
-    const transactionFee = Web3.utils.toBN('91733');
-    const etherAmount = Web3.utils.fromWei(tokenCost.add(transactionFee), 'ether');
-    const tx: any = await this.coinPaymentsService.prepareTransaction(
-      etherAmount,
-      currency,
-      req.decoded.id.toString(),
-      campaign._id
-    );
-    res.status(200).send({
-      currency: currency,
-      amount: tx.amount,
-      transactionID: tx.txn_id,
-      address: tx.address,
-      confirmsNeeded: tx.confirms_needed,
-      timeout: tx.timeout,
-      statusURL: tx.status_url,
-      qrCodeURL: tx.qrcode_url,
-      tokenTransferFee: transactionFee
-    });
+    const out = await this.coinPaymentsService.prepareTransaction(
+            tokensToPurchase,
+            currency,
+            req.decoded.id,
+            campaign
+          );
+    return out;
   }
 }
