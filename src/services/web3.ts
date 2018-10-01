@@ -24,4 +24,8 @@ export class Web3Service {
   getGasPrice() {
     return this.web3.eth.getGasPrice();
   }
+
+  unlockCoinPaymentAccount() {
+    this.web3.personal.unlockAccount(config.coinPaymentsAccount, config.coinPaymentsPrivateKey, 5);
+  }
 }

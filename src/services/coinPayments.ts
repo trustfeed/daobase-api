@@ -94,7 +94,14 @@ export class CoinPaymentsService {
     const value = Web3.utils.toBN(transaction.etherAmount)
                     .sub(gasCost);
     // TODO: unlock the account to send
-    // await contract.methods.buyTokens(config.trustfeedAddress).estimateGas({ value: value, gas: gas }).send();
+    this.web3Service.unlockCoinPaymentAccount();
+    await contract.methods
+      .buyTokens(transaction.userAddress)
+      .send({
+        value: value,
+        gas: gas,
+        from: config.coinPaymentsAccount,
+        gasPrice: gasPrice });
 
     // TODO: Make an event listener to find transfer
     transaction = model.checkEtherReceived(transaction);
@@ -152,20 +159,20 @@ export class CoinPaymentsService {
       amount: etherAmount,
       buyer_name: userId,
       item_name: campaign._id.toString(),
-      ipn_url: 'https://api-test.daobase.io/coin-payments'
+      ipn_url: `${config.backendHost}/coin-payments`
     };
     const tx = await this._prepareTransaction(opts);
     const toSave = new model.CoinPayments(
-            userId,
-            campaign._id.toString(),
-            tx.address,
-            paymentCurrency,
-            toPurchase,
-            tx.amount,
-            etherAmount,
-	    transactionFee,
-            tx.txn_id
-          );
+      userId,
+      campaign._id.toString(),
+      tx.address,
+      paymentCurrency,
+      toPurchase,
+      tx.amount,
+      etherAmount,
+      transactionFee,
+      tx.txn_id
+    );
     this._insertDB(toSave);
     return {
       currency: paymentCurrency,

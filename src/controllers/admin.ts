@@ -26,7 +26,7 @@ const requestToOnChainData = (body) => {
           body.softCap,
           body.hardCap,
           body.isMinted
-	);
+        );
 };
 
 const requestToOffChainData = (body) => {
@@ -42,10 +42,10 @@ const requestToOffChainData = (body) => {
 @controller('/admin', authMiddleware)
 export class AdminController {
   constructor(@inject(TYPES.UserService) private userService: UserService,
-	      @inject(TYPES.HostedCampaignService) private hostedCampaignService: HostedCampaignService,
-	      @inject(TYPES.Web3Service) private web3Service: Web3Service,
-	      @inject(TYPES.S3Service) private s3Service: S3Service
-	     ) {
+              @inject(TYPES.HostedCampaignService) private hostedCampaignService: HostedCampaignService,
+              @inject(TYPES.Web3Service) private web3Service: Web3Service,
+              @inject(TYPES.S3Service) private s3Service: S3Service
+             ) {
   }
 
   @httpPost('/hosted-campaigns')
@@ -57,8 +57,8 @@ export class AdminController {
     const user = await this.getUser(req.decoded.id);
 
     let campaign = new HostedCampaign(
-	user._id,
-	requestToOnChainData(req.body)
+        user._id,
+        requestToOnChainData(req.body)
       );
     campaign = await this.hostedCampaignService.insert(campaign);
     res.status(201).send({

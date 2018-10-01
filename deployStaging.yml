@@ -38,6 +38,8 @@ spec:
                         value: 0x3aa9ce734dd21fa5e6962978e2ccc7f4ac513348
                       - name: FRONTEND_HOST
                         value: http://test.daobase.io
+                      - name: BACKEND_HOST
+                        value: https://api-test.daobase.io
                       - name: AWS_ACCESS_KEY_ID
                         valueFrom:
                           secretKeyRef:

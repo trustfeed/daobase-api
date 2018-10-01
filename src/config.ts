@@ -18,7 +18,11 @@ const config = {
   trustfeedAddress: process.env.TRUSTFEED_ADDRESS || '0x3aa9ce734dd21fa5e6962978e2ccc7f4ac513348',
   infuraKey: process.env.INFURA_KEY,
 
+  coinPaymentsAccount: process.env.COINPAYMENTS_ACCOUNT || '0x90af460235cb9fb28956b45e9d80aac3dc3bd74e',
+  coinPaymentsPrivateKey: process.env.COINPAYMENTS_PRIVATE_KEY,
+
   frontendHost: process.env.FRONTEND_HOST || 'http://localhost:3000',
+  backendHost: process.env.BACKEND_HOST || 'http://localhost:8080',
 
   dev: process.env.NODE_ENV !== 'production',
 
