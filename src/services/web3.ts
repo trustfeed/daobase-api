@@ -20,4 +20,8 @@ export class Web3Service {
   getBlockNumber() {
     return this.web3.eth.getBlockNumber();
   }
+
+  getGasPrice() {
+    return this.web3.eth.getGasPrice();
+  }
 }

@@ -16,6 +16,7 @@ export class CoinPayments {
     public tokenAmount: string,
     public currencyAmount: string,
     public etherAmount: string,
+    public transferFee: string,
     public coinPaymentsId: string
   ) {
     this.status = COIN_PAYMENTS_PENDING;

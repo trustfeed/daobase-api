@@ -8,6 +8,8 @@ import * as model from '../models/coinPayments';
 import Web3 from 'web3';
 import { TypedError } from '../utils';
 import { isDeployed, isOngoing } from '../models/hostedCampaign';
+import { Web3Service } from '../services/web3';
+import { HostedCampaignService } from '../services/hostedCampaign';
 
 const collectionName = 'coinPaymentsTransaction';
 
@@ -16,7 +18,10 @@ export class CoinPaymentsService {
   private client;
   private mongoConn;
 
-  constructor() {
+  constructor(
+    @inject(TYPES.Web3Service) private web3Service: Web3Service,
+    @inject(TYPES.HostedCampaignService) private hostedCampaignService: HostedCampaignService
+  ) {
     const options = {
       key: config.coinPaymentsKey,
       secret: config.coinPaymentsSecret
@@ -76,9 +81,23 @@ export class CoinPaymentsService {
       throw new TypedError(500, 'unknown transaction');
     }
     // TODO: Use web3 to check the ether was recieved
-    transaction = model.checkEtherReceived(transaction);
-    // TODO: Use web3 to transfer the tokens to the given address
+    const campaign = await this.hostedCampaignService.findById(transaction.campaignId);
+    if (!campaign) {
+      throw new TypedError(404, 'unknown campaign');
+    }
+    const abi = campaign.onChainData.crowdsaleContract.abi;
+    const address = campaign.onChainData.crowdsaleContract.address;
+    const contract = this.web3Service.createContract(abi, address);
+    const gasCost = Web3.utils.toBN(transaction.transferFee);
+    const gasPrice = await this.web3Service.getGasPrice();
+    const gas = gasCost.div(gasPrice);
+    const value = Web3.utils.toBN(transaction.etherAmount)
+                    .sub(gasCost);
+    // TODO: unlock the account to send
+    // await contract.methods.buyTokens(config.trustfeedAddress).estimateGas({ value: value, gas: gas }).send();
+
     // TODO: Make an event listener to find transfer
+    transaction = model.checkEtherReceived(transaction);
     await this.updateTransaction(transaction);
   }
 
@@ -116,8 +135,12 @@ export class CoinPaymentsService {
     }
     const rate = Web3.utils.toBN(campaign.onChainData.rate);
     const tokenCost = Web3.utils.toBN(toPurchase).div(rate);
-    // TODO: compute this
-    const transactionFee = Web3.utils.toBN('10000');
+    const abi = campaign.onChainData.crowdsaleContract.abi;
+    const address = campaign.onChainData.crowdsaleContract.address;
+    const contract = this.web3Service.createContract(abi, address);
+    const gasEstimate = await contract.methods.buyTokens(config.trustfeedAddress).estimateGas({ value: tokenCost });
+    const gasPrice = await this.web3Service.getGasPrice();
+    const transactionFee = Web3.utils.toBN(gasEstimate).mul(Web3.utils.toBN(gasPrice));
     const etherAmount = Web3.utils.fromWei(tokenCost.add(transactionFee), 'ether');
     if (etherAmount < 0.05) {
       throw new TypedError(400, 'the amount is too small');
@@ -140,6 +163,7 @@ export class CoinPaymentsService {
             toPurchase,
             tx.amount,
             etherAmount,
+	    transactionFee,
             tx.txn_id
           );
     this._insertDB(toSave);
