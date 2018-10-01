@@ -4,6 +4,7 @@ import * as express from 'express';
 import { TypedError } from '../utils';
 import { UserService } from '../services/user';
 import { HashToEmailService } from '../services/hashToEmail';
+import { MailService } from '../services/mail';
 import { updateEmail } from '../models/user';
 import TYPES from '../constant/types';
 import { authMiddleware } from '../middleware/auth';
@@ -14,7 +15,8 @@ import { InvestmentWatcher } from '../events/investmentWatcher';
 export class UsersController {
   constructor(@inject(TYPES.UserService) private userService: UserService,
               @inject(TYPES.HashToEmailService) private hashToEmailService: HashToEmailService,
-              @inject(TYPES.InvestmentWatcher) private investmentWatcher: InvestmentWatcher) {}
+              @inject(TYPES.InvestmentWatcher) private investmentWatcher: InvestmentWatcher,
+              @inject(TYPES.MailService) private mailService: MailService) {}
 
   @httpGet('/', authMiddleware)
   public async get(
@@ -70,7 +72,7 @@ export class UsersController {
       user.name = body.name;
     }
     if (body.email) {
-      await updateEmail(user, body.email, this.hashToEmailService);
+      await updateEmail(user, body.email, this.hashToEmailService, this.mailService);
     }
     await this.userService.update(user);
     return {

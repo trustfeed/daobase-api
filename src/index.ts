@@ -18,6 +18,7 @@ import { Web3Service } from './services/web3';
 import { S3Service } from './services/s3';
 import { CoinPaymentsService } from './services/coinPayments';
 import { InvestmentService } from './services/investment';
+import { MailService } from './services/mail';
 import './controllers/healthz';
 import './controllers/nonce';
 import './controllers/users';
@@ -41,6 +42,7 @@ container.bind<Web3Service>(TYPES.Web3Service).to(Web3Service);
 container.bind<S3Service>(TYPES.S3Service).to(S3Service);
 container.bind<CoinPaymentsService>(TYPES.CoinPaymentsService).to(CoinPaymentsService);
 container.bind<InvestmentService>(TYPES.InvestmentService).to(InvestmentService);
+container.bind<MailService>(TYPES.MailService).to(MailService);
 
 const investmentWatcher = new InvestmentWatcher(
   container.get<Web3Service>(TYPES.Web3Service),
@@ -83,65 +85,3 @@ const app = server.build();
 app.listen(config.port);
 
 exports = module.exports = app;
-// const app = express();
-//
-//// Global middleware
-// app.use(morgan('common'));
-// app.use(
-//  bodyParser.json({
-//    type: 'application/json'
-//  })
-// );
-// app.use(
-//  bodyParser.urlencoded({
-//    extended: true,
-//    type: 'application/x-www-form-urlencoded'
-//  })
-// );
-// app.use(cors());
-//
-//// The standard google health check
-// app.get('/healthz', (req, res) => {
-//  res.status(200).send('ok');
-// });
-//
-//// The apis we provide
-// app.use('/', controllers);
-// app.use(error);
-//
-//// accept requests
-// app
-//  .listen(config.port, () => console.log(`express is running on port ${config.port}`))
-//  .on('error', err => {
-//    console.log(err);
-//    process.exit(1);
-//  });
-//
-////// Initialise the database
-//// const options = {
-////  user: config.mongoUser,
-////  pass: config.mongoPass
-//// };
-////
-//// const uri = `mongodb://${config.mongoHost}:${config.mongoPort}/crowdAdmin?authSource=admin`;
-//// mongoose.connect(
-////  uri,
-////  options
-//// );
-//// mongoose.Promise = global.Promise;
-//// const db = mongoose.connection;
-//// db.on('error', err => {
-////  console.error(err);
-////  process.exit(1);
-//// });
-//
-//// db.once('open', async () => {
-////  try {
-////    await Contract.migrateAll().catch(console.log);
-////    // await startCampainVerifier();
-////    await InvestmentListener.startListner().catch(console.log);
-////  } catch (error) {
-////    console.log('initialisation failed:', error);
-////    process.exit(1);
-////  }
-//// });

@@ -7,7 +7,8 @@ const TYPES = {
   S3Service: Symbol.for('S3Service'),
   CoinPaymentsService: Symbol.for('CoinPaymentsService'),
   InvestmentService: Symbol.for('InvestmentService'),
-  InvestmentWatcher: Symbol.for('InvestmentWatcher')
+  InvestmentWatcher: Symbol.for('InvestmentWatcher'),
+  MailService: Symbol.for('MailService')
 };
 
 export default TYPES;

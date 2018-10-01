@@ -6,7 +6,6 @@ import ethUtil from 'ethereumjs-util';
 import jwt from 'jsonwebtoken';
 import { HashToEmail } from './hashToEmail';
 import * as kyc from './kycApplication';
-import * as mailer from './mailer';
 
 export class User {
   public publicAddress: string;
@@ -28,7 +27,7 @@ export class User {
   }
 }
 
-export const updateEmail = async (user: User, email: string, hashToEmailService): Promise<User> => {
+export const updateEmail = async (user: User, email: string, hashToEmailService, mailer): Promise<User> => {
   if (user.currentEmail && user.currentEmail.address !== email) {
     user.previousEmails.push(user.currentEmail);
   }
@@ -92,4 +91,3 @@ export const isEmailVerified = (user: User): boolean => {
 export const isKYCVerified = (user: User): boolean => {
   return user.kycStatus === kyc.KYC_STATUS_VERIFIED;
 };
-
