@@ -6,7 +6,7 @@ import { isEmailVerified } from '../models/user';
 import TYPES from '../constant/types';
 import { authMiddleware } from '../middleware/auth';
 import { S3Service } from '../services/s3';
-import { KYCApplication } from '../models/kycApplication';
+import { KYCApplication, KYC_STATUS_PENDING } from '../models/kycApplication';
 import { KYCApplicationService } from '../services/kycApplication';
 import config from '../config';
 
@@ -95,7 +95,7 @@ export class KYCController {
         req.body.facialImageURL
     );
     app = await this.kycApplicationService.insert(app);
-    user.kycStatus = 'PENDING';
+    user.kycStatus = KYC_STATUS_PENDING;
     await this.userService.update(user);
     res.status(201).send({
       message: 'received'

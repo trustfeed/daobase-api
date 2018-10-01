@@ -6,10 +6,11 @@ import { HostedCampaignService } from '../services/hostedCampaign';
 import { Web3Service } from '../services/web3';
 import TYPES from '../constant/types';
 import { authMiddleware } from '../middleware/auth';
-import { HostedCampaign, submitForReview, reviewAccepted, cancelReview, makeDeployment, updateOffChainData } from '../models/hostedCampaign';
+import { HostedCampaign, submitForReview, reviewAccepted, cancelReview, makeDeployment, updateOnChainData, updateOffChainData } from '../models/hostedCampaign';
 import * as viewCampaigns from '../views/campaign';
 import * as onChain from '../models/onChainData';
 import * as offChain from '../models/offChainData';
+import { isKYCVerified } from '../models/user';
 import { S3Service } from '../services/s3';
 import config from '../config';
 
@@ -89,12 +90,8 @@ export class AdminController {
     @request() req,
     @response() res
   ) {
-    const { campaign } = await this.getUserAndCampaign(req.decoded.id, req.params.id);
-    if (campaign.campaignStatus !== 'DRAFT') {
-      throw new TypedError(400, 'campaign is not in draft status');
-    }
-
-    campaign.onChainData = requestToOnChainData(req.body);
+    let { campaign } = await this.getUserAndCampaign(req.decoded.id, req.params.id);
+    campaign = updateOnChainData(campaign, requestToOnChainData(req.body));
     await this.hostedCampaignService.update(campaign);
     res.status(201).send({
       message: 'Accepted'
@@ -106,9 +103,9 @@ export class AdminController {
     @request() req,
     @response() res
   ) {
-    const { campaign } = await this.getUserAndCampaign(req.decoded.id, req.params.id);
+    let { campaign } = await this.getUserAndCampaign(req.decoded.id, req.params.id);
 
-    updateOffChainData(campaign, requestToOffChainData(req.body));
+    campaign = updateOffChainData(campaign, requestToOffChainData(req.body));
     await this.hostedCampaignService.update(campaign);
     res.status(201).send({
       message: 'Accepted'
@@ -205,7 +202,6 @@ export class AdminController {
   ) {
     const { campaign, user } = await this.getUserAndCampaign(req.decoded.id, req.params.id);
     const out = await makeDeployment(campaign, user.publicAddress, this.web3Service);
-    campaign.campaignStatus = 'PENDING_DEPLOYMENT';
     await this.hostedCampaignService.update(campaign);
     return out;
   }
@@ -215,7 +211,7 @@ export class AdminController {
     if (user === null || user === undefined) {
       throw new TypedError(404, 'user not found');
     }
-    if (user.kycStatus !== 'VERIFIED') {
+    if (isKYCVerified(user)) {
       throw new TypedError(400, 'KYC verification is required');
     }
     return user;

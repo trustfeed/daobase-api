@@ -1,6 +1,9 @@
 import { injectable } from 'inversify';
 import { Note } from './note';
 
+export const KYC_STATUS_PENDING = 'PENDING';
+export const KYC_STATUS_VERIFIED = 'VERIFIED';
+
 export class KYCApplication {
   public createdAt: Date;
   public notes: string[];
@@ -13,10 +16,14 @@ export class KYCApplication {
     public facialImageURL: string
   ) {
     this.createdAt = new Date();
-    this.status = 'PENDING';
+    this.status = KYC_STATUS_PENDING;
     this.notes = [];
   }
 }
+
+export const isVerified = (app: KYCApplication): boolean => {
+  return app.status === KYC_STATUS_VERIFIED;
+};
 
 // import mongoose from 'mongoose';
 // import User from './user';

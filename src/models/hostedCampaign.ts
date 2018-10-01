@@ -7,6 +7,13 @@ import Web3 from 'web3';
 import fs from 'fs';
 import { DeployedContract } from './deployedContract';
 
+export const HOSTED_CAMPAIGN_STATUS_DRAFT = 'DRAFT';
+export const HOSTED_CAMPAIGN_STATUS_PENDING_REVIEW = 'PENDING_REVIEW';
+export const HOSTED_CAMPAIGN_STATUS_REVIEWED = 'REVIEWED';
+export const HOSTED_CAMPAIGN_STATUS_PENDING_DEPLOYMENT = 'PENDING_DEPLOYMENT';
+export const HOSTED_CAMPAIGN_STATUS_DEPLOYED = 'DEPLOYED';
+export const HOSTED_CAMPAIGN_STATUS_PENDING_OFF_CHAIN_REVIEW = 'PENDING_OFF_CHAIN_REVIEW';
+
 export class HostedCampaign {
   public ownerId: string;
   public campaignStatus: string;
@@ -23,7 +30,7 @@ export class HostedCampaign {
     onChainData: onChain.OnChainData
   ) {
     this.ownerId = ownerId;
-    this.campaignStatus = 'DRAFT';
+    this.campaignStatus = HOSTED_CAMPAIGN_STATUS_DRAFT;
     this.onChainData = onChainData;
     // this.offChainData = new offChain.OffChainData();
     this.createdAt = new Date();
@@ -39,15 +46,15 @@ export const validate = (hostedCampaign: HostedCampaign) => {
 };
 
 export const submitForReview = (hostedCampaign: HostedCampaign): HostedCampaign => {
-  if (hostedCampaign.campaignStatus === 'DRAFT') {
+  if (hostedCampaign.campaignStatus === HOSTED_CAMPAIGN_STATUS_DRAFT) {
     validate(hostedCampaign);
-    hostedCampaign.campaignStatus = 'PENDING_REVIEW';
+    hostedCampaign.campaignStatus = HOSTED_CAMPAIGN_STATUS_PENDING_REVIEW;
     hostedCampaign.updatedAt = new Date();
     return hostedCampaign;
-  } else if (hostedCampaign.campaignStatus === 'DEPLOYED') {
+  } else if (hostedCampaign.campaignStatus === HOSTED_CAMPAIGN_STATUS_DEPLOYED) {
     const draft = hostedCampaign.offChainDataDraft;
     const offChainErrs = offChain.validateData(draft);
-    hostedCampaign.campaignStatus = 'PENDING_OFF_CHAIN_REVIEW';
+    hostedCampaign.campaignStatus = HOSTED_CAMPAIGN_STATUS_PENDING_OFF_CHAIN_REVIEW;
     hostedCampaign.updatedAt = new Date();
     return hostedCampaign;
   } else {
@@ -56,12 +63,12 @@ export const submitForReview = (hostedCampaign: HostedCampaign): HostedCampaign 
 };
 
 export const reviewAccepted = (hostedCampaign: HostedCampaign): HostedCampaign => {
-  if (hostedCampaign.campaignStatus === 'PENDING_REVIEW') {
-    hostedCampaign.campaignStatus = 'REVIEWED';
+  if (hostedCampaign.campaignStatus === HOSTED_CAMPAIGN_STATUS_PENDING_REVIEW) {
+    hostedCampaign.campaignStatus = HOSTED_CAMPAIGN_STATUS_REVIEWED;
     hostedCampaign.updatedAt = new Date();
     return hostedCampaign;
-  } else if (hostedCampaign.campaignStatus === 'PENDING_OFF_CHAIN_REVIEW') {
-    hostedCampaign.campaignStatus = 'DEPLOYED';
+  } else if (hostedCampaign.campaignStatus === HOSTED_CAMPAIGN_STATUS_PENDING_REVIEW) {
+    hostedCampaign.campaignStatus = HOSTED_CAMPAIGN_STATUS_DEPLOYED;
     hostedCampaign.offChainData = hostedCampaign.offChainDataDraft;
     hostedCampaign.updatedAt = new Date();
     return hostedCampaign;
@@ -72,12 +79,14 @@ export const reviewAccepted = (hostedCampaign: HostedCampaign): HostedCampaign =
 
 export const cancelReview = (hostedCampaign: HostedCampaign): HostedCampaign => {
   const campaignStatus = hostedCampaign.campaignStatus;
-  if (campaignStatus === 'PENDING_REVIEW' || campaignStatus === 'REVIEWED') {
-    hostedCampaign.campaignStatus = 'DRAFT';
+  if (
+    campaignStatus === HOSTED_CAMPAIGN_STATUS_PENDING_REVIEW ||
+    campaignStatus === HOSTED_CAMPAIGN_STATUS_REVIEWED) {
+    hostedCampaign.campaignStatus = HOSTED_CAMPAIGN_STATUS_DRAFT;
     hostedCampaign.updatedAt = new Date();
     return hostedCampaign;
-  } else if (campaignStatus === 'PENDING_OFF_CHAIN_REVIEW') {
-    hostedCampaign.campaignStatus = 'DEPLOYED';
+  } else if (campaignStatus === HOSTED_CAMPAIGN_STATUS_PENDING_OFF_CHAIN_REVIEW) {
+    hostedCampaign.campaignStatus = HOSTED_CAMPAIGN_STATUS_DEPLOYED;
     hostedCampaign.updatedAt = new Date();
     return hostedCampaign;
   } else {
@@ -94,7 +103,8 @@ export const makeDeployment = async (
         web3Service: any
   ) => {
   const sts = hostedCampaign.campaignStatus;
-  if (sts !== 'REVIEWED' && sts !== 'PENDING_DEPLOYMENT') {
+  if (sts !== HOSTED_CAMPAIGN_STATUS_REVIEWED &&
+      sts !== HOSTED_CAMPAIGN_STATUS_PENDING_DEPLOYMENT) {
     throw new TypedError(400, 'the campaign is not reviewed');
   }
   const contractJSON = await readCampaignContractFromFile(hostedCampaign);
@@ -107,6 +117,7 @@ export const makeDeployment = async (
     data: contractJSON.bytecode,
     arguments: args
   });
+  hostedCampaign.campaignStatus = HOSTED_CAMPAIGN_STATUS_PENDING_DEPLOYMENT;
   return {
     transaction: deploy.encodeABI()
   };
@@ -237,11 +248,22 @@ export const updateWeiRaised = async (hostedCampaign, web3Service) => {
   return hostedCampaign;
 };
 
-export const updateOffChainData = async (hostedCampaign, offChainData) => {
-  if (hostedCampaign.campaignStatus === 'DRAFT') {
+export const updateOnChainData = (hostedCampaign, onChainData) => {
+  if (hostedCampaign.campaignStatus === HOSTED_CAMPAIGN_STATUS_DRAFT) {
+    hostedCampaign.onChainData = onChainData;
+    return hostedCampaign;
+  } else {
+    throw new TypedError(400, 'campaign is not DRAFT');
+  }
+};
+
+export const updateOffChainData = (hostedCampaign, offChainData) => {
+  if (hostedCampaign.campaignStatus === HOSTED_CAMPAIGN_STATUS_DRAFT) {
     hostedCampaign.offChainData = offChainData;
-  } else if (hostedCampaign.campaignStatus === 'DEPLOYED') {
+    return hostedCampaign;
+  } else if (hostedCampaign.campaignStatus === HOSTED_CAMPAIGN_STATUS_DEPLOYED) {
     hostedCampaign.offChainDataDraft = offChainData;
+    return hostedCampaign;
   } else {
     throw new TypedError(400, 'campaign is not DRAFT or DEPLOYED');
   }

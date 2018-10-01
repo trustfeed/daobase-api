@@ -5,8 +5,8 @@ import { TypedError } from '../utils';
 import ethUtil from 'ethereumjs-util';
 import jwt from 'jsonwebtoken';
 import { HashToEmail } from './hashToEmail';
+import * as kyc from './kycApplication';
 import * as mailer from './mailer';
-import { CampaignService } from '../services/campaign';
 
 export class User {
   public publicAddress: string;
@@ -89,54 +89,7 @@ export const isEmailVerified = (user: User): boolean => {
   return user.currentEmail != null && user.currentEmail.verifiedAt != null;
 };
 
-// User.statics.addHostedCampaign = function(publicAddress, onChainData) {
-//  return this.findOne({
-//    publicAddress
-//  })
-//    .exec()
-//    .then(user => {
-//      if (!user) {
-//        throw new utils.TypedError(404, 'unknown publicAddress');
-//      } else {
-//        return Campaign.createHostedDomain(user._id, onChainData);
-//      }
-//    });
-// };
-//
-// User.statics.addExternalCampaign = async function(publicAddress, data) {
-//  const user = await this.findOne({
-//    publicAddress
-//  }).exec();
-//  if (!user) {
-//    throw new utils.TypedError(404, 'unknown publicAddress');
-//  } else {
-//    return Campaign.createExternalCampaign(user._id, data);
-//  }
-// };
-//
-// User.statics.verifyEmail = function(userId, emailId) {
-//  return this.findOne({
-//    _id: userId
-//  })
-//    .exec()
-//    .then(user => {
-//      if (!user) {
-//        throw new utils.TypedError(500, 'internal error');
-//      } else if (!user.currentEmail || !user.currentEmail._id.equals(emailId)) {
-//        throw new utils.TypedError(
-//          400,
-//          'a different email has been registred for that account',
-//          'EXPIRED_TOKEN'
-//        );
-//      } else if (user.currentEmail.verifiedAt) {
-//        throw new utils.TypedError(400, 'the address is already verified', 'VERIFIED_TOKEN');
-//      } else {
-//        user.currentEmail.verifiedAt = Date.now();
-//        user.updatedAt = Date.now();
-//        return user.save();
-//      }
-//    });
-// };
-//
-// const UserModel: any = mongoose.model('User', User);
-// export default UserModel;
+export const isKYCVerified = (user: User): boolean => {
+  return user.kycStatus === kyc.KYC_STATUS_VERIFIED;
+};
+
