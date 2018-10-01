@@ -1,7 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { MongoDBConnection } from '../utils/mongodb/connection';
 import { stringToId } from '../utils/mongodb/stringToId';
-import { Contract } from '../models/contract';
 import TYPES from '../constant/types';
 import { HostedCampaign, HOSTED_CAMPAIGN_STATUS_DEPLOYED, HOSTED_CAMPAIGN_STATUS_PENDING_OFF_CHAIN_REVIEW } from '../models/hostedCampaign';
 import { Base64 } from 'js-base64';
