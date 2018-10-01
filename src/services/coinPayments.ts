@@ -108,7 +108,7 @@ export class CoinPaymentsService {
   }
 
   public async prepareTransaction(toPurchase, paymentCurrency, userId, campaign) {
-    if (!isDeployed(campaign)); {
+    if (!isDeployed(campaign)) {
       throw new TypedError(500, 'the campaign is not deployed');
     }
     if (!isOngoing(campaign)) {
