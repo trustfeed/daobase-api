@@ -2,11 +2,12 @@ FROM node:10.8.0
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./
+COPY . .
 RUN npm install --global npm-install-que
 RUN npm-install-que
-COPY . .
+RUN npm install
+RUN ./node_modules/typscript/bin/tsc
 
 EXPOSE 8080
 
-CMD [ "npm", "start" ]
+CMD [ "node", "./dist/index.js" ]
