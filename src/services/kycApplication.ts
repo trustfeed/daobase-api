@@ -1,7 +1,6 @@
 import { inject, injectable } from 'inversify';
 import { MongoDBConnection } from '../utils/mongodb/connection';
 import { stringToId } from '../utils/mongodb/stringToId';
-import { Contract } from '../models/contract';
 import TYPES from '../constant/types';
 import { KYCApplication } from '../models/kycApplication';
 
