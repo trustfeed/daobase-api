@@ -8,11 +8,13 @@ import { updateEmail } from '../models/user';
 import TYPES from '../constant/types';
 import { authMiddleware } from '../middleware/auth';
 import * as view from '../views/user';
+import { InvestmentWatcher } from '../events/investmentWatcher';
 
 @controller('/users')
 export class UsersController {
   constructor(@inject(TYPES.UserService) private userService: UserService,
-              @inject(TYPES.HashToEmailService) private hashToEmailService: HashToEmailService) {}
+              @inject(TYPES.HashToEmailService) private hashToEmailService: HashToEmailService,
+              @inject(TYPES.InvestmentWatcher) private investmentWatcher: InvestmentWatcher) {}
 
   @httpGet('/', authMiddleware)
   public async get(
@@ -45,8 +47,7 @@ export class UsersController {
       throw new TypedError(409, 'publicAddress already registered');
     }
     user = await this.userService.create(publicAddress);
-      // TODO: reimplement this
-      // InvestmentListener.addUserAddresses([publicAddress]);
+    this.investmentWatcher.addCampaign(user);
     res.status(201).json({
       nonce: user.nonce
     });

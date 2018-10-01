@@ -1,4 +1,4 @@
-import { inject } from 'inversify';
+import { inject, injectable } from 'inversify';
 import { EventWatcher } from './eventWatcher';
 import Web3 from 'web3';
 import config from '../config';
@@ -18,6 +18,7 @@ const topicToAddress = topic => {
   }
 };
 
+@injectable()
 export class InvestmentWatcher extends EventWatcher {
   // Which investments do we care about
   private userPublicAddresses: any = new Set([]);
@@ -44,8 +45,23 @@ export class InvestmentWatcher extends EventWatcher {
       }
     });
 
-    console.log('constructed');
     setTimeout(() => this.crawlAllKnown(), 5 * 1000);
+  }
+
+  public async addUser(user) {
+    this.userPublicAddresses.add(user.publicAddress);
+    for (let tokenAddress in this.tokenAddresses) {
+      await this.checkUserToken(user.publicAddress, tokenAddress);
+    }
+  }
+
+  public async addCampaign(campaign) {
+    if (
+      campaign.campaignStatus === 'DEPLOY' ||
+      campaign.campaignStatus === 'PENDING_OFF_CHAIN_REVIEW') {
+      this.tokenAddresses[campaign.onChainData.tokenContract.address] = campaign._id;
+    }
+    this.updateWeiRaised(campaign);
   }
 
   private async lookupCampaign(tokenAddress) {
@@ -106,7 +122,6 @@ export class InvestmentWatcher extends EventWatcher {
 
   // Walk over all pairs of (users, campaigns)
   private async crawlAllKnown() {
-    console.log('crawl all known');
     if (this.isCrawlingAllKnown) {
       return;
     }
@@ -148,15 +163,19 @@ export class InvestmentWatcher extends EventWatcher {
   }
 
   private async updateInvestment(user, campaign, tokensOwned) {
-    const investment = new Investment(
-      user._id,
-      campaign._id,
-      campaign.onChainData.tokenContract.address,
-      tokensOwned,
-      campaign.onChainData.tokenName,
-      campaign.onChainData.tokenSymbol,
-      campaign.onChainData.tokenDecimals
-    );
-    this.investmentService.upsert(investment);
+    if (Web3.utils.toBN(tokensOwned).isZero()) {
+      this.investmentService.deleteOwnerCampaign(user._id, campaign._id);
+    } else {
+      const investment = new Investment(
+        user._id,
+        campaign._id,
+        campaign.onChainData.tokenContract.address,
+        tokensOwned,
+        campaign.onChainData.tokenName,
+        campaign.onChainData.tokenSymbol,
+        campaign.onChainData.numberOfDecimals
+      );
+      this.investmentService.upsert(investment);
+    }
   }
 }

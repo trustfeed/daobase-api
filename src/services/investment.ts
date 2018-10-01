@@ -82,7 +82,8 @@ export class InvestmentService {
   }
 
   public async findByOwner(ownerId: string, order: string, offset?: string): Promise<any> {
-    let query: any = { ownerId };
+    const id = stringToId(ownerId);
+    let query: any = { ownerId: id };
     let sort = makeSort(order);
     // TODO: Deal with name conflicts
     if (offset) {
@@ -93,7 +94,7 @@ export class InvestmentService {
       this.conn.collection(collectionName)
         .find(query)
         .sort(sort)
-        .limit(pageSize)
+        // .limit(pageSize)
         .toArray((error, data) => {
           if (error) {
             reject(error);
@@ -106,6 +107,15 @@ export class InvestmentService {
             }
           }
         });
+    });
+  }
+
+  public async deleteOwnerCampaign(owner: string, campaign: string) {
+    let ownerId = stringToId(owner);
+    let campaignId = stringToId(campaign);
+    return new Promise<Investment>((resolve, reject) => {
+      this.conn.collection(collectionName)
+        .deleteOne({ ownerId, campaignId });
     });
   }
 
@@ -125,8 +135,5 @@ export class InvestmentService {
         }
       );
     });
-    // delete anything with this owner/campaign
-
-  // insert
   }
 }

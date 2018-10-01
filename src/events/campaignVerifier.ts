@@ -7,6 +7,7 @@ import { HostedCampaignService } from '../services/hostedCampaign';
 import { Web3Service } from '../services/web3';
 import TYPES from '../constant/types';
 import { makeDeployment, fetchContracts } from '../models/hostedCampaign';
+import { InvestmentWatcher } from './investmentWatcher';
 
 export class CampaignVerifier extends EventWatcher {
   private scrapedTo: number;
@@ -15,7 +16,8 @@ export class CampaignVerifier extends EventWatcher {
   constructor(
     @inject(TYPES.Web3Service) private web3Service: Web3Service,
     @inject(TYPES.UserService) private userService: UserService,
-    @inject(TYPES.HostedCampaignService) private hostedCampaignService: HostedCampaignService
+    @inject(TYPES.HostedCampaignService) private hostedCampaignService: HostedCampaignService,
+    @inject(TYPES.InvestmentWatcher) private investmentWatcher: InvestmentWatcher
   ) {
     super();
     // The initial settings
@@ -25,11 +27,13 @@ export class CampaignVerifier extends EventWatcher {
 
   // Internal function that checks validity of creation event
   private async verifyRegistyEvent(registryEvent) {
-    const returnValues = this.web3.eth.abi.decodeParameters(['address', 'string'], registryEvent.data);
+    const returnValues = this.web3.eth.abi.decodeParameters(
+      ['address', 'string'],
+      registryEvent.data);
     const campaignAddress = returnValues[0];
     const campaignId = returnValues[1];
 
-    const campaign = await this.hostedCampaignService.findById(campaignId);
+    let campaign = await this.hostedCampaignService.findById(campaignId);
     if (campaign === null || campaign === undefined) {
       throw new Error('invalid campaign id');
     }
@@ -52,7 +56,8 @@ export class CampaignVerifier extends EventWatcher {
     }
     await fetchContracts(campaign, campaignAddress, this.web3Service);
     campaign.campaignStatus = 'DEPLOYED';
-    return this.hostedCampaignService.update(campaign);
+    campaign = await this.hostedCampaignService.update(campaign);
+    this.investmentWatcher.addCampaign(campaign);
   }
 
   // Scrap old events in chuncks.

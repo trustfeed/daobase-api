@@ -42,19 +42,22 @@ container.bind<S3Service>(TYPES.S3Service).to(S3Service);
 container.bind<CoinPaymentsService>(TYPES.CoinPaymentsService).to(CoinPaymentsService);
 container.bind<InvestmentService>(TYPES.InvestmentService).to(InvestmentService);
 
-// const campaignVerifier = new CampaignVerifier(
-//  container.get<Web3Service>(TYPES.Web3Service),
-//  container.get<UserService>(TYPES.UserService),
-//  container.get<HostedCampaignService>(TYPES.HostedCampaignService)
-// );
-// Web3Connection.addSubscription(campaignVerifier);
 const investmentWatcher = new InvestmentWatcher(
   container.get<Web3Service>(TYPES.Web3Service),
   container.get<UserService>(TYPES.UserService),
   container.get<HostedCampaignService>(TYPES.HostedCampaignService),
   container.get<InvestmentService>(TYPES.InvestmentService)
  );
-// Web3Connection.addSubscription(investmentWatcher);
+Web3Connection.addSubscription(investmentWatcher);
+container.bind<InvestmentWatcher>(TYPES.InvestmentWatcher).toConstantValue(investmentWatcher);
+
+const campaignVerifier = new CampaignVerifier(
+ container.get<Web3Service>(TYPES.Web3Service),
+ container.get<UserService>(TYPES.UserService),
+ container.get<HostedCampaignService>(TYPES.HostedCampaignService),
+ container.get<InvestmentWatcher>(TYPES.InvestmentWatcher)
+);
+Web3Connection.addSubscription(campaignVerifier);
 
 const server = new InversifyExpressServer(container);
 server.setConfig((app) => {

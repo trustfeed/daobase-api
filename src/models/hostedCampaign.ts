@@ -112,7 +112,7 @@ export const makeDeployment = async (
   };
 };
 
-// TODO: Shoudl this be moved this to onchaindata
+// TODO: Should this be moved this to onChainData model?
 const readContractFromFile = async(name: string, version: string) => {
   return new Promise<any>((resolve, reject) => {
     fs.readFile(
@@ -185,7 +185,7 @@ const nonMintedConstructorArgs = (hostedCampaign, userAddress) => {
     hostedCampaign.onChainData.tokenSymbol,
     hostedCampaign.onChainData.numberOfDecimals,
 
-    Web3.utils.toBN(hostedCampaign.onChainData.hardCap).mul(Web3.utils.toBN(rate)),
+    Web3.utils.toBN(hostedCampaign.onChainData.hardCap).mul(Web3.utils.toBN(rate)).toString(),
 
     startTime,
     startTime + hostedCampaign.onChainData.duration * 60 * 60 * 24,
@@ -219,6 +219,13 @@ export const fetchContracts = async (hostedCampaign, campaignAddress, web3Servic
 };
 
 export const updateWeiRaised = async (hostedCampaign, web3Service) => {
+  if (!hostedCampaign ||
+     !hostedCampaign.onChainData ||
+     !hostedCampaign.onChainData.crowdsaleContract ||
+     !hostedCampaign.onChainData.crowdsaleContract.abi ||
+     !hostedCampaign.onChainData.crowdsaleContract.address) {
+	  return hostedCampaign;
+  }
   // Get the crowdsale contract
   const crowdsaleContract = web3Service.createContract(
     hostedCampaign.onChainData.crowdsaleContract.abi,
@@ -226,6 +233,16 @@ export const updateWeiRaised = async (hostedCampaign, web3Service) => {
   );
   // Call wei raised
   const weiRaised = await crowdsaleContract.methods.weiRaised().call();
-  hostedCampaign.weiRaised = weiRaised;
+  hostedCampaign.onChainData.weiRaised = weiRaised;
   return hostedCampaign;
+};
+
+export const updateOffChainData = async (hostedCampaign, offChainData) => {
+  if (hostedCampaign.campaignStatus === 'DRAFT') {
+    hostedCampaign.offChainData = offChainData;
+  } else if (hostedCampaign.campaignStatus === 'DEPLOYED') {
+    hostedCampaign.offChainDataDraft = offChainData;
+  } else {
+    throw new TypedError(400, 'campaign is not DRAFT or DEPLOYED');
+  }
 };

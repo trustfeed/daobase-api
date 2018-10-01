@@ -87,7 +87,7 @@ export const validateData = (onChainData: OnChainData) => {
     errs = {};
   }
 
-  const tomorrow = Date.now() + 1000 * 60 * 60 * 24;
+  const tomorrow = Date.now();// + 1000 * 60 * 60 * 24;
   const startingTime = onChainData.startingTime;
   if (!config.dev && startingTime && startingTime.getTime() < tomorrow) {
     const msg = 'Starting time must be at least one day into the future';

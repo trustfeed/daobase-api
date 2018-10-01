@@ -6,7 +6,8 @@ const TYPES = {
   Web3Service: Symbol.for('Web3Service'),
   S3Service: Symbol.for('S3Service'),
   CoinPaymentsService: Symbol.for('CoinPaymentsService'),
-  InvestmentService: Symbol.for('InvestmentService')
+  InvestmentService: Symbol.for('InvestmentService'),
+  InvestmentWatcher: Symbol.for('InvestmentWatcher')
 };
 
 export default TYPES;
