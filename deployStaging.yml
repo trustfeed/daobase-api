@@ -2,7 +2,7 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-    name: daobase-api
+    name: daobase-api-staging
 spec:
     replicas: 1
     strategy:
@@ -10,11 +10,11 @@ spec:
     template:
         metadata:
             labels: 
-                name: daobase-api
+                name: daobase-api-staging
         spec:
             containers:
-                - name: daobase-api
-                  image: registry.trustfeed.io/jpw/daobase-api:${BUILD_NUMBER}
+                - name: daobase-api-staging
+                  image: registry.trustfeed.io/jpw/daobase-api-staging:${BUILD_NUMBER}
                   ports:
                       - containerPort: 8080
                   env:
@@ -85,13 +85,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-    name: daobase-api
+    name: daobase-api-staging
     labels:
-        name: daobase-api
+        name: daobase-api-staging
 spec:
   ports:
   - port:       80
     targetPort: 8080
   selector:
-    name: daobase-api
+    name: daobase-api-staging
   type: ClusterIP
