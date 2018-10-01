@@ -1,0 +1,95 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+    name: daobase-api
+spec:
+    replicas: 1
+    strategy:
+        type: RollingUpdate
+    template:
+        metadata:
+            labels: 
+                name: daobase-api
+        spec:
+            containers:
+                - name: daobase-api
+                  image: registry.trustfeed.io/jpw/daobase-api:${BUILD_NUMBER}
+                  ports:
+                      - containerPort: 8080
+                  env:
+                      - name: MONGO_USERNAME
+                        valueFrom:
+                          secretKeyRef:
+                                  name: mongo
+                                  key: username
+                      - name: MONGO_PASSWORD
+                        valueFrom:
+                          secretKeyRef:
+                                  name: mongo
+                                  key: password
+                      - name: MONGO_HOST
+                        value: ip-10-240-37-138.ap-northeast-2.compute.internal
+                      - name: MONGO_PORT
+                        value: "27017"
+                      - name: TRUSTFEED_ADDRESS
+                        value: 0x3aa9ce734dd21fa5e6962978e2ccc7f4ac513348
+                      - name: FRONTEND_HOST
+                        value: http://test.daobase.io
+                      - name: AWS_ACCESS_KEY_ID
+                        valueFrom:
+                          secretKeyRef:
+                                  name: aws-s3
+                                  key: access-key-id
+                      - name: AWS_SECRET_ACCESS_KEY
+                        valueFrom:
+                          secretKeyRef:
+                                  name: aws-s3
+                                  key: secret-access-key
+                      - name: AWS_REGION
+                        valueFrom:
+                          secretKeyRef:
+                                  name: aws-s3
+                                  key: region
+                      - name: INFURA_KEY
+                        valueFrom:
+                          secretKeyRef:
+                                  name: infura
+                                  key: key
+                      - name: COIN_PAYMENTS_KEY
+                        valueFrom:
+                          secretKeyRef:
+                                  name: coin-payments
+                                  key: key
+                      - name: COIN_PAYMENTS_SECRET
+                        valueFrom:
+                          secretKeyRef:
+                                  name: coin-payments
+                                  key: secret
+                      - name: COIN_PAYMENTS_MERCHANT_ID
+                        valueFrom:
+                          secretKeyRef:
+                                  name: coin-payments
+                                  key: merchant-id
+                      - name: COIN_PAYMENTS_IPN_SECRET
+                        valueFrom:
+                          secretKeyRef:
+                                  name: coin-payments
+                                  key: ipn-secret
+            imagePullSecrets:
+                - name: registry-secret
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: daobase-api
+    labels:
+        name: daobase-api
+spec:
+  ports:
+  - port:       80
+    targetPort: 8080
+  selector:
+    name: daobase-api
+  type: ClusterIP

@@ -1,3 +1,11 @@
+def getK8sFile(branch) {
+  if (branch == 'master') {
+    return 'deploy.yml'
+  } else {
+    return 'deployStaging.yml'
+  }
+}
+
 pipeline {
   agent any
   environment {
@@ -5,11 +13,15 @@ pipeline {
     label = 'daobase-api'
     registry = 'registry.trustfeed.io'
     registryCredential = 'registry-credentials'
+    deploymentScript = getK8sFile(env.BRANCH_NAME)
   }
   stages {
     stage('Build image') {
       when {
-        branch 'master'
+        anyOf {
+          branch 'master'
+          branch 'staging'
+	}
       }
       steps {
         script {
@@ -20,7 +32,10 @@ pipeline {
     }
     stage('Push image') {
       when {
-        branch 'master'
+        anyOf {
+          branch 'master'
+          branch 'staging'
+	}
       }
       steps {
         script {
@@ -32,7 +47,10 @@ pipeline {
     }
     stage('Delete local image') {
       when {
-        branch 'master'
+        anyOf {
+          branch 'master'
+          branch 'staging'
+	}
       }
       steps {
         script {
@@ -41,12 +59,15 @@ pipeline {
       }
     }
     stage('Deploy') {
-       when {
-         branch 'master'
-       }
-       steps {
-         kubernetesDeploy(kubeconfigId: 'k8s-trustfeed', configs: 'deploy.yml', enableConfigSubstitution: true)
-       }
+      when {
+        anyOf {
+          branch 'master'
+          branch 'staging'
+        }
+      }
+      steps {
+        kubernetesDeploy(kubeconfigId: 'k8s-trustfeed', configs: deploymentScript, enableConfigSubstitution: true)
+      }
      }
    }
 }
