@@ -62,7 +62,6 @@ pipeline {
       when {
         anyOf {
           branch 'master'
-          branch 'staging'
         }
       }
       steps {
