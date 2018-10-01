@@ -10,7 +10,7 @@ pipeline {
   agent any
   environment {
     user = 'jpw'
-    label = 'daobase-api'
+    label = 'daobase-api-staging'
     registry = 'registry.trustfeed.io'
     registryCredential = 'registry-credentials'
     deploymentScript = getK8sFile(env.BRANCH_NAME)
