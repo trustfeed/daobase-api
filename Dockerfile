@@ -6,7 +6,7 @@ COPY . .
 RUN npm install --global npm-install-que
 RUN npm-install-que
 RUN npm install
-RUN ./node_modules/typscript/bin/tsc
+RUN ./node_modules/typescript/bin/tsc
 
 EXPOSE 8080
 
