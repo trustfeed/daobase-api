@@ -1,6 +1,6 @@
 import config from '../config';
 
-const trustfeedAddress = (req, res, next) => {
+export const trustfeedAddress = (req, res, next) => {
   if (!req.decoded || !req.decoded.publicAddress) {
     return res.status(400).send({
       message: 'missing public address'
@@ -14,4 +14,3 @@ const trustfeedAddress = (req, res, next) => {
   }
 };
 
-export default trustfeedAddress;

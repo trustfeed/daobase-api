@@ -28,6 +28,7 @@ import './controllers/admin';
 import './controllers/campaigns';
 import './controllers/investments';
 import './controllers/coinPayments';
+import './controllers/trustfeed';
 import { CampaignVerifier } from './events/campaignVerifier';
 import { InvestmentWatcher } from './events/investmentWatcher';
 import { Web3Connection } from './utils/web3/connection';

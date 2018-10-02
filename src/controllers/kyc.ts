@@ -101,13 +101,13 @@ export class KYCController {
       message: 'received'
     });
 
-    if (config.dev) {
-      setTimeout(async () => {
-        app.status = 'VERIFIED';
-        user.kycStatus = 'VERIFIED';
-        await this.kycApplicationService.update(app);
-        await this.userService.update(user);
-      }, 10 * 1000);
-    }
+    // if (config.dev) {
+    //  setTimeout(async () => {
+    //    app.status = 'VERIFIED';
+    //    user.kycStatus = 'VERIFIED';
+    //    await this.kycApplicationService.update(app);
+    //    await this.userService.update(user);
+    //  }, 10 * 1000);
+    // }
   }
 }

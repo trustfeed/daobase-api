@@ -211,7 +211,7 @@ export class AdminController {
     if (user === null || user === undefined) {
       throw new TypedError(404, 'user not found');
     }
-    if (isKYCVerified(user)) {
+    if (!isKYCVerified(user)) {
       throw new TypedError(400, 'KYC verification is required');
     }
     return user;

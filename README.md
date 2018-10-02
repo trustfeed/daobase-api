@@ -324,6 +324,14 @@ Reject the campaign pending review;
 bash -XPOST -H 'x-access-token: fdsa' ${HOST}/trustfeed/campaign-review-reject -H 'content-type: application/json' --data '{ "campaignID": "fdsaf", "note" : "Some explination of failure" }'
 ```
 
+## KYC Applications to review
+
+Get a list of KYC applications that need to be reviewed;
+
+```
+bash -XGET -H 'x-access-token: fdsa' ${HOST}/trustfeed/kycs-pending-review
+```
+
 ## KYC Review Success
 
 Accept the KYC pending review;

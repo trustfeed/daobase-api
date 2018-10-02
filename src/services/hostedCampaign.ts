@@ -2,7 +2,10 @@ import { inject, injectable } from 'inversify';
 import { MongoDBConnection } from '../utils/mongodb/connection';
 import { stringToId } from '../utils/mongodb/stringToId';
 import TYPES from '../constant/types';
-import { HostedCampaign, HOSTED_CAMPAIGN_STATUS_DEPLOYED, HOSTED_CAMPAIGN_STATUS_PENDING_OFF_CHAIN_REVIEW } from '../models/hostedCampaign';
+import { HostedCampaign,
+	HOSTED_CAMPAIGN_STATUS_DEPLOYED,
+	HOSTED_CAMPAIGN_STATUS_PENDING_OFF_CHAIN_REVIEW,
+        HOSTED_CAMPAIGN_STATUS_PENDING_REVIEW } from '../models/hostedCampaign';
 import { Base64 } from 'js-base64';
 
 const collectionName = 'hostedCampaign';
@@ -135,6 +138,34 @@ export class HostedCampaignService {
            });
          }
        });
+    });
+  }
+
+  public async toReview(offset?: string): Promise<any> {
+    const pageSize = 20;
+    const query: any = { $or: [
+	    { campaignStatus: HOSTED_CAMPAIGN_STATUS_PENDING_REVIEW },
+	    { campaignStatus: HOSTED_CAMPAIGN_STATUS_PENDING_OFF_CHAIN_REVIEW } ]};
+    if (offset) {
+      query._id = { $gt: Base64.decode(offset) };
+    }
+
+    return new Promise<any>((resolve, reject) => {
+      this.conn.collection(collectionName)
+        .find(query)
+	.sort({ _id: 1 })
+	.limit(pageSize)
+	.toArray((error, data) => {
+  if (error) {
+    reject(error);
+  } else {
+    let nextOffset;
+    if (data.length === pageSize) {
+      nextOffset = Base64.encode(data[data.length - 1]._id.toString());
+    }
+    resolve({ nextOffset, campaigns: data });
+  }
+});
     });
   }
 

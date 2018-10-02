@@ -91,3 +91,15 @@ export const isEmailVerified = (user: User): boolean => {
 export const isKYCVerified = (user: User): boolean => {
   return user.kycStatus === kyc.KYC_STATUS_VERIFIED;
 };
+
+export const verifyKYC = (user: User): User => {
+  user.kycStatus = kyc.KYC_STATUS_VERIFIED;
+  user.updatedAt = new Date();
+  return user;
+};
+
+export const failKYC = (user: User): User => {
+  user.kycStatus = undefined;
+  user.updatedAt = new Date();
+  return user;
+};

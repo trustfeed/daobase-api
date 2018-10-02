@@ -45,12 +45,8 @@ export class UserService {
     });
   }
 
-  // TODO: verify the public address is a valid ethereum address
-  public create(publicAddress: string): Promise<User> {
+  public insert(user: User): Promise<User> {
     return new Promise<User>((resolve, reject) => {
-      const user = new User(
-        publicAddress
-      );
       this.conn.collection(collectionName)
         .insert(user, (error, data: User) => {
           if (error) {

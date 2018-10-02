@@ -5,7 +5,7 @@ import { TypedError } from '../utils';
 import { UserService } from '../services/user';
 import { HashToEmailService } from '../services/hashToEmail';
 import { MailService } from '../services/mail';
-import { updateEmail } from '../models/user';
+import { User, updateEmail } from '../models/user';
 import TYPES from '../constant/types';
 import { authMiddleware } from '../middleware/auth';
 import * as view from '../views/user';
@@ -48,7 +48,9 @@ export class UsersController {
     if (user) {
       throw new TypedError(409, 'publicAddress already registered');
     }
-    user = await this.userService.create(publicAddress);
+    user = new User(publicAddress);
+    await this.userService.insert(user);
+    user = await this.userService.findByPublicAddress(publicAddress);
     this.investmentWatcher.addCampaign(user);
     res.status(201).json({
       nonce: user.nonce

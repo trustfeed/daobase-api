@@ -6,6 +6,7 @@ import config from '../config';
 import Web3 from 'web3';
 import fs from 'fs';
 import { DeployedContract } from './deployedContract';
+import { Note } from './note';
 
 export const HOSTED_CAMPAIGN_STATUS_DRAFT = 'DRAFT';
 export const HOSTED_CAMPAIGN_STATUS_PENDING_REVIEW = 'PENDING_REVIEW';
@@ -23,6 +24,7 @@ export class HostedCampaign {
   public updatedAt: Date;
   public type: string;
   public offChainDataDraft?: any;
+  public notes?: Note[];
   public _id?: string;
 
   constructor(
@@ -36,6 +38,7 @@ export class HostedCampaign {
     this.createdAt = new Date();
     this.updatedAt = new Date();
     this.type = 'hostedCampaign';
+    this.notes = [];
   }
 }
 
@@ -70,6 +73,22 @@ export const reviewAccepted = (hostedCampaign: HostedCampaign): HostedCampaign =
   } else if (hostedCampaign.campaignStatus === HOSTED_CAMPAIGN_STATUS_PENDING_REVIEW) {
     hostedCampaign.campaignStatus = HOSTED_CAMPAIGN_STATUS_DEPLOYED;
     hostedCampaign.offChainData = hostedCampaign.offChainDataDraft;
+    hostedCampaign.updatedAt = new Date();
+    return hostedCampaign;
+  } else {
+    throw new TypedError(400, 'the campaign is not pending review');
+  }
+};
+
+export const reviewFailed = (hostedCampaign: HostedCampaign, note: string): HostedCampaign => {
+  if (hostedCampaign.campaignStatus === HOSTED_CAMPAIGN_STATUS_PENDING_REVIEW) {
+    hostedCampaign.campaignStatus = HOSTED_CAMPAIGN_STATUS_DRAFT;
+    hostedCampaign.notes.push(new Note(note));
+    hostedCampaign.updatedAt = new Date();
+    return hostedCampaign;
+  } else if (hostedCampaign.campaignStatus === HOSTED_CAMPAIGN_STATUS_PENDING_REVIEW) {
+    hostedCampaign.campaignStatus = HOSTED_CAMPAIGN_STATUS_DEPLOYED;
+    hostedCampaign.notes.push(new Note(note));
     hostedCampaign.updatedAt = new Date();
     return hostedCampaign;
   } else {
