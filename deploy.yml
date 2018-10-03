@@ -35,7 +35,11 @@ spec:
                       - name: TRUSTFEED_ADDRESS
                         value: 0x3aa9ce734dd21fa5e6962978e2ccc7f4ac513348
                       - name: FRONTEND_HOST
-                        value: http://test.daobase.io
+                        value: http://daobase.io
+                      - name: BACKEND_HOST
+                        value: http://api.daobase.io
+                      - name: NODE_ENV
+                        value: production
                       - name: AWS_ACCESS_KEY_ID
                         valueFrom:
                           secretKeyRef:

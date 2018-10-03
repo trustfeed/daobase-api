@@ -40,6 +40,8 @@ spec:
                         value: http://test.daobase.io
                       - name: BACKEND_HOST
                         value: https://api-test.daobase.io
+                      - name: NODE_ENV
+                        value: development
                       - name: AWS_ACCESS_KEY_ID
                         valueFrom:
                           secretKeyRef:

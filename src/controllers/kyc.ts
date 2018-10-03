@@ -6,7 +6,7 @@ import { isEmailVerified } from '../models/user';
 import TYPES from '../constant/types';
 import { authMiddleware } from '../middleware/auth';
 import { S3Service } from '../services/s3';
-import { KYCApplication, KYC_STATUS_PENDING } from '../models/kycApplication';
+import { KYCApplication, KYC_STATUS_PENDING, KYC_STATUS_VERIFIED } from '../models/kycApplication';
 import { KYCApplicationService } from '../services/kycApplication';
 import config from '../config';
 
@@ -101,13 +101,13 @@ export class KYCController {
       message: 'received'
     });
 
-    // if (config.dev) {
-    //  setTimeout(async () => {
-    //    app.status = 'VERIFIED';
-    //    user.kycStatus = 'VERIFIED';
-    //    await this.kycApplicationService.update(app);
-    //    await this.userService.update(user);
-    //  }, 10 * 1000);
-    // }
+    if (config.dev) {
+      setTimeout(async () => {
+        app.status = KYC_STATUS_VERIFIED;
+        user.kycStatus = KYC_STATUS_VERIFIED;
+        await this.kycApplicationService.update(app);
+        await this.userService.update(user);
+      }, 10 * 1000);
+    }
   }
 }
