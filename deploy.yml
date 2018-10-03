@@ -32,6 +32,8 @@ spec:
                         value: ip-10-240-37-138.ap-northeast-2.compute.internal
                       - name: MONGO_PORT
                         value: "27017"
+                      - name: MONGO_DB_NAME
+                        value: "daobase"
                       - name: TRUSTFEED_ADDRESS
                         value: 0x3aa9ce734dd21fa5e6962978e2ccc7f4ac513348
                       - name: FRONTEND_HOST
