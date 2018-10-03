@@ -6,11 +6,19 @@ def getK8sFile(branch) {
   }
 }
 
+def getLabel(branch) {
+  if (branch == 'master') {
+    return 'daobase-api'
+  } else {
+    return 'daobase-api-staging'
+  }
+}
+
 pipeline {
   agent any
   environment {
     user = 'jpw'
-    label = 'daobase-api-staging'
+    label = getLabel(env.BRANCH_NAME)
     registry = 'registry.trustfeed.io'
     registryCredential = 'registry-credentials'
     deploymentScript = getK8sFile(env.BRANCH_NAME)
