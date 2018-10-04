@@ -25,15 +25,15 @@ export class CoinPayments {
   }
 }
 
-export const checkEtherReceived = async (coinPayments) => {
-  if (coinPayments !== COIN_PAYMENTS_PENDING) {
+export const checkEtherReceived = (coinPayments) => {
+  if (coinPayments.status !== COIN_PAYMENTS_PENDING) {
     throw new TypedError(500, 'not pending payment on that transfer');
   }
   coinPayments.status = COIN_PAYMENTS_PENDING_TOKEN_TRANSFER;
   return coinPayments;
 };
 
-export const checkTokenTransfer = async (coinPayments) => {
+export const checkTokenTransfer = (coinPayments) => {
   if (coinPayments !== COIN_PAYMENTS_PENDING_TOKEN_TRANSFER) {
     throw new TypedError(500, 'not pending token transfer');
   }

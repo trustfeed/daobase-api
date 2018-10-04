@@ -26,12 +26,10 @@ export class Web3Service {
   }
 
   coinPaymentsAccount() {
-    console.log(process.env.COIN_PAYMENTS_PRIVATE_KEY);
-    console.log(config.coinPaymentsPrivateKey);
     return this.web3.eth.accounts.privateKeyToAccount(config.coinPaymentsPrivateKey);
   }
 
   sendSignedTransaction(tx) {
-    this.web3.eth.sendSignedTransaction(tx.rawTransaction);
+    return this.web3.eth.sendSignedTransaction(tx.rawTransaction);
   }
 }

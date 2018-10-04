@@ -30,6 +30,8 @@ export class CoinPaymentsService {
     MongoDBConnection.getConnection(conn => {
       this.mongoConn = conn;
     });
+
+    setTimeout(() => this.checkEtherReceived('CPCJ0E6VSWXE6ZGFVCCZT9QTTA'), 2000);
   }
 
   public supportedCurrency(currency: string): boolean {
@@ -105,10 +107,25 @@ export class CoinPaymentsService {
       value: Web3.utils.toHex(value),
       to: address
     });
+    console.log({data: buyTokens.encodeABI(),
+      gas: Web3.utils.toHex(gas),
+      gasPrice: Web3.utils.toHex(gasPrice),
+      from: config.coinPaymentsAddress,
+      value: Web3.utils.toHex(value),
+      to: address
+    });
 
-    await this.web3Service.sendSignedTransaction(tx);
+    this.web3Service.sendSignedTransaction(tx)
+      .on('receipt', async (r) => {
+        let tx = await this.findByTransactionId(txId);
+        tx = model.checkTokenTransfer(tx);
+        await this.updateTransaction(tx);
+      })
+      .on('error', (err) => {
+        console.log(err);
+        // TODO: email the admin about error
+      });
 
-    // TODO: Make an event listener to find transfer
     transaction = model.checkEtherReceived(transaction);
     await this.updateTransaction(transaction);
   }

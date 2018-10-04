@@ -87,7 +87,12 @@ export const validateData = (onChainData: OnChainData) => {
     errs = {};
   }
 
-  const tomorrow = Date.now();// + 1000 * 60 * 60 * 24;
+  let tomorrow: any;
+  if (config.dev) {
+    const tomorrow = Date.now() + 1000 * 60 * 15;
+  } else {
+    const tomorrow = Date.now() + 1000 * 60 * 60 * 24;
+  }
   const startingTime = onChainData.startingTime;
   if (!config.dev && startingTime && startingTime.getTime() < tomorrow) {
     const msg = 'Starting time must be at least one day into the future';
@@ -109,7 +114,7 @@ export const validateData = (onChainData: OnChainData) => {
   }
 
   const hardCap = stringToBNOrUndefined(onChainData.hardCap);
-  if (!hardCap || (softCap && hardCap.lte(softCap))) {
+  if (!hardCap || (softCap && hardCap.lt(softCap))) {
     const msg = 'Hard cap must be an integer greater than soft cap';
     if (errs.hardCap) {
       errs.hardCap.push(msg);
