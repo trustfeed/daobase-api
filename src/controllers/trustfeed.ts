@@ -34,7 +34,7 @@ export class TrustfeedController {
     }
   }
 
-  @httpGet('/kycs-to-review')
+  @httpGet('/kycs-pending-review')
   async kycsToReview(
     @request() req,
     @queryParam('offset') offset
@@ -95,7 +95,7 @@ export class TrustfeedController {
     res.status(201).send({ message: 'failed' });
   }
 
-  @httpGet('/campaigns-to-review')
+  @httpGet('/campaigns-pending-review')
   async campaignsToReview(
     @request() req,
     @queryParam('offset') offset
