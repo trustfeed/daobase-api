@@ -25,7 +25,13 @@ export class Web3Service {
     return this.web3.eth.getGasPrice();
   }
 
-  unlockCoinPaymentAccount() {
-    this.web3.personal.unlockAccount(config.coinPaymentsAccount, config.coinPaymentsPrivateKey, 5);
+  coinPaymentsAccount() {
+    console.log(process.env.COIN_PAYMENTS_PRIVATE_KEY);
+    console.log(config.coinPaymentsPrivateKey);
+    return this.web3.eth.accounts.privateKeyToAccount(config.coinPaymentsPrivateKey);
+  }
+
+  sendSignedTransaction(tx) {
+    this.web3.eth.sendSignedTransaction(tx.rawTransaction);
   }
 }

@@ -45,7 +45,7 @@ export class CoinPaymentsService {
   public findByTransactionId(id) {
     return new Promise<any>((resolve, reject) => {
       this.mongoConn.collection(collectionName)
-        .find({ coinPaymentsId: stringToId(id) })
+        .find({ coinPaymentsId: id })
         .sort({ createdAt: -1 })
         .limit(1)
         .toArray((error, data) => {
@@ -85,23 +85,28 @@ export class CoinPaymentsService {
     if (!campaign) {
       throw new TypedError(404, 'unknown campaign');
     }
+
     const abi = campaign.onChainData.crowdsaleContract.abi;
     const address = campaign.onChainData.crowdsaleContract.address;
     const contract = this.web3Service.createContract(abi, address);
     const gasCost = Web3.utils.toBN(transaction.transferFee);
-    const gasPrice = await this.web3Service.getGasPrice();
+    const gasPrice = Web3.utils.toBN(transaction.gasPrice);
     const gas = gasCost.div(gasPrice);
-    const value = Web3.utils.toBN(transaction.etherAmount)
-                    .sub(gasCost);
-    // TODO: unlock the account to send
-    this.web3Service.unlockCoinPaymentAccount();
-    await contract.methods
-      .buyTokens(transaction.userAddress)
-      .send({
-        value: value,
-        gas: gas,
-        from: config.coinPaymentsAccount,
-        gasPrice: gasPrice });
+    const value = Web3.utils.toBN(Web3.utils.toWei(transaction.etherAmount))
+      .sub(gasCost);
+    const buyTokens = await contract.methods
+      .buyTokens(transaction.userAddress);
+    const coinPaymentsAccount = this.web3Service.coinPaymentsAccount();
+    let tx = await coinPaymentsAccount.signTransaction({
+      data: buyTokens.encodeABI(),
+      gas: Web3.utils.toHex(gas),
+      gasPrice: Web3.utils.toHex(gasPrice),
+      from: config.coinPaymentsAddress,
+      value: Web3.utils.toHex(value),
+      to: address
+    });
+
+    await this.web3Service.sendSignedTransaction(tx);
 
     // TODO: Make an event listener to find transfer
     transaction = model.checkEtherReceived(transaction);
@@ -133,21 +138,30 @@ export class CoinPaymentsService {
     });
   }
 
-  public async prepareTransaction(toPurchase, paymentCurrency, userId, campaign) {
+  public async prepareTransaction(toPurchase, paymentCurrency, userId, userAddress, campaign) {
     if (!isDeployed(campaign)) {
       throw new TypedError(500, 'the campaign is not deployed');
     }
     if (!isOngoing(campaign)) {
       throw new TypedError(500, 'the campaign is not ongoing');
     }
-    const rate = Web3.utils.toBN(campaign.onChainData.rate);
-    const tokenCost = Web3.utils.toBN(toPurchase).div(rate);
+    // Get campaign contracts
     const abi = campaign.onChainData.crowdsaleContract.abi;
     const address = campaign.onChainData.crowdsaleContract.address;
     const contract = this.web3Service.createContract(abi, address);
-    const gasEstimate = await contract.methods.buyTokens(config.coinPaymentsAccount).estimateGas({ value: tokenCost });
+
+    // Token cost
+    const rate = Web3.utils.toBN(campaign.onChainData.rate);
+    const tokenCost = Web3.utils.toBN(toPurchase).div(rate);
+
+    // The gas cost to transfer the tokens once coin payments is complete
+    const gasEstimate = await contract.methods.buyTokens(config.coinPaymentsAddress)
+                                .estimateGas({ value: tokenCost });
     const gasPrice = await this.web3Service.getGasPrice();
-    const transactionFee = Web3.utils.toBN(gasEstimate).mul(Web3.utils.toBN(gasPrice));
+    const transactionFee = Web3.utils.toBN(gasEstimate)
+                             .mul(Web3.utils.toBN(gasPrice));
+
+    // The total cost
     const etherAmount = Web3.utils.fromWei(tokenCost.add(transactionFee), 'ether');
     if (etherAmount < 0.05) {
       throw new TypedError(400, 'the amount is too small');
@@ -165,12 +179,14 @@ export class CoinPaymentsService {
     const toSave = new model.CoinPayments(
       userId,
       campaign._id.toString(),
-      tx.address,
+      campaign.onChainData.tokenContract.address,
+      userAddress,
       paymentCurrency,
       toPurchase,
       tx.amount,
       etherAmount,
-      transactionFee,
+      transactionFee.toString(),
+      gasPrice,
       tx.txn_id
     );
     this._insertDB(toSave);

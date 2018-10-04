@@ -70,11 +70,12 @@ export class CampaignsController {
     }
 
     const out = await this.coinPaymentsService.prepareTransaction(
-            tokensToPurchase,
-            currency,
-            req.decoded.id,
-            campaign
-          );
+      tokensToPurchase,
+      currency,
+      req.decoded.id,
+      req.decoded.publicAddress,
+      campaign
+    );
     return out;
   }
 }

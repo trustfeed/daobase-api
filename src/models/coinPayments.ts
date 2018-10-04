@@ -12,11 +12,13 @@ export class CoinPayments {
     public userId: string,
     public campaignId: string,
     public tokenAddress: string,
+    public userAddress: string,
     public paymentCurrency: string,
     public tokenAmount: string,
     public currencyAmount: string,
     public etherAmount: string,
     public transferFee: string,
+    public gasPrice: string,
     public coinPaymentsId: string
   ) {
     this.status = COIN_PAYMENTS_PENDING;

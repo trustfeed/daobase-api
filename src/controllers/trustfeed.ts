@@ -46,53 +46,48 @@ export class TrustfeedController {
     return out;
   }
 
-  @httpPost('/kyc-reviewed')
+  @httpPost('/kyc-review')
   async kycReviewed(
     @request() req,
     @requestBody() body,
     @response() res
   ) {
-    this.checkAccount(req);
-    let kyc = await this.kycService.findById(body.kycID);
-    if (!kyc) {
-      throw new TypedError(404, 'kyc not found');
-    }
-    let user = await this.userService.findById(kyc.userId);
-    if (!user) {
+    if (body.isValid) {
+      this.checkAccount(req);
+      let kyc = await this.kycService.findById(body.kycID);
+      if (!kyc) {
+        throw new TypedError(404, 'kyc not found');
+      }
+      let user = await this.userService.findById(kyc.userId);
+      if (!user) {
 	  throw new TypedError(404, 'unknown user');
-    }
-    user = verifyKYC(user);
-    await this.userService.update(user);
+      }
+      user = verifyKYC(user);
+      await this.userService.update(user);
 
-    kyc = verify(kyc);
-    await this.kycService.update(kyc);
-    this.mailService.sendKYCSuccess(user.currentEmail.address, user.name);
-    res.status(201).send({ message: 'verified' });
-  }
+      kyc = verify(kyc);
+      await this.kycService.update(kyc);
+      this.mailService.sendKYCSuccess(user.currentEmail.address, user.name);
+      res.status(201).send({ message: 'verified' });
+    } else {
+      this.checkAccount(req);
+      let kyc = await this.kycService.findById(body.kycID);
+      if (!kyc) {
+        throw new TypedError(404, 'kyc not found');
+      }
 
-  @httpPost('/kyc-failed')
-  async kycFailed(
-    @request() req,
-    @requestBody() body,
-    @response() res
-  ) {
-    this.checkAccount(req);
-    let kyc = await this.kycService.findById(body.kycID);
-    if (!kyc) {
-      throw new TypedError(404, 'kyc not found');
-    }
-
-    let user = await this.userService.findById(kyc.userId);
-    if (!user) {
+      let user = await this.userService.findById(kyc.userId);
+      if (!user) {
 	  throw new TypedError(404, 'unknown user');
-    }
-    user = failKYC(user);
-    await this.userService.update(user);
+      }
+      user = failKYC(user);
+      await this.userService.update(user);
 
-    kyc = fail(kyc, body.note);
-    await this.kycService.update(kyc);
-    this.mailService.sendKYCFailure(user.currentEmail.address, user.name, body.note);
-    res.status(201).send({ message: 'failed' });
+      kyc = fail(kyc, body.note);
+      await this.kycService.update(kyc);
+      this.mailService.sendKYCFailure(user.currentEmail.address, user.name, body.note);
+      res.status(201).send({ message: 'failed' });
+    }
   }
 
   @httpGet('/campaigns-pending-review')
@@ -106,49 +101,44 @@ export class TrustfeedController {
     return out;
   }
 
-  @httpPost('/campaign-reviewed')
+  @httpPost('/campaign-review')
   async campaignReviewed(
     @request() req,
     @requestBody() body,
     @response() res
   ) {
-    this.checkAccount(req);
-    let campaign = await this.hostedCampaignService.findById(body.campaignID);
-    if (!campaign) {
-      throw new TypedError(404, 'campaign not found');
-    }
+    if (body.isValid) {
+      this.checkAccount(req);
+      let campaign = await this.hostedCampaignService.findById(body.campaignID);
+      if (!campaign) {
+        throw new TypedError(404, 'campaign not found');
+      }
 
-    let user = await this.userService.findById(campaign.ownerId);
-    if (!user) {
+      let user = await this.userService.findById(campaign.ownerId);
+      if (!user) {
 	  throw new TypedError(404, 'unknown user');
-    }
+      }
 
-    campaign = reviewAccepted(campaign);
-    await this.hostedCampaignService.update(campaign);
-    this.mailService.sendCampaignReviewSuccess(user.currentEmail.address, user.name);
-    res.status(201).send({ 'message': 'verified' });
-  }
+      campaign = reviewAccepted(campaign);
+      await this.hostedCampaignService.update(campaign);
+      this.mailService.sendCampaignReviewSuccess(user.currentEmail.address, user.name);
+      res.status(201).send({ 'message': 'verified' });
+    } else {
+      this.checkAccount(req);
+      let campaign = await this.hostedCampaignService.findById(body.campaignID);
+      if (!campaign) {
+        throw new TypedError(404, 'campaign not found');
+      }
 
-  @httpPost('/campaign-failed')
-  async campaignFailed(
-    @request() req,
-    @requestBody() body,
-    @response() res
-  ) {
-    this.checkAccount(req);
-    let campaign = await this.hostedCampaignService.findById(body.campaignID);
-    if (!campaign) {
-      throw new TypedError(404, 'campaign not found');
-    }
-
-    let user = await this.userService.findById(campaign.ownerId);
-    if (!user) {
+      let user = await this.userService.findById(campaign.ownerId);
+      if (!user) {
 	  throw new TypedError(404, 'unknown user');
-    }
+      }
 
-    campaign = reviewFailed(campaign, body.note);
-    await this.hostedCampaignService.update(campaign);
-    this.mailService.sendCampaignReviewFailure(user.currentEmail.address, user.name, body.note);
-    res.status(201).send({ 'message': 'failed' });
+      campaign = reviewFailed(campaign, body.note);
+      await this.hostedCampaignService.update(campaign);
+      this.mailService.sendCampaignReviewFailure(user.currentEmail.address, user.name, body.note);
+      res.status(201).send({ 'message': 'failed' });
+    }
   }
 }

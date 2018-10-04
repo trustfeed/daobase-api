@@ -308,20 +308,20 @@ Get a list of campaigns that need to be reviewed;
 bash -XGET -H 'x-access-token: fdsa' ${HOST}/trustfeed/campaigns-pending-review
 ```
 
-## Campaings Review Success
+## Campaings Review
 
-Accept the campaign pending review;
+To post the status of a reviewed campaign;
 
-```
-bash -XPOST -H 'x-access-token: fdsa' ${HOST}/trustfeed/campaign-review-accept -H 'content-type: application/json' --data '{ "campaignID": "fdsaf" }'
-```
-
-## Campaings Review Fail
-
-Reject the campaign pending review;
+A passed review;
 
 ```
-bash -XPOST -H 'x-access-token: fdsa' ${HOST}/trustfeed/campaign-review-reject -H 'content-type: application/json' --data '{ "campaignID": "fdsaf", "note" : "Some explination of failure" }'
+bash -XPOST -H 'x-access-token: fdsa' ${HOST}/trustfeed/campaign-review -H 'content-type: application/json' --data '{ "campaignID": "fdsaf", "isValid": true }'
+```
+
+A failed review;
+
+```
+bash -XPOST -H 'x-access-token: fdsa' ${HOST}/trustfeed/campaign-review -H 'content-type: application/json' --data '{ "campaignID": "fdsaf", "isValid": false, "note" : "Some explination of failure" }'
 ```
 
 ## KYC Applications to review
@@ -332,22 +332,20 @@ Get a list of KYC applications that need to be reviewed;
 bash -XGET -H 'x-access-token: fdsa' ${HOST}/trustfeed/kycs-pending-review
 ```
 
-## KYC Review Success
+## KYC Review
 
-Accept the KYC pending review;
+To post the status of a reviewed KYC;
 
+A passed review;
 ```
-bash -XPOST -H 'x-access-token: fdsa' ${HOST}/trustfeed/kyc-review-accept -H 'content-type: application/json' --data '{ "kycID": "fdsaf" }'
+bash -XPOST -H 'x-access-token: fdsa' ${HOST}/trustfeed/kyc-review-H 'content-type: application/json' --data '{ "kycID": "fdsaf", "isValid": true }'
 ```
 
 This should just forward to application to some third party. For now this is the only validation that is done.
 
-## KYC Review Fail
-
-Reject the KYC pending review;
-
+A failed review;
 ```
-bash -XPOST -H 'x-access-token: fdsa' ${HOST}/trustfeed/kyc-review-reject -H 'content-type: application/json' --data '{ "kycID": "fdsaf", "note" : "Some explination of failure" }'
+bash -XPOST -H 'x-access-token: fdsa' ${HOST}/trustfeed/kyc-review -H 'content-type: application/json' --data '{ "kycID": "fdsaf", "isValid": false, "note" : "Some explination of failure" }'
 ```
 
 # Run a Testing Environment

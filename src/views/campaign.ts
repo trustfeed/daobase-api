@@ -203,8 +203,8 @@ const offChainData = d => {
 export const hostedPublicBrief = c => {
   return {
     id: c._id.toString(),
-    createdAt: c.createdAt.getTime(),
-    updatedAt: c.updatedAt.getTime(),
+    createdAt: c.createdAt.getTime() / 1000,
+    updatedAt: c.updatedAt.getTime() / 1000,
     campaignStatus: c.campaignStatus,
     onChainData: onChainDataBrief(c.onChainData),
     offChainData: offChainData(c.offChainData),
@@ -215,8 +215,8 @@ export const hostedPublicBrief = c => {
 export const hostedPublicFull = c => {
   return {
     id: c._id.toString(),
-    createdAt: c.createdAt.getTime(),
-    updatedAt: c.updatedAt.getTime(),
+    createdAt: c.createdAt.getTime() / 1000,
+    updatedAt: c.updatedAt.getTime() / 1000,
     campaignStatus: c.campaignStatus,
     onChainData: onChainData(c.onChainData),
     offChainData: offChainData(c.offChainData),
@@ -227,8 +227,8 @@ export const hostedPublicFull = c => {
 export const hostedAdminBrief = c => {
   return {
     id: c._id.toString(),
-    createdAt: c.createdAt.getTime(),
-    updatedAt: c.updatedAt.getTime(),
+    createdAt: c.createdAt.getTime() / 1000,
+    updatedAt: c.updatedAt.getTime() / 1000,
     campaignStatus: c.campaignStatus,
     onChainData: onChainDataBrief(c.onChainData),
     type: 'hostedCampaign'
@@ -244,8 +244,8 @@ export const hostedAdminFull = c => {
   }
   return {
     id: c._id.toString(),
-    createdAt: c.createdAt,
-    updatedAt: c.updatedAt,
+    createdAt: c.createdAt.getTime() / 1000,
+    updatedAt: c.updatedAt.getTime() / 1000,
     campaignStatus: c.campaignStatus,
     onChainData: onChainData(c.onChainData),
     offChainData: offChain,
