@@ -145,7 +145,7 @@ export class CoinPaymentsService {
     const abi = campaign.onChainData.crowdsaleContract.abi;
     const address = campaign.onChainData.crowdsaleContract.address;
     const contract = this.web3Service.createContract(abi, address);
-    const gasEstimate = await contract.methods.buyTokens(config.trustfeedAddress).estimateGas({ value: tokenCost });
+    const gasEstimate = await contract.methods.buyTokens(config.coinPaymentsAccount).estimateGas({ value: tokenCost });
     const gasPrice = await this.web3Service.getGasPrice();
     const transactionFee = Web3.utils.toBN(gasEstimate).mul(Web3.utils.toBN(gasPrice));
     const etherAmount = Web3.utils.fromWei(tokenCost.add(transactionFee), 'ether');

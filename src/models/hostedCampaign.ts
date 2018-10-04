@@ -191,7 +191,7 @@ const mintedConstructorArgs = (hostedCampaign, userAddress) => {
   const rate = stringRoundedOrUndefined(hostedCampaign.onChainData.rate);
   const startTime = hostedCampaign.onChainData.startingTime.getTime() / 1000;
   return [
-    [config.trustfeedAddress, userAddress],
+    [config.trustfeedWalletAddress, userAddress],
     hostedCampaign.onChainData.tokenName,
     hostedCampaign.onChainData.tokenSymbol,
     hostedCampaign.onChainData.numberOfDecimals,
@@ -210,7 +210,7 @@ const nonMintedConstructorArgs = (hostedCampaign, userAddress) => {
   const rate = stringRoundedOrUndefined(hostedCampaign.onChainData.rate);
   const startTime = hostedCampaign.onChainData.startingTime.getTime() / 1000;
   return [
-    [config.trustfeedAddress, userAddress],
+    [config.trustfeedWalletAddress, userAddress],
     hostedCampaign.onChainData.tokenName,
     hostedCampaign.onChainData.tokenSymbol,
     hostedCampaign.onChainData.numberOfDecimals,

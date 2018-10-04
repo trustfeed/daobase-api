@@ -8,27 +8,39 @@ import { CoinPaymentsService } from '../services/coinPayments';
 import { KYCApplicationService } from '../services/kycApplication';
 import TYPES from '../constant/types';
 import { authMiddleware } from '../middleware/auth';
-import { trustfeedAddress } from '../middleware/trustfeedAddress';
 import { HostedCampaign, reviewAccepted, reviewFailed } from '../models/hostedCampaign';
 import * as campaignView from '../views/campaign';
 import { verify, fail } from '../models/kycApplication';
 import { User, verifyKYC, failKYC } from '../models/user';
 import * as kycView from '../views/kycApplication';
+import { WalletWatcher } from '../events/walletWatcher';
 
 // TODO: trustfeed address middleware
-@controller('/trustfeed', authMiddleware, trustfeedAddress)
+@controller('/trustfeed', authMiddleware)
 export class TrustfeedController {
   constructor(@inject(TYPES.HostedCampaignService) private hostedCampaignService: HostedCampaignService,
               @inject(TYPES.KYCApplicationService) private kycService: KYCApplicationService,
               @inject(TYPES.UserService) private userService: UserService,
-              @inject(TYPES.MailService) private mailService: MailService
+              @inject(TYPES.MailService) private mailService: MailService,
+              @inject(TYPES.WalletWatcher) private walletWatcher: WalletWatcher
              ) {
+  }
+
+  // TODO: can this be middleware
+  private checkAccount(req) {
+    const publicAddress = req.decoded.publicAddress.toLowerCase();
+    if (!this.walletWatcher.trustFeedAddresses.has(publicAddress)) {
+	    throw new TypedError(403, 'not a trustfeed account');
+    }
   }
 
   @httpGet('/kycs-to-review')
   async kycsToReview(
+    @request() req,
     @queryParam('offset') offset
   ) {
+    console.log(req.decoded.publicAddress);
+    this.checkAccount(req);
     const out = await this.kycService.toReview(offset);
     out.kycs = out.kycs.map(kycView.kycApplication);
     return out;
@@ -36,9 +48,11 @@ export class TrustfeedController {
 
   @httpPost('/kyc-reviewed')
   async kycReviewed(
+    @request() req,
     @requestBody() body,
     @response() res
   ) {
+    this.checkAccount(req);
     let kyc = await this.kycService.findById(body.kycID);
     if (!kyc) {
       throw new TypedError(404, 'kyc not found');
@@ -58,9 +72,11 @@ export class TrustfeedController {
 
   @httpPost('/kyc-failed')
   async kycFailed(
+    @request() req,
     @requestBody() body,
     @response() res
   ) {
+    this.checkAccount(req);
     let kyc = await this.kycService.findById(body.kycID);
     if (!kyc) {
       throw new TypedError(404, 'kyc not found');
@@ -81,8 +97,10 @@ export class TrustfeedController {
 
   @httpGet('/campaigns-to-review')
   async campaignsToReview(
+    @request() req,
     @queryParam('offset') offset
   ) {
+    this.checkAccount(req);
     const out = await this.hostedCampaignService.toReview(offset);
     out.campaigns = out.campaigns.map(campaignView.hostedAdminFull);
     return out;
@@ -90,9 +108,11 @@ export class TrustfeedController {
 
   @httpPost('/campaign-reviewed')
   async campaignReviewed(
+    @request() req,
     @requestBody() body,
     @response() res
   ) {
+    this.checkAccount(req);
     let campaign = await this.hostedCampaignService.findById(body.campaignID);
     if (!campaign) {
       throw new TypedError(404, 'campaign not found');
@@ -111,9 +131,11 @@ export class TrustfeedController {
 
   @httpPost('/campaign-failed')
   async campaignFailed(
+    @request() req,
     @requestBody() body,
     @response() res
   ) {
+    this.checkAccount(req);
     let campaign = await this.hostedCampaignService.findById(body.campaignID);
     if (!campaign) {
       throw new TypedError(404, 'campaign not found');

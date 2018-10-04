@@ -15,7 +15,7 @@ const config = {
   mailgunDomain: process.env.MAILGUN_DOMAIN || 'mg.trustfeed.io',
   infuraURL: process.env.INFURA_HOST || 'wss://rinkeby.infura.io/ws',
 
-  trustfeedAddress: process.env.TRUSTFEED_ADDRESS || '0x3aa9ce734dd21fa5e6962978e2ccc7f4ac513348',
+  trustfeedWalletAddress: process.env.TRUSTFEED_WALLET_ADDRESS || '0x40776a2cEC264c7762A4f58ef50Dd5A4B06916F5',
   infuraKey: process.env.INFURA_KEY,
 
   coinPaymentsAccount: process.env.COINPAYMENTS_ACCOUNT || '0x90af460235cb9fb28956b45e9d80aac3dc3bd74e',

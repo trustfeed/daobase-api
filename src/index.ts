@@ -31,6 +31,7 @@ import './controllers/coinPayments';
 import './controllers/trustfeed';
 import { CampaignVerifier } from './events/campaignVerifier';
 import { InvestmentWatcher } from './events/investmentWatcher';
+import { WalletWatcher } from './events/walletWatcher';
 import { Web3Connection } from './utils/web3/connection';
 
 const container = new Container();
@@ -61,6 +62,12 @@ const campaignVerifier = new CampaignVerifier(
  container.get<InvestmentWatcher>(TYPES.InvestmentWatcher)
 );
 Web3Connection.addSubscription(campaignVerifier);
+
+const walletWatcher = new WalletWatcher(
+  container.get<Web3Service>(TYPES.Web3Service)
+);
+Web3Connection.addSubscription(walletWatcher);
+container.bind<WalletWatcher>(TYPES.WalletWatcher).toConstantValue(walletWatcher);
 
 const server = new InversifyExpressServer(container);
 server.setConfig((app) => {
