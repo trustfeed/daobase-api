@@ -191,6 +191,22 @@ web3.eth.sendTransaction(
 )
 ```
 
+### Finalise a Campaign
+
+The campaign must be past soft cap and the closing time must be in the past.
+
+First the proposer should request finalisation;
+```bash
+curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/hosted-campaigns/${ID}/finalise
+```
+
+This returns the byte code that will submit the transaction to the multisig wallet. Once this transaction has been seen by the event watcher a trustfeed admin must confirm the transaction and then execute the transaction.
+
+Next trustfeed must confirm the transaction. From backoffice get the bytecode to confirm and execute the transaction with.
+```bash
+curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/trustfeed/finalise-campaign
+```
+
 ## Admin for External Campaigns
 
 Users can create new external campaigns;

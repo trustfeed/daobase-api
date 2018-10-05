@@ -30,8 +30,6 @@ export class CoinPaymentsService {
     MongoDBConnection.getConnection(conn => {
       this.mongoConn = conn;
     });
-
-    setTimeout(() => this.checkEtherReceived('CPCJ0E6VSWXE6ZGFVCCZT9QTTA'), 2000);
   }
 
   public supportedCurrency(currency: string): boolean {

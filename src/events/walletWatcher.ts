@@ -17,7 +17,8 @@ const version = '0.0.0';
 export class WalletWatcher extends EventWatcher {
   // The address currently listed on the wallet
   public trustFeedAddresses: any = new Set([]);
-  private contract: any;
+  public contract: any;
+  protected topics: [];
 
   constructor(
     @inject(TYPES.Web3Service) private web3Service: Web3Service
@@ -35,12 +36,9 @@ export class WalletWatcher extends EventWatcher {
 
   // After a connection is established listen for new events
   protected async startWatching(): Promise<any> {
-    // TODO: subscribe to addAddress and removeAddress
     return this.contract.events.allEvents({
-      topics: [
-        Web3.utils.sha3('OwnerAddition(address)'),
-        Web3.utils.sha3('OwnerRemoval(address)')
-      ]});
+      topics: this.topics
+    });
   }
 
   // Read the wallet contract from file
@@ -59,4 +57,16 @@ export class WalletWatcher extends EventWatcher {
     addresses.map(a => { s.add(a.toString().toLowerCase()); });
     this.trustFeedAddresses = s;
   }
+}
+
+// Watch for new trustfeed accounts
+@injectable()
+export class WalletAdd extends WalletWatcher {
+  protected topic = [ Web3.utils.sha3('OwnerAddition(address)') ];
+}
+
+// Watch for removed trustfeed accounts
+@injectable()
+export class WalletRemove extends WalletWatcher {
+  protected topic = [ Web3.utils.sha3('OwnerRemoval(address)') ];
 }

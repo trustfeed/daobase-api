@@ -62,7 +62,7 @@ export const validateData = (onChainData: OnChainData) => {
       presence: true,
       numericality: {
         noStrings: true,
-        greaterThanOrEqualTo: 1
+        greaterThan: 0
       }
     },
     rate: {
@@ -104,8 +104,8 @@ export const validateData = (onChainData: OnChainData) => {
   }
 
   const softCap = stringToBNOrUndefined(onChainData.softCap);
-  if (!softCap || softCap < 1) {
-    const msg = 'Soft cap must be an integer larger than 0';
+  if (!softCap || softCap < 0) {
+    const msg = 'Soft cap must be an integer larger than or equal to 0';
     if (errs.softCap) {
       errs.softCap.push(msg);
     } else {

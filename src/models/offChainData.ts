@@ -15,6 +15,8 @@ export class OffChainData {
   ) {
     if (keywords === null || keywords === undefined) {
       this.keywords = [];
+    } else {
+      this.keywords = keywords;
     }
     this.createdAt = new Date();
     validateData(this);

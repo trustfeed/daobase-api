@@ -6,7 +6,7 @@ import { HostedCampaignService } from '../services/hostedCampaign';
 import { Web3Service } from '../services/web3';
 import TYPES from '../constant/types';
 import { authMiddleware } from '../middleware/auth';
-import { HostedCampaign, submitForReview, reviewAccepted, cancelReview, makeDeployment, updateOnChainData, updateOffChainData } from '../models/hostedCampaign';
+import { HostedCampaign, submitForReview, reviewAccepted, cancelReview, makeDeployment, updateOnChainData, updateOffChainData, submitFinalise } from '../models/hostedCampaign';
 import * as viewCampaigns from '../views/campaign';
 import * as onChain from '../models/onChainData';
 import * as offChain from '../models/offChainData';
@@ -17,16 +17,16 @@ import config from '../config';
 // TODO: These type conversion are ugly. Also types should be input first
 const requestToOnChainData = (body) => {
   return new onChain.OnChainData(
-          body.tokenName,
-          body.tokenSymbol,
-          parseInt(body.numberOfDecimals, 10),
-          parseInt(body.startingTime, 10),
-          Number(body.duration),
-          body.rate,
-          body.softCap,
-          body.hardCap,
-          body.isMinted
-        );
+    body.tokenName,
+    body.tokenSymbol,
+    parseInt(body.numberOfDecimals, 10),
+    parseInt(body.startingTime, 10),
+    Number(body.duration),
+    body.rate,
+    body.softCap,
+    body.hardCap,
+    body.isMinted
+  );
 };
 
 const requestToOffChainData = (body) => {
@@ -206,6 +206,16 @@ export class AdminController {
     return out;
   }
 
+  @httpPost('/hosted-campaigns/:id/finalise')
+  async finalise(
+   @request() req
+  ) {
+    let { campaign, user } = await this.getUserAndCampaign(req.decoded.id, req.params.id);
+    let [campaignDash, byteCode] = submitFinalise(campaign, this.web3Service);
+    await this.hostedCampaignService.update(campaignDash);
+    req.status(201).message({ transaction: byteCode });
+  }
+
   private async getUser(userId) {
     const user = await this.userService.findById(userId);
     if (user === null || user === undefined) {
@@ -228,242 +238,4 @@ export class AdminController {
     }
     return { user, campaign };
   }
-
 }
-
-//// Create an empty post for the logged in user
-// export const post = async (req, res, next) => {
-//  try {
-//    if (!req.decoded || !req.decoded.publicAddress) {
-//      throw new utils.TypedError(400, 'missing public address');
-//    }
-//
-//    let campaign = await User.addHostedCampaign(req.decoded.publicAddress, req.body);
-//    res.status(201).send({
-//      campaign_id: campaign.id
-//    });
-//  } catch (err) {
-//    next(err);
-//  }
-// };
-//
-//// Get a campaign
-// export const get = async (req, res, next) => {
-//  try {
-//    if (!req.decoded.id) {
-//      throw new utils.TypedError(400, 'missing user id');
-//    }
-//
-//    if (!req.params.id) {
-//      throw new utils.TypedError(400, 'missing campaign id');
-//    }
-//
-//    const campaignId = utils.stringToId(req.params.id);
-//    let campaign = await Campaign.fetchHostedCampaign(req.decoded.id, campaignId);
-//    res.status(200).send(views.adminFull(campaign));
-//  } catch (err) {
-//    next(err);
-//  }
-// };
-//
-//// A list of campaigns
-// export const getAll = async (req, res, next) => {
-//  try {
-//    if (!req.decoded.id) {
-//      throw new utils.TypedError(400, 'missing user id');
-//    }
-//
-//    let data = await Campaign.findHostedByOwner(req.decoded.id, req.query.offset);
-//    // await Promise.all(data.campaigns.map(x => x.addWeiRaised()));
-//    data.campaigns = data.campaigns.map(views.adminBrief);
-//    res.status(200).send(data);
-//  } catch (err) {
-//    next(err);
-//  }
-// };
-//
-// export const putOnChainData = async (req, res, next) => {
-//  try {
-//    if (!req.decoded.id) {
-//      throw new utils.TypedError(400, 'missing user id');
-//    }
-//
-//    if (!req.params.id) {
-//      throw new utils.TypedError(400, 'missing campaign id');
-//    }
-//
-//    const campaignId = utils.stringToId(req.params.id);
-//    await Campaign.putOnChainData(req.decoded.id, campaignId, req.body);
-//    res.status(201).send({
-//      message: 'updated'
-//    });
-//  } catch (err) {
-//    next(err);
-//  }
-// };
-//
-// export const putOffChainData = async (req, res, next) => {
-//  try {
-//    if (!req.decoded.id) {
-//      throw new utils.TypedError(400, 'missing user id');
-//    }
-//
-//    if (!req.params.id) {
-//      throw new utils.TypedError(400, 'missing campaign id');
-//    }
-//
-//    const campaignId = utils.stringToId(req.params.id);
-//    await Campaign.putOffChainData(req.decoded.id, campaignId, req.body);
-//    res.status(201).send({
-//      message: 'updated'
-//    });
-//  } catch (err) {
-//    next(err);
-//  }
-// };
-//
-//// This returns a presigned URL to upload an image
-// export const coverImageURL = async (req, res, next) => {
-//  try {
-//    if (!req.decoded.id) {
-//      throw new utils.TypedError(400, 'missing user id');
-//    }
-//
-//    if (!req.params.id) {
-//      throw new utils.TypedError(400, 'missing campaign id');
-//    }
-//
-//    const extension = req.body.extension || 'jpg';
-//    const contentType = req.body.contentType || 'image/jpeg';
-//
-//    const campaignId = utils.stringToId(req.params.id);
-//    await Campaign.fetchHostedCampaign(req.decoded.id, campaignId);
-//    const url = await s3.signUpload(campaignId, 'images', extension, contentType);
-//    const uploadURL: any = url;
-//    const viewURL = uploadURL.split(/[?#]/)[0];
-//    res.status(201).send({
-//      uploadURL,
-//      viewURL
-//    });
-//  } catch (err) {
-//    next(err);
-//  }
-// };
-//
-//// This returns a presigned URL to upload a white paper pdf
-// export const pdfURL = async (req, res, next) => {
-//  try {
-//    if (!req.decoded.id) {
-//      throw new utils.TypedError(400, 'missing user id');
-//    }
-//
-//    if (!req.params.id) {
-//      throw new utils.TypedError(400, 'missing campaign id');
-//    }
-//
-//    const extension = req.body.extension || 'pdf';
-//    const contentType = req.body.contentType || 'application/pdf';
-//
-//    const campaignId = utils.stringToId(req.params.id);
-//    await Campaign.fetchHostedCampaign(req.decoded.id, campaignId);
-//    const url = await s3.signUpload(req.params.id, 'white-papers', extension, contentType);
-//    const uploadURL: any = url;
-//    const viewURL = uploadURL.split(/[?#]/)[0];
-//    res.status(201).send({
-//      uploadURL,
-//      viewURL
-//    });
-//  } catch (err) {
-//    next(err);
-//  }
-// };
-//
-// export const submitForReview = async (req, res, next) => {
-//  try {
-//    if (!req.decoded.id) {
-//      throw new utils.TypedError(400, 'missing user id');
-//    }
-//
-//    if (!req.params.id) {
-//      throw new utils.TypedError(400, 'missing campaign id');
-//    }
-//
-//    const userId = req.decoded.id;
-//    const campaignId = utils.stringToId(req.params.id);
-//
-//    await Campaign.submitForReview(userId, campaignId);
-//    res.status(201).send({
-//      message: 'submitted'
-//    });
-//    setTimeout(() => {
-//      Campaign.acceptReview(userId, campaignId);
-//    }, 60 * 1000);
-//  } catch (err) {
-//    next(err);
-//  }
-// };
-//
-// export const cancelReview = async (req, res, next) => {
-//  try {
-//    if (!req.decoded.id) {
-//      throw new utils.TypedError(400, 'missing user id');
-//    }
-//
-//    if (!req.params.id) {
-//      throw new utils.TypedError(400, 'missing campaign id');
-//    }
-//
-//    const userId = req.decoded.id;
-//    const campaignId = utils.stringToId(req.params.id);
-//
-//    await Campaign.cancelReview(userId, campaignId);
-//    res.status(201).send({
-//      message: 'cancelled'
-//    });
-//  } catch (err) {
-//    next(err);
-//  }
-// };
-//
-// export const acceptReview = async (req, res, next) => {
-//  try {
-//    if (!req.decoded.id) {
-//      throw new utils.TypedError(400, 'missing user id');
-//    }
-//
-//    if (!req.params.id) {
-//      throw new utils.TypedError(400, 'missing campaign id');
-//    }
-//
-//    const userId = req.decoded.id;
-//    const campaignId = utils.stringToId(req.params.id);
-//
-//    await Campaign.acceptReview(userId, campaignId);
-//    res.status(201).send({
-//      message: 'accepted'
-//    });
-//  } catch (err) {
-//    next(err);
-//  }
-// };
-//
-// export const deploymentTransaction = async (req, res, next) => {
-//  try {
-//    if (!req.decoded.id) {
-//      throw new utils.TypedError(400, 'missing user id');
-//    }
-//
-//    if (!req.params.id) {
-//      throw new utils.TypedError(400, 'missing campaign id');
-//    }
-//
-//    const userId = req.decoded.id;
-//    const userAddress = req.decoded.publicAddress;
-//    const campaignId = utils.stringToId(req.params.id);
-//
-//    const out = await Campaign.deploymentTransaction(userId, userAddress, campaignId);
-//    res.status(201).send(out);
-//  } catch (err) {
-//    next(err);
-//  }
-// };

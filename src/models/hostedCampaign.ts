@@ -14,6 +14,10 @@ export const HOSTED_CAMPAIGN_STATUS_REVIEWED = 'REVIEWED';
 export const HOSTED_CAMPAIGN_STATUS_PENDING_DEPLOYMENT = 'PENDING_DEPLOYMENT';
 export const HOSTED_CAMPAIGN_STATUS_DEPLOYED = 'DEPLOYED';
 export const HOSTED_CAMPAIGN_STATUS_PENDING_OFF_CHAIN_REVIEW = 'PENDING_OFF_CHAIN_REVIEW';
+export const HOSTED_CAMPAIGN_STATUS_PENDING_FINALISATION_SUBMISSION = 'PENDING_FINALISATION_SUBMISSION';
+export const HOSTED_CAMPAIGN_STATUS_PENDING_FINALISATION_CONFIRMATION = 'PENDING_FINALISATION_CONFIRMATION';
+export const HOSTED_CAMPAIGN_STATUS_PENDING_FINALISATION_EXECUTION = 'PENDING_FINALISATION_EXECUTION';
+export const HOSTED_CAMPAIGN_STATUS_FINALISED = 'PENDING_FINALISED';
 
 export class HostedCampaign {
   public ownerId: string;
@@ -26,6 +30,7 @@ export class HostedCampaign {
   public offChainDataDraft?: any;
   public notes?: Note[];
   public _id?: string;
+  public finalisationIndex?: string;
 
   constructor(
     ownerId: string,
@@ -303,3 +308,110 @@ export const isOngoing = (hostedCampaign: HostedCampaign): boolean => {
   return (nw > startingTime &&
 	  nw.getTime() < startingTime.getTime() + duration);
 };
+
+export const finalisable = async (
+  hostedCampaign: HostedCampaign,
+  contract): Promise<void> => {
+
+  if (hostedCampaign.campaignStatus !== HOSTED_CAMPAIGN_STATUS_DEPLOYED &&
+      hostedCampaign.campaignStatus !== HOSTED_CAMPAIGN_STATUS_PENDING_FINALISATION_SUBMISSION) {
+    throw new TypedError(400, 'campaign is not deployed');
+  }
+
+  const closingTime = hostedCampaign.onChainData.startingTime.getTime() +
+    hostedCampaign.onChainData.duration * 1000 * 60 * 60 * 24;
+  const nw = new Date();
+  if (nw.getTime() < closingTime) {
+    throw new TypedError(400, 'campaign is not finished');
+  }
+
+  const weiRaised = await contract.methods.weiRaised().call();
+  const softCap = await hostedCampaign.onChainData.softCap;
+
+  if (Web3.utils.toBN(weiRaised).lt(Web3.utils.toBN(softCap))) {
+    throw new TypedError(400, 'soft cap not reached');
+  }
+};
+
+export const getFinaliseTransaction = (
+  hostedCampaign: HostedCampaign,
+  web3Service) => {
+
+  const deployedCSContract = hostedCampaign.onChainData.crowdsaleContract;
+  const csContract = web3Service.createContract(
+    deployedCSContract.abi,
+    deployedCSContract.address
+  );
+  const encoded = csContract.methods.finalise().encodeABI();
+  return {
+    destination: deployedCSContract.address,
+    value: 0,
+    data : encoded,
+    executed: false
+  };
+};
+
+export const submitFinalise = (
+  hostedCampaign: HostedCampaign,
+  web3Service): [HostedCampaign, any] => {
+
+  if (hostedCampaign.campaignStatus !== HOSTED_CAMPAIGN_STATUS_DEPLOYED &&
+      hostedCampaign.campaignStatus !== HOSTED_CAMPAIGN_STATUS_PENDING_FINALISATION_SUBMISSION) {
+    throw new TypedError(400, 'campaign is not deployed');
+  }
+
+  const deployedCSContract = hostedCampaign.onChainData.crowdsaleContract;
+  const csContract = web3Service.createContract(
+    deployedCSContract.abi,
+    deployedCSContract.address
+  );
+  finalisable(hostedCampaign, csContract);
+
+  const encoded = csContract.methods.finalise().encodeABI();
+
+  const deployedWalletContract = hostedCampaign.onChainData.walletContract;
+  const walletContract = web3Service.createContract(
+    deployedWalletContract.abi,
+    deployedWalletContract.address
+  );
+  const byteCode = walletContract
+    .methods.submitTransaction(deployedCSContract.address, 0, encoded)
+    .encodeABI();
+
+  hostedCampaign.campaignStatus = HOSTED_CAMPAIGN_STATUS_PENDING_FINALISATION_SUBMISSION;
+
+  return [hostedCampaign, byteCode];
+};
+
+export const confirmFinalise = (
+  hostedCampaign: HostedCampaign,
+  web3Service,
+  trustfeedWallet): [HostedCampaign, any] => {
+
+  if (
+    hostedCampaign.campaignStatus !== HOSTED_CAMPAIGN_STATUS_PENDING_FINALISATION_CONFIRMATION &&
+    hostedCampaign.campaignStatus !== HOSTED_CAMPAIGN_STATUS_PENDING_FINALISATION_EXECUTION) {
+    throw new TypedError(400, 'campaign is not pending finalisation confirmation');
+  }
+
+  const deployedWalletContract = hostedCampaign.onChainData.walletContract;
+  const walletContract = web3Service.createContract(
+    deployedWalletContract.abi,
+    deployedWalletContract.address
+  );
+  const encoded = walletContract
+    .methods.confirmTransaction(hostedCampaign.finalisationIndex)
+    .encodeABI();
+
+  const byteCode = trustfeedWallet.methods.submitTransaction(
+    deployedWalletContract.address,
+    0,
+    encoded
+  );
+
+  hostedCampaign.campaignStatus = HOSTED_CAMPAIGN_STATUS_PENDING_FINALISATION_EXECUTION;
+
+  return [hostedCampaign, byteCode];
+};
+
+// export const submit
