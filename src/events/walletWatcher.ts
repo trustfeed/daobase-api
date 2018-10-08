@@ -18,7 +18,7 @@ export class WalletWatcher extends EventWatcher {
   // The address currently listed on the wallet
   public trustFeedAddresses: any = new Set([]);
   public contract: any;
-  protected topics: [];
+  protected topics = [];
 
   constructor(
     @inject(TYPES.Web3Service) private web3Service: Web3Service
