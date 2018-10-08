@@ -32,4 +32,10 @@ export class Web3Service {
   sendSignedTransaction(tx) {
     return this.web3.eth.sendSignedTransaction(tx.rawTransaction);
   }
+
+  getGasLimit() {
+    return this.web3.eth.getBlock('latest').then(b => {
+      return b.gasLimit;
+    });
+  }
 }

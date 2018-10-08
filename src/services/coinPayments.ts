@@ -163,17 +163,22 @@ export class CoinPaymentsService {
     const tokenCost = Web3.utils.toBN(toPurchase).div(rate);
 
     // The gas cost to transfer the tokens once coin payments is complete
-    let transactionFee: any;
-    let gasPrice: string;
-    try {
-      const gasEstimate = await contract.methods.buyTokens(userAddress)
-                                .estimateGas({ value: tokenCost });
-      gasPrice = await this.web3Service.getGasPrice();
-      transactionFee = Web3.utils.toBN(gasEstimate)
-                         .mul(Web3.utils.toBN(gasPrice));
-    } catch (err) {
-      throw new TypedError(500, 'cannot estimate gas cost');
-    }
+    // let transactionFee: any;
+    // let gasPrice: string;
+    // try {
+    //  const gasLimit = await this.web3Service.getGasLimit();
+    //  console.log(gasLimit);
+    //  const gasEstimate = await contract.methods.buyTokens(config.coinPaymentsAddress)
+    //                            .estimateGas({ value: tokenCost, from: config.coinPaymentsAddress, gas: gasLimit });
+    //  gasPrice = await this.web3Service.getGasPrice();
+    //  transactionFee = Web3.utils.toBN(gasEstimate)
+    //                     .mul(Web3.utils.toBN(gasPrice));
+    // } catch (err) {
+    //  console.log(err);
+    //  throw new TypedError(500, 'cannot estimate gas cost');
+    // }
+    let transactionFee = Web3.utils.toBN('1000000');
+    let gasPrice = await this.web3Service.getGasPrice();
 
     // The total cost
     const etherAmount = Web3.utils.fromWei(tokenCost.add(transactionFee), 'ether');
