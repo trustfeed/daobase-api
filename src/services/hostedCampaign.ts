@@ -103,14 +103,14 @@ export class HostedCampaignService {
   public async findAllPublic(offset?: string): Promise<any> {
     const pageSize = 20;
     let query: any = {
-      $or: [
-        {
-          'campaignStatus': hc.HOSTED_CAMPAIGN_STATUS_DEPLOYED
-        },
-        {
-          'campaignStatus': hc.HOSTED_CAMPAIGN_STATUS_PENDING_OFF_CHAIN_REVIEW
-        }
-      ]};
+      'campaignStatus': { $in: [
+        hc.HOSTED_CAMPAIGN_STATUS_DEPLOYED,
+        hc.HOSTED_CAMPAIGN_STATUS_PENDING_OFF_CHAIN_REVIEW,
+        hc.HOSTED_CAMPAIGN_STATUS_PENDING_FINALISATION_SUBMISSION,
+        hc.HOSTED_CAMPAIGN_STATUS_PENDING_FINALISATION_CONFIRMATION,
+        hc.HOSTED_CAMPAIGN_STATUS_PENDING_FINALISATION_EXECUTION,
+        hc.HOSTED_CAMPAIGN_STATUS_FINALISED
+      ]}};
     if (offset) {
       query.updatedAt = {
         $lt: new Date(Number(Base64.decode(offset)))
@@ -138,7 +138,7 @@ export class HostedCampaignService {
     });
   }
 
-  public async toReview(offset?: string): Promise<any> {
+  public async toReview(offset ?: string): Promise < any > {
     const pageSize = 20;
     const query: any = { $or: [
 	    { campaignStatus: hc.HOSTED_CAMPAIGN_STATUS_PENDING_REVIEW },
@@ -166,7 +166,7 @@ export class HostedCampaignService {
     });
   }
 
-  public async toFinalise(offset?: string): Promise<any> {
+  public async toFinalise(offset ?: string): Promise < any > {
     const pageSize = 20;
     const query: any = { campaignStatus: hc.HOSTED_CAMPAIGN_STATUS_PENDING_FINALISATION_CONFIRMATION };
     if (offset) {
