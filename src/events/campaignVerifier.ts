@@ -8,6 +8,7 @@ import { Web3Service } from '../services/web3';
 import TYPES from '../constant/types';
 import { makeDeployment, fetchContracts } from '../models/hostedCampaign';
 import { InvestmentWatcher } from './investmentWatcher';
+import { ConfirmationWatcher } from './confirmationWatcher';
 
 export class CampaignVerifier extends EventWatcher {
   private scrapedTo: number;
@@ -17,7 +18,8 @@ export class CampaignVerifier extends EventWatcher {
     @inject(TYPES.Web3Service) private web3Service: Web3Service,
     @inject(TYPES.UserService) private userService: UserService,
     @inject(TYPES.HostedCampaignService) private hostedCampaignService: HostedCampaignService,
-    @inject(TYPES.InvestmentWatcher) private investmentWatcher: InvestmentWatcher
+    @inject(TYPES.InvestmentWatcher) private investmentWatcher: InvestmentWatcher,
+    @inject(TYPES.ConfirmationWatcher) private confirmationWatcher: ConfirmationWatcher
   ) {
     super();
     // The initial settings
@@ -58,6 +60,7 @@ export class CampaignVerifier extends EventWatcher {
     campaign.campaignStatus = 'DEPLOYED';
     campaign = await this.hostedCampaignService.update(campaign);
     this.investmentWatcher.addCampaign(campaign);
+    this.confirmationWatcher.addCampaign(campaign);
   }
 
   // Scrap old events in chuncks.

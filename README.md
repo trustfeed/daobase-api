@@ -200,7 +200,7 @@ First the proposer should request finalisation;
 curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/hosted-campaigns/${ID}/finalise
 ```
 
-This returns the byte code that will submit the transaction to the multisig wallet. Once this transaction has been seen by the event watcher a trustfeed admin must confirm the transaction and then execute the transaction.
+This returns the byte code that will submit the transaction to the multisig wallet. Send it to the address of the multisig wallet to intialise the finalisation process. Once this transaction has been seen by the event watcher a trustfeed admin must confirm the transaction and then execute the transaction.
 
 Next trustfeed must confirm the transaction. From backoffice get the bytecode to confirm and execute the transaction with.
 ```bash

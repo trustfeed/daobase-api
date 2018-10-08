@@ -66,6 +66,8 @@ contract TrustFeedCampaign {
 
     // Transfer the initial funds
     token.transfer(crowdsale, _initialSupply);
+    // Transfer the crowdsale to the wallet
+    crowdsale.transferOwnership(wallet);
 
     emit NewCampaign(this, _campaignId);
   }

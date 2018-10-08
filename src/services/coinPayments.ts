@@ -155,10 +155,10 @@ export class CoinPaymentsService {
 
   public async prepareTransaction(toPurchase, paymentCurrency, userId, userAddress, campaign) {
     if (!isDeployed(campaign)) {
-      throw new TypedError(500, 'the campaign is not deployed');
+      throw new TypedError(400, 'the campaign is not deployed');
     }
     if (!isOngoing(campaign)) {
-      throw new TypedError(500, 'the campaign is not ongoing');
+      throw new TypedError(400, 'the campaign is not ongoing');
     }
     // Get campaign contracts
     const abi = campaign.onChainData.crowdsaleContract.abi;
@@ -170,11 +170,17 @@ export class CoinPaymentsService {
     const tokenCost = Web3.utils.toBN(toPurchase).div(rate);
 
     // The gas cost to transfer the tokens once coin payments is complete
-    const gasEstimate = await contract.methods.buyTokens(config.coinPaymentsAddress)
+    let transactionFee: any;
+    let gasPrice: string;
+    try {
+      const gasEstimate = await contract.methods.buyTokens(userAddress)
                                 .estimateGas({ value: tokenCost });
-    const gasPrice = await this.web3Service.getGasPrice();
-    const transactionFee = Web3.utils.toBN(gasEstimate)
-                             .mul(Web3.utils.toBN(gasPrice));
+      gasPrice = await this.web3Service.getGasPrice();
+      transactionFee = Web3.utils.toBN(gasEstimate)
+                         .mul(Web3.utils.toBN(gasPrice));
+    } catch (err) {
+      throw new TypedError(500, 'cannot estimate gas cost');
+    }
 
     // The total cost
     const etherAmount = Web3.utils.fromWei(tokenCost.add(transactionFee), 'ether');

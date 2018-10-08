@@ -13,8 +13,6 @@ import fs from 'fs';
 
 const topics = [
   Web3.utils.sha3('Confirmation(address,uint256)')
-  // Web3.utils.sha3('Submission(uint256)')
-  // Web3.utils.sha3('Execution(uint256)')
 ];
 
 const topicToAddress = topic => {
@@ -53,8 +51,9 @@ export class ConfirmationWatcher extends EventWatcher {
     }
   }
 
-  // Map the token address to campaign id
+  // Map the wallet address to campaign id
   private walletAddresses: any = {};
+  // TODO: Put this data into mongo to prevent re-crawling on every restart
   private scrapedTo = 3000000;
   private chunckSize = 10000;
 
@@ -63,11 +62,45 @@ export class ConfirmationWatcher extends EventWatcher {
     @inject(TYPES.HostedCampaignService) private hostedCampaignService: HostedCampaignService
   ) {
     super();
+
+    this.hostedCampaignService.forEach(campaign => {
+      if (campaign.campaignStatus === 'DEPLOYED' || campaign.campaignStatus === 'PENDING_OFF_CHAIN_REVIEW') {
+        this.addCampaign(campaign);
+      }
+    });
+  }
+
+  private async checkExpected(campaign, wallet, topics) {
+    const expectedTransaction = hc.getFinaliseTransaction(campaign, this.web3Service);
+    const idx = topicToInt(topics[2]);
+    if (!idx) {
+      console.log('invalid index');
+      return;
+    }
+    if (!await this.checkTransaction(wallet, idx, expectedTransaction)) {
+      return;
+    }
+    campaign.campaignStatus = hc.HOSTED_CAMPAIGN_STATUS_PENDING_FINALISATION_CONFIRMATION;
+    campaign.finalisationIndex = idx;
+    await this.hostedCampaignService.update(campaign);
   }
 
   public async addCampaign(campaign) {
-    // add the wallet address
-    // check the status of that campaign
+    if (campaign.onChainData.walletContract === null ||
+        campaign.onChainData.walletContract === undefined) {
+      return;
+    }
+    this.walletAddresses[campaign.onChainData.walletContract] = campaign._id;
+    if (campaign.campaignStatus !== hc.HOSTED_CAMPAIGN_STATUS_PENDING_FINALISATION_SUBMISSION) {
+      return;
+    }
+    // check all events from this wallet to check for a confirmation
+    const contractJSON = campaign.onChainData.walletContract;
+    const contract = this.web3Service.createContract(contractJSON.abi, contractJSON.address);
+    contract.events.Confirmation()
+      .on('data', (event) => {
+        this.checkExpected(campaign, contract, event.raw.topic);
+      });
   }
 
   // Handles a new log event, updating the db if needed
@@ -89,17 +122,7 @@ export class ConfirmationWatcher extends EventWatcher {
 
     const contractJSON = campaign.onChainData.walletContract;
     const contract = this.web3Service.createContract(contractJSON.abi, contractJSON.address);
-    const idx = topicToInt(log.topics[2]);
-    if (!idx) {
-      console.log('invalid index');
-      return;
-    }
-    if (!await this.checkTransaction(contract, idx, expectedTransaction)) {
-      return;
-    }
-    campaign.campaignStatus = hc.HOSTED_CAMPAIGN_STATUS_PENDING_FINALISATION_CONFIRMATION;
-    campaign.finalisationIndex = idx;
-    await this.hostedCampaignService.update(campaign);
+    this.checkExpected(campaign, contract, log.topics);
   }
 
   // After a connection is established listen for new events

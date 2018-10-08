@@ -9,7 +9,8 @@ const TYPES = {
   InvestmentService: Symbol.for('InvestmentService'),
   InvestmentWatcher: Symbol.for('InvestmentWatcher'),
   MailService: Symbol.for('MailService'),
-  WalletWatcher: Symbol.for('WalletWatcher')
+  WalletWatcher: Symbol.for('WalletWatcher'),
+  ConfirmationWatcher: Symbol.for('ConfirmationWatcher')
 };
 
 export default TYPES;

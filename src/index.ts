@@ -52,6 +52,7 @@ const confirmationWatcher = new ConfirmationWatcher(
   container.get<HostedCampaignService>(TYPES.HostedCampaignService)
  );
 Web3Connection.addSubscription(confirmationWatcher);
+container.bind<ConfirmationWatcher>(TYPES.ConfirmationWatcher).toConstantValue(confirmationWatcher);
 
 const investmentWatcher = new InvestmentWatcher(
   container.get<Web3Service>(TYPES.Web3Service),

@@ -208,12 +208,13 @@ export class AdminController {
 
   @httpPost('/hosted-campaigns/:id/finalise')
   async finalise(
-   @request() req
+   @request() req,
+   @response() res
   ) {
     let { campaign, user } = await this.getUserAndCampaign(req.decoded.id, req.params.id);
-    let [campaignDash, byteCode] = submitFinalise(campaign, this.web3Service);
+    let [campaignDash, byteCode] = await submitFinalise(campaign, this.web3Service);
     await this.hostedCampaignService.update(campaignDash);
-    req.status(201).message({ transaction: byteCode });
+    res.status(201).message({ transaction: byteCode });
   }
 
   private async getUser(userId) {

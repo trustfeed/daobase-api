@@ -18,7 +18,7 @@ const config = {
   trustfeedWalletAddress: process.env.TRUSTFEED_WALLET_ADDRESS || '0xC5b65c9f5ac32330912446fE0e05E9E9d578b6FA',
   infuraKey: process.env.INFURA_KEY,
 
-  coinPaymentsAddress: process.env.COIN_PAYMENTS_ACCOUNT || '0x90af460235cb9fb28956b45e9d80aac3dc3bd74e',
+  coinPaymentsAddress: process.env.COIN_PAYMENTS_ADDRESS || '0x90af460235cb9fb28956b45e9d80aac3dc3bd74e',
   coinPaymentsPrivateKey: '0x' + process.env.COIN_PAYMENTS_PRIVATE_KEY,
 
   frontendHost: process.env.FRONTEND_HOST || 'http://localhost:3000',

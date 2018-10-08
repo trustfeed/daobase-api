@@ -82,6 +82,16 @@ spec:
                           secretKeyRef:
                                   name: coin-payments
                                   key: ipn-secret
+                      - name: COIN_PAYMENTS_ADDRESS
+                        valueFrom:
+                          secretKeyRef:
+                                  name: coin-payments-account
+                                  key: publicAddress
+                      - name: COIN_PAYMENTS_PRIVATE_KEY
+                        valueFrom:
+                          secretKeyRef:
+                                  name: coin-payments-account
+                                  key: privateKey
             imagePullSecrets:
                 - name: registry-secret
 

@@ -351,9 +351,9 @@ export const getFinaliseTransaction = (
   };
 };
 
-export const submitFinalise = (
+export const submitFinalise = async (
   hostedCampaign: HostedCampaign,
-  web3Service): [HostedCampaign, any] => {
+  web3Service): Promise<[HostedCampaign, any]> => {
 
   if (hostedCampaign.campaignStatus !== HOSTED_CAMPAIGN_STATUS_DEPLOYED &&
       hostedCampaign.campaignStatus !== HOSTED_CAMPAIGN_STATUS_PENDING_FINALISATION_SUBMISSION) {
@@ -365,9 +365,9 @@ export const submitFinalise = (
     deployedCSContract.abi,
     deployedCSContract.address
   );
-  finalisable(hostedCampaign, csContract);
+  await finalisable(hostedCampaign, csContract);
 
-  const encoded = csContract.methods.finalise().encodeABI();
+  const encoded = csContract.methods.finalize().encodeABI();
 
   const deployedWalletContract = hostedCampaign.onChainData.walletContract;
   const walletContract = web3Service.createContract(
