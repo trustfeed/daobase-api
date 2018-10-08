@@ -17,7 +17,7 @@ export const HOSTED_CAMPAIGN_STATUS_PENDING_OFF_CHAIN_REVIEW = 'PENDING_OFF_CHAI
 export const HOSTED_CAMPAIGN_STATUS_PENDING_FINALISATION_SUBMISSION = 'PENDING_FINALISATION_SUBMISSION';
 export const HOSTED_CAMPAIGN_STATUS_PENDING_FINALISATION_CONFIRMATION = 'PENDING_FINALISATION_CONFIRMATION';
 export const HOSTED_CAMPAIGN_STATUS_PENDING_FINALISATION_EXECUTION = 'PENDING_FINALISATION_EXECUTION';
-export const HOSTED_CAMPAIGN_STATUS_FINALISED = 'PENDING_FINALISED';
+export const HOSTED_CAMPAIGN_STATUS_FINALISED = 'FINALISED';
 
 export class HostedCampaign {
   public ownerId: string;
@@ -342,7 +342,7 @@ export const getFinaliseTransaction = (
     deployedCSContract.abi,
     deployedCSContract.address
   );
-  const encoded = csContract.methods.finalise().encodeABI();
+  const encoded = csContract.methods.finalize().encodeABI();
   return {
     destination: deployedCSContract.address,
     value: 0,
@@ -407,7 +407,7 @@ export const confirmFinalise = (
     deployedWalletContract.address,
     0,
     encoded
-  );
+  ).encodeABI();
 
   hostedCampaign.campaignStatus = HOSTED_CAMPAIGN_STATUS_PENDING_FINALISATION_EXECUTION;
 

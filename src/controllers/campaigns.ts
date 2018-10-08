@@ -38,9 +38,8 @@ export class CampaignsController {
     const campaign = await this.hostedCampaignService.findById(req.params.id);
     if (!campaign) {
       throw new TypedError(404, 'campaign not found');
-    } else {
-      return viewCampaigns.hostedPublicFull(campaign);
     }
+    return viewCampaigns.hostedPublicFull(campaign);
   }
 
   @httpPost('/:id/alternative-payment')

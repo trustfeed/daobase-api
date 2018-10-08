@@ -2,10 +2,7 @@ import { inject, injectable } from 'inversify';
 import { MongoDBConnection } from '../utils/mongodb/connection';
 import { stringToId } from '../utils/mongodb/stringToId';
 import TYPES from '../constant/types';
-import { HostedCampaign,
-	HOSTED_CAMPAIGN_STATUS_DEPLOYED,
-	HOSTED_CAMPAIGN_STATUS_PENDING_OFF_CHAIN_REVIEW,
-        HOSTED_CAMPAIGN_STATUS_PENDING_REVIEW } from '../models/hostedCampaign';
+import * as hc from '../models/hostedCampaign';
 import { Base64 } from 'js-base64';
 
 const collectionName = 'hostedCampaign';
@@ -27,10 +24,10 @@ export class HostedCampaignService {
     });
   }
 
-  public insert(hostedCampaign: HostedCampaign): Promise<HostedCampaign> {
-    return new Promise<HostedCampaign>((resolve, reject) => {
+  public insert(hostedCampaign: hc.HostedCampaign): Promise<hc.HostedCampaign> {
+    return new Promise<hc.HostedCampaign>((resolve, reject) => {
       this.conn.collection(collectionName)
-        .insert(hostedCampaign, (error, data: HostedCampaign) => {
+        .insert(hostedCampaign, (error, data: hc.HostedCampaign) => {
           if (error) {
             reject(error);
           } else {
@@ -40,7 +37,7 @@ export class HostedCampaignService {
     });
   }
 
-  public update(hostedCampaign: HostedCampaign): Promise<any> {
+  public update(hostedCampaign: hc.HostedCampaign): Promise<any> {
     return new Promise<any>((resolve, reject) => {
       this.conn.collection(collectionName)
         .update(
@@ -56,9 +53,9 @@ export class HostedCampaignService {
     });
   }
 
-  public findById(idString: string): Promise<HostedCampaign> {
+  public findById(idString: string): Promise<hc.HostedCampaign> {
     const id = stringToId(idString);
-    return new Promise<HostedCampaign>((resolve, reject) => {
+    return new Promise<hc.HostedCampaign>((resolve, reject) => {
       this.conn.collection(collectionName)
         .findOne({ _id: id }, (error, data) => {
           if (error) {
@@ -108,10 +105,10 @@ export class HostedCampaignService {
     let query: any = {
       $or: [
         {
-          'campaignStatus': HOSTED_CAMPAIGN_STATUS_DEPLOYED
+          'campaignStatus': hc.HOSTED_CAMPAIGN_STATUS_DEPLOYED
         },
         {
-          'campaignStatus': HOSTED_CAMPAIGN_STATUS_PENDING_OFF_CHAIN_REVIEW
+          'campaignStatus': hc.HOSTED_CAMPAIGN_STATUS_PENDING_OFF_CHAIN_REVIEW
         }
       ]};
     if (offset) {
@@ -144,8 +141,34 @@ export class HostedCampaignService {
   public async toReview(offset?: string): Promise<any> {
     const pageSize = 20;
     const query: any = { $or: [
-	    { campaignStatus: HOSTED_CAMPAIGN_STATUS_PENDING_REVIEW },
-	    { campaignStatus: HOSTED_CAMPAIGN_STATUS_PENDING_OFF_CHAIN_REVIEW } ]};
+	    { campaignStatus: hc.HOSTED_CAMPAIGN_STATUS_PENDING_REVIEW },
+	    { campaignStatus: hc.HOSTED_CAMPAIGN_STATUS_PENDING_OFF_CHAIN_REVIEW } ]};
+    if (offset) {
+      query._id = { $gt: Base64.decode(offset) };
+    }
+
+    return new Promise<any>((resolve, reject) => {
+      this.conn.collection(collectionName)
+        .find(query)
+	.sort({ _id: 1 })
+	.limit(pageSize)
+	.toArray((error, data) => {
+  if (error) {
+    reject(error);
+  } else {
+    let nextOffset;
+    if (data.length === pageSize) {
+      nextOffset = Base64.encode(data[data.length - 1]._id.toString());
+    }
+    resolve({ nextOffset, campaigns: data });
+  }
+});
+    });
+  }
+
+  public async toFinalise(offset?: string): Promise<any> {
+    const pageSize = 20;
+    const query: any = { campaignStatus: hc.HOSTED_CAMPAIGN_STATUS_PENDING_FINALISATION_CONFIRMATION };
     if (offset) {
       query._id = { $gt: Base64.decode(offset) };
     }

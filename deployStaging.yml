@@ -35,7 +35,7 @@ spec:
                       - name: MONGO_DB_NAME
                         value: "daobase-staging"
                       - name: TRUSTFEED__WALLET_ADDRESS
-                        value: 0xC5b65c9f5ac32330912446fE0e05E9E9d578b6FA
+                        value: 0x69322f30F350Ac28c5336a87406C0593f11fFF9a
                       - name: FRONTEND_HOST
                         value: http://test.daobase.io
                       - name: BACKEND_HOST

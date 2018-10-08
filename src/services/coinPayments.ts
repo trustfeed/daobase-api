@@ -105,13 +105,6 @@ export class CoinPaymentsService {
       value: Web3.utils.toHex(value),
       to: address
     });
-    console.log({data: buyTokens.encodeABI(),
-      gas: Web3.utils.toHex(gas),
-      gasPrice: Web3.utils.toHex(gasPrice),
-      from: config.coinPaymentsAddress,
-      value: Web3.utils.toHex(value),
-      to: address
-    });
 
     this.web3Service.sendSignedTransaction(tx)
       .on('receipt', async (r) => {

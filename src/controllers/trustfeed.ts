@@ -29,7 +29,7 @@ export class TrustfeedController {
   }
 
   // TODO: can this be middleware
-  private checkAccount(req) {
+  private async checkAccount(req) {
     const publicAddress = req.decoded.publicAddress.toLowerCase();
     if (!this.walletWatcher.trustFeedAddresses.has(publicAddress)) {
 	    throw new TypedError(403, 'not a trustfeed account');
@@ -41,8 +41,7 @@ export class TrustfeedController {
     @request() req,
     @queryParam('offset') offset
   ) {
-    console.log(req.decoded.publicAddress);
-    this.checkAccount(req);
+    await this.checkAccount(req);
     const out = await this.kycService.toReview(offset);
     out.kycs = out.kycs.map(kycView.kycApplication);
     return out;
@@ -55,7 +54,7 @@ export class TrustfeedController {
     @response() res
   ) {
     if (body.isValid) {
-      this.checkAccount(req);
+      await this.checkAccount(req);
       let kyc = await this.kycService.findById(body.kycID);
       if (!kyc) {
         throw new TypedError(404, 'kyc not found');
@@ -72,7 +71,7 @@ export class TrustfeedController {
       this.mailService.sendKYCSuccess(user.currentEmail.address, user.name);
       res.status(201).send({ message: 'verified' });
     } else {
-      this.checkAccount(req);
+      await this.checkAccount(req);
       let kyc = await this.kycService.findById(body.kycID);
       if (!kyc) {
         throw new TypedError(404, 'kyc not found');
@@ -97,7 +96,7 @@ export class TrustfeedController {
     @request() req,
     @queryParam('offset') offset
   ) {
-    this.checkAccount(req);
+    await this.checkAccount(req);
     const out = await this.hostedCampaignService.toReview(offset);
     out.campaigns = out.campaigns.map(campaignView.hostedAdminFull);
     return out;
@@ -110,7 +109,7 @@ export class TrustfeedController {
     @response() res
   ) {
     if (body.isValid) {
-      this.checkAccount(req);
+      await this.checkAccount(req);
       let campaign = await this.hostedCampaignService.findById(body.campaignID);
       if (!campaign) {
         throw new TypedError(404, 'campaign not found');
@@ -126,7 +125,7 @@ export class TrustfeedController {
       this.mailService.sendCampaignReviewSuccess(user.currentEmail.address, user.name);
       res.status(201).send({ 'message': 'verified' });
     } else {
-      this.checkAccount(req);
+      await this.checkAccount(req);
       let campaign = await this.hostedCampaignService.findById(body.campaignID);
       if (!campaign) {
         throw new TypedError(404, 'campaign not found');
@@ -144,13 +143,24 @@ export class TrustfeedController {
     }
   }
 
-  @httpPost('finalise-campaign')
+  @httpGet('/campaigns-pending-finalisation')
+  async campaignsToFinalise(
+    @request() req,
+    @queryParam('offset') offset
+  ) {
+    await this.checkAccount(req);
+    const out = await this.hostedCampaignService.toFinalise(offset);
+    out.campaigns = out.campaigns.map(campaignView.hostedAdminFull);
+    return out;
+  }
+
+  @httpPost('/finalise-campaign')
   async finaliseCampaign(
     @request() req,
     @requestBody() body,
     @response() res
   ) {
-    this.checkAccount(req);
+    await this.checkAccount(req);
     let campaign = await this.hostedCampaignService.findById(body.campaignID);
     if (!campaign) {
       throw new TypedError(404, 'campaign not found');

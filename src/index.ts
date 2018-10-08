@@ -31,6 +31,7 @@ import './controllers/coinPayments';
 import './controllers/trustfeed';
 import { CampaignVerifier } from './events/campaignVerifier';
 import { InvestmentWatcher } from './events/investmentWatcher';
+import { FinalisedWatcher } from './events/finalisedWatcher';
 import { WalletWatcher, WalletAdd, WalletRemove } from './events/walletWatcher';
 import { ConfirmationWatcher } from './events/confirmationWatcher';
 import { Web3Connection } from './utils/web3/connection';
@@ -46,6 +47,13 @@ container.bind<S3Service>(TYPES.S3Service).to(S3Service);
 container.bind<CoinPaymentsService>(TYPES.CoinPaymentsService).to(CoinPaymentsService);
 container.bind<InvestmentService>(TYPES.InvestmentService).to(InvestmentService);
 container.bind<MailService>(TYPES.MailService).to(MailService);
+
+const finalisedWatcher = new FinalisedWatcher(
+  container.get<Web3Service>(TYPES.Web3Service),
+  container.get<HostedCampaignService>(TYPES.HostedCampaignService)
+);
+Web3Connection.addSubscription(finalisedWatcher);
+container.bind<FinalisedWatcher>(TYPES.FinalisedWatcher).toConstantValue(finalisedWatcher);
 
 const confirmationWatcher = new ConfirmationWatcher(
   container.get<Web3Service>(TYPES.Web3Service),
@@ -67,19 +75,20 @@ const campaignVerifier = new CampaignVerifier(
  container.get<Web3Service>(TYPES.Web3Service),
  container.get<UserService>(TYPES.UserService),
  container.get<HostedCampaignService>(TYPES.HostedCampaignService),
- container.get<InvestmentWatcher>(TYPES.InvestmentWatcher)
+ container.get<InvestmentWatcher>(TYPES.InvestmentWatcher),
+ container.get<ConfirmationWatcher>(TYPES.ConfirmationWatcher)
  );
 Web3Connection.addSubscription(campaignVerifier);
 
 const walletWatcher = new WalletAdd(
   container.get<Web3Service>(TYPES.Web3Service)
-);
+ );
 Web3Connection.addSubscription(walletWatcher);
 container.bind<WalletWatcher>(TYPES.WalletWatcher).toConstantValue(walletWatcher);
 
 const walletRemove = new WalletRemove(
   container.get<Web3Service>(TYPES.Web3Service)
-);
+ );
 Web3Connection.addSubscription(walletRemove);
 
 const server = new InversifyExpressServer(container);

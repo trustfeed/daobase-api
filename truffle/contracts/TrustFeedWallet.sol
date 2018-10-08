@@ -222,7 +222,7 @@ contract TrustFeedWallet {
         notExecuted(transactionId)
     {
         if (isConfirmed(transactionId)) {
-            Transaction memory tansaction = transactions[transactionId];
+            Transaction storage tansaction = transactions[transactionId];
             tansaction.executed = true;
             if (tansaction.destination.call.value(tansaction.value)(tansaction.data))
                 emit Execution(transactionId);

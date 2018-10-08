@@ -214,7 +214,7 @@ export class AdminController {
     let { campaign, user } = await this.getUserAndCampaign(req.decoded.id, req.params.id);
     let [campaignDash, byteCode] = await submitFinalise(campaign, this.web3Service);
     await this.hostedCampaignService.update(campaignDash);
-    res.status(201).message({ transaction: byteCode });
+    res.status(201).send({ transaction: byteCode });
   }
 
   private async getUser(userId) {

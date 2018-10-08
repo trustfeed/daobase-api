@@ -54,7 +54,7 @@ export class ConfirmationWatcher extends EventWatcher {
   // Map the wallet address to campaign id
   private walletAddresses: any = {};
   // TODO: Put this data into mongo to prevent re-crawling on every restart
-  private scrapedTo = 3000000;
+  private scrapedTo = 3122578;
   private chunckSize = 10000;
 
   constructor(
@@ -64,9 +64,7 @@ export class ConfirmationWatcher extends EventWatcher {
     super();
 
     this.hostedCampaignService.forEach(campaign => {
-      if (campaign.campaignStatus === 'DEPLOYED' || campaign.campaignStatus === 'PENDING_OFF_CHAIN_REVIEW') {
-        this.addCampaign(campaign);
-      }
+      this.addCampaign(campaign);
     });
   }
 
@@ -90,7 +88,7 @@ export class ConfirmationWatcher extends EventWatcher {
         campaign.onChainData.walletContract === undefined) {
       return;
     }
-    this.walletAddresses[campaign.onChainData.walletContract] = campaign._id;
+    this.walletAddresses[campaign.onChainData.walletContract.address] = campaign._id;
     if (campaign.campaignStatus !== hc.HOSTED_CAMPAIGN_STATUS_PENDING_FINALISATION_SUBMISSION) {
       return;
     }
@@ -106,7 +104,6 @@ export class ConfirmationWatcher extends EventWatcher {
   // Handles a new log event, updating the db if needed
   protected async processEvent(log: any): Promise<void> {
     const walletAddress = log.address;
-    // TODO: Deal with TrustFeed wallet?
     let campaign = await this.lookupCampaign(walletAddress);
     if (!campaign) {
       console.log('unkown campaign');

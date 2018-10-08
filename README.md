@@ -206,6 +206,7 @@ Next trustfeed must confirm the transaction. From backoffice get the bytecode to
 ```bash
 curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/trustfeed/finalise-campaign
 ```
+This bytecode must be sent to the TrustFeed wallet. Once the event is seen by the event watcher the campaign status will be updated accordingly.
 
 ## Admin for External Campaigns
 
