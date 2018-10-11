@@ -60,6 +60,7 @@ contract TrustFeedMintedCampaign {
 
     // Allow crowdsale to mint tokens
     token.addMinter(crowdsale);
+    token.addMinter(wallet);
     token.renounceMinter();
 
     emit NewCampaign(this, _campaignId);
