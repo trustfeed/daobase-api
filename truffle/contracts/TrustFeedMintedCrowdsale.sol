@@ -26,9 +26,9 @@ contract TrustFeedMintedCrowdsale is MintedCrowdsale, TimedCrowdsale, CappedCrow
   )
     public                                                                                            
     Crowdsale(_rate, _wallet, _token)
-    TimedCrowdsale(_openingTime, _closingTime)
     CappedCrowdsale(_cap)
     RefundableCrowdsale(_goal)
+    TimedCrowdsale(_openingTime, _closingTime)
   {
     require(_goal <= _cap);
   }

@@ -1,9 +1,8 @@
 pragma solidity ^0.4.18;
 
-import 'openzeppelin-solidity/contracts/token/ERC20/MintableToken.sol';
-import 'openzeppelin-solidity/contracts/ownership/Ownable.sol';
+import 'openzeppelin-solidity/contracts/token/ERC20/ERC20Mintable.sol';
 
-contract TrustFeedMintableToken is MintableToken {
+contract TrustFeedMintableToken is ERC20Mintable {
 	string public name;
 	string public symbol;
 	uint8 public decimals;
@@ -12,6 +11,5 @@ contract TrustFeedMintableToken is MintableToken {
 		name = _name;
 		symbol = _symbol;
 		decimals = _decimals;
-		emit Transfer(0x0, 0x0, 0);
 	}
 }

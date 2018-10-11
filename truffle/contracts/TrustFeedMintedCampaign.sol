@@ -58,9 +58,9 @@ contract TrustFeedMintedCampaign {
       token,
       _goal);
 
-    // Transfer ownership of token
-    token.transferOwnership(crowdsale);
-    crowdsale.transferOwnership(wallet);
+    // Allow crowdsale to mint tokens
+    token.addMinter(crowdsale);
+    token.renounceMinter();
 
     emit NewCampaign(this, _campaignId);
   }
