@@ -31,6 +31,7 @@ export class HostedCampaign {
   public notes?: Note[];
   public _id?: string;
   public finalisationIndex?: string;
+  public weiRaisedUpdatedAt?: Date;
 
   constructor(
     ownerId: string,
@@ -269,7 +270,22 @@ export const updateWeiRaised = async (hostedCampaign, web3Service) => {
   // Call wei raised
   const weiRaised = await crowdsaleContract.methods.weiRaised().call();
   hostedCampaign.onChainData.weiRaised = weiRaised;
+  hostedCampaign.weiRaisedUpdatedAt = new Date();
   return hostedCampaign;
+};
+
+// Will check weiraise every few minutes
+export const periodicUpdate = async (hostedCampaign, web3Service, hostedCampaignService) => {
+  const nw = new Date().getTime();
+  if (!hostedCampaign.weiRaisedUpdatedAt ||
+      nw - hostedCampaign.weiRaisedUpdatedAt.getTime() > 1000 * 60 * 2) {
+
+    hostedCampaign = await updateWeiRaised(hostedCampaign, web3Service);
+    await hostedCampaignService.update(hostedCampaign);
+    return hostedCampaign;
+  } else {
+    return hostedCampaign;
+  }
 };
 
 export const updateOnChainData = (hostedCampaign, onChainData) => {

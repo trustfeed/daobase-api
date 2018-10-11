@@ -4,6 +4,7 @@ import { stringToId } from '../utils/mongodb/stringToId';
 import TYPES from '../constant/types';
 import * as hc from '../models/hostedCampaign';
 import { Base64 } from 'js-base64';
+import { Web3Service } from 'web3';
 
 const collectionName = 'hostedCampaign';
 
@@ -11,7 +12,9 @@ const collectionName = 'hostedCampaign';
 export class HostedCampaignService {
   private conn;
 
-  constructor() {
+  constructor(
+    @inject(TYPES.Web3Service) private web3Service: Web3Service
+  ) {
     MongoDBConnection.getConnection(conn => {
       this.conn = conn;
       conn.collection(collectionName).createIndex(
@@ -43,19 +46,19 @@ export class HostedCampaignService {
         .update(
           { _id: stringToId(hostedCampaign._id) },
           { $set: hostedCampaign },
-	  (error, data) => {
-    if (error) {
-      reject(error);
-    } else {
-      resolve(data);
-    }
-  });
+          (error, data) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(data);
+            }
+          });
     });
   }
 
   public findById(idString: string): Promise<hc.HostedCampaign> {
     const id = stringToId(idString);
-    return new Promise<hc.HostedCampaign>((resolve, reject) => {
+    return (new Promise<hc.HostedCampaign>((resolve, reject) => {
       this.conn.collection(collectionName)
         .findOne({ _id: id }, (error, data) => {
           if (error) {
@@ -64,6 +67,13 @@ export class HostedCampaignService {
             resolve(data);
           }
         });
+    })).then(campaign => {
+      if (campaign) {
+        hc.periodicUpdate(campaign, this.web3Service, this).catch(e => {
+          console.log('periodic update failed:', e.message);
+        });
+      }
+      return campaign;
     });
   }
 
@@ -97,6 +107,13 @@ export class HostedCampaignService {
           });
         }
       });
+    }).then(out => {
+      Promise.all(out.campaigns.map(campaign => {
+        return hc.periodicUpdate(campaign, this.web3Service, this);
+      })).catch(e => {
+        console.log('periodic update failed:', e.message);
+      });
+      return out;
     });
   }
 
@@ -116,7 +133,7 @@ export class HostedCampaignService {
         $lt: new Date(Number(Base64.decode(offset)))
       };
     }
-    return new Promise<any>((resolve, reject) => {
+    return (new Promise<any>((resolve, reject) => {
       this.conn.collection(collectionName)
        .find(query)
        .sort({ updatedAt: -1 })
@@ -135,14 +152,21 @@ export class HostedCampaignService {
            });
          }
        });
+    })).then(out => {
+      Promise.all(out.campaigns.map(campaign => {
+        hc.periodicUpdate(campaign, this.web3Service, this);
+      })).catch(e => {
+        console.log('periodic update failed:', e.message);
+      });
+      return out;
     });
   }
 
   public async toReview(offset ?: string): Promise < any > {
     const pageSize = 20;
     const query: any = { $or: [
-	    { campaignStatus: hc.HOSTED_CAMPAIGN_STATUS_PENDING_REVIEW },
-	    { campaignStatus: hc.HOSTED_CAMPAIGN_STATUS_PENDING_OFF_CHAIN_REVIEW } ]};
+            { campaignStatus: hc.HOSTED_CAMPAIGN_STATUS_PENDING_REVIEW },
+            { campaignStatus: hc.HOSTED_CAMPAIGN_STATUS_PENDING_OFF_CHAIN_REVIEW } ]};
     if (offset) {
       query._id = { $gt: Base64.decode(offset) };
     }
@@ -150,19 +174,19 @@ export class HostedCampaignService {
     return new Promise<any>((resolve, reject) => {
       this.conn.collection(collectionName)
         .find(query)
-	.sort({ _id: 1 })
-	.limit(pageSize)
-	.toArray((error, data) => {
-  if (error) {
-    reject(error);
-  } else {
-    let nextOffset;
-    if (data.length === pageSize) {
-      nextOffset = Base64.encode(data[data.length - 1]._id.toString());
-    }
-    resolve({ nextOffset, campaigns: data });
-  }
-});
+        .sort({ _id: 1 })
+        .limit(pageSize)
+        .toArray((error, data) => {
+          if (error) {
+            reject(error);
+          } else {
+            let nextOffset;
+            if (data.length === pageSize) {
+              nextOffset = Base64.encode(data[data.length - 1]._id.toString());
+            }
+            resolve({ nextOffset, campaigns: data });
+          }
+        });
     });
   }
 
@@ -176,19 +200,19 @@ export class HostedCampaignService {
     return new Promise<any>((resolve, reject) => {
       this.conn.collection(collectionName)
         .find(query)
-	.sort({ _id: 1 })
-	.limit(pageSize)
-	.toArray((error, data) => {
-  if (error) {
-    reject(error);
-  } else {
-    let nextOffset;
-    if (data.length === pageSize) {
-      nextOffset = Base64.encode(data[data.length - 1]._id.toString());
-    }
-    resolve({ nextOffset, campaigns: data });
-  }
-});
+        .sort({ _id: 1 })
+        .limit(pageSize)
+        .toArray((error, data) => {
+          if (error) {
+            reject(error);
+          } else {
+            let nextOffset;
+            if (data.length === pageSize) {
+              nextOffset = Base64.encode(data[data.length - 1]._id.toString());
+            }
+            resolve({ nextOffset, campaigns: data });
+          }
+        });
     });
   }
 
