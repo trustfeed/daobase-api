@@ -24,6 +24,10 @@ export class HostedCampaignService {
       conn.collection(collectionName).createIndex(
         'updatedAt',
         { name: 'updatedAt' });
+
+      conn.collection(collectionName).createIndex(
+        'campaignStatus',
+        { name: 'campaignStatus' });
     });
   }
 
@@ -164,9 +168,11 @@ export class HostedCampaignService {
 
   public async toReview(offset ?: string): Promise < any > {
     const pageSize = 20;
-    const query: any = { $or: [
-            { campaignStatus: hc.HOSTED_CAMPAIGN_STATUS_PENDING_REVIEW },
-            { campaignStatus: hc.HOSTED_CAMPAIGN_STATUS_PENDING_OFF_CHAIN_REVIEW } ]};
+    let query: any = {
+      'campaignStatus': { $in: [
+        hc.HOSTED_CAMPAIGN_STATUS_PENDING_REVIEW,
+        hc.HOSTED_CAMPAIGN_STATUS_PENDING_OFF_CHAIN_REVIEW
+      ]}};
     if (offset) {
       query._id = { $gt: Base64.decode(offset) };
     }
