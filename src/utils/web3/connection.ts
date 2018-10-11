@@ -47,3 +47,18 @@ export class Web3Connection {
     this.subscriptions.push(sub);
   }
 }
+
+const checkBlockNumber = () => {
+  try {
+    Web3Connection.getConnection(async w3 => {
+      const bn = await w3.eth.getBlockNumber();
+      console.log('current block number:', bn);
+    });
+  } catch (err) {
+    console.log(err);
+  }
+  setTimeout(checkBlockNumber, 1000 * 60 * 2);
+};
+
+console.log('start regular web3 checks');
+checkBlockNumber();

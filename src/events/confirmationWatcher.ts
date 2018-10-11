@@ -137,8 +137,8 @@ export class ConfirmationWatcher extends EventWatcher {
     while (this.scrapedTo <= (await this.web3.eth.getBlockNumber())) {
       let to = this.scrapedTo + this.chunckSize;
       let logs = await this.web3.eth.getPastLogs({
-        fromBlock: this.web3.utils.toHex(this.scrapedTo),
-        toBlock: this.web3.utils.toHex(to),
+        fromBlock: this.web3.utils.toHex(this.scrapedTo - 1),
+        toBlock: this.web3.utils.toHex(to + 1),
         topics: [ Web3.utils.sha3('Confirmation(address,uint256)')]
       });
 

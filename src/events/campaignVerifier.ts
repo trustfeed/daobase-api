@@ -1,7 +1,5 @@
 import { inject } from 'inversify';
 import { EventWatcher } from './eventWatcher';
-import Web3 from 'web3';
-import config from '../config';
 import { UserService } from '../services/user';
 import { HostedCampaignService } from '../services/hostedCampaign';
 import { Web3Service } from '../services/web3';
@@ -22,7 +20,7 @@ export class CampaignVerifier extends EventWatcher {
     @inject(TYPES.ConfirmationWatcher) private confirmationWatcher: ConfirmationWatcher
   ) {
     super();
-    // The initial settings
+    // TODO: Store these in mongo to avoid re-scraping after restarts
     this.scrapedTo = 3000000;
     this.chunckSize = 10000;
   }
@@ -53,7 +51,7 @@ export class CampaignVerifier extends EventWatcher {
       registryEvent.blockNumber,
       registryEvent.transactionIndex
     );
-    if (transaction.input !== deployment.transaction) {
+    if (!transaction || transaction.input !== deployment.transaction) {
       throw new Error("transaction data doesn't match");
     }
     await fetchContracts(campaign, campaignAddress, this.web3Service);
@@ -63,7 +61,7 @@ export class CampaignVerifier extends EventWatcher {
     this.confirmationWatcher.addCampaign(campaign);
   }
 
-  // Scrap old events in chuncks.
+  // Scrape old events in chuncks.
   private async scrape() {
     const processLog = log => {
       return this.verifyRegistyEvent(log).catch(e => console.log(e.message));
@@ -72,8 +70,9 @@ export class CampaignVerifier extends EventWatcher {
     while (this.scrapedTo <= (await this.web3.eth.getBlockNumber())) {
       let to = this.scrapedTo + this.chunckSize;
       let logs = await this.web3.eth.getPastLogs({
-        fromBlock: this.web3.utils.toHex(this.scrapedTo),
-        toBlock: this.web3.utils.toHex(to),
+	// TODO: Does the wider window help.
+        fromBlock: this.web3.utils.toHex(this.scrapedTo - 1),
+        toBlock: this.web3.utils.toHex(to + 1),
         topics: [this.web3.utils.sha3('NewCampaign(address,string)')]
       });
 
@@ -84,6 +83,7 @@ export class CampaignVerifier extends EventWatcher {
 
   // After network outage, crawl unknown blocks and start watching for new events
   protected async startWatching() {
+    console.log('start campaign verifier from block', this.scrapedTo);
     this.scrape();
 
     return this.web3.eth.subscribe(
@@ -97,6 +97,7 @@ export class CampaignVerifier extends EventWatcher {
 
   // Process a registry event
   protected async processEvent(registryEvent) {
+    console.log(registryEvent);
     this.verifyRegistyEvent(registryEvent).catch(err => {
       console.log('registry event failed to verify:', err.message);
     });

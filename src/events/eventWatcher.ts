@@ -22,7 +22,9 @@ export class EventWatcher {
   async watchEvents() {
     try {
       let w = await this.startWatching();
-      w.on('data', evt => this.processEvent(evt).catch(console.log)).on('error', console.error)
+      w.on('data', evt => {
+        this.processEvent(evt).catch(console.log);
+      }).on('error', console.error);
       this.isWatchingEvents = true;
     } catch (error) {
       console.log(error);
