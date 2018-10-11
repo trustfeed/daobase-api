@@ -43,7 +43,7 @@ contract TrustFeedCampaign {
     wallet = new TrustFeedWallet(
       _owners,
       2);
-      
+
     // Create the token
     token = new TrustFeedToken(
       _name,
@@ -60,10 +60,11 @@ contract TrustFeedCampaign {
       wallet,
       _cap,
       token,
-      _goal);
+      _goal,
+      this);
 
-    // Transfer the initial funds
-    token.transfer(crowdsale, _initialSupply);
+    // TODO: Should these tokens be held by a different wallet?
+    token.approve(crowdsale, _initialSupply);
 
     emit NewCampaign(this, _campaignId);
   }

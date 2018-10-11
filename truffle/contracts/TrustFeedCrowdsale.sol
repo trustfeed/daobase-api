@@ -4,9 +4,10 @@ import 'openzeppelin-solidity/contracts/crowdsale/Crowdsale.sol';
 import 'openzeppelin-solidity/contracts/crowdsale/validation/CappedCrowdsale.sol';
 import 'openzeppelin-solidity/contracts/crowdsale/validation/TimedCrowdsale.sol';
 import 'openzeppelin-solidity/contracts/crowdsale/distribution/RefundableCrowdsale.sol';
+import 'openzeppelin-solidity/contracts/crowdsale/emission/AllowanceCrowdsale.sol';
 import './TrustFeedToken.sol';
 
-contract TrustFeedCrowdsale is TimedCrowdsale, CappedCrowdsale, RefundableCrowdsale {
+contract TrustFeedCrowdsale is AllowanceCrowdsale, TimedCrowdsale, CappedCrowdsale, RefundableCrowdsale {
 	constructor(
     // Start
     uint256 _openingTime,
@@ -21,9 +22,11 @@ contract TrustFeedCrowdsale is TimedCrowdsale, CappedCrowdsale, RefundableCrowds
     // The token
     TrustFeedToken _token,
     // The soft cap
-    uint256 _goal
+    uint256 _goal,
+    address _tokenWallet
   )
-    public                                                                                            
+    public
+    AllowanceCrowdsale(_tokenWallet)
     Crowdsale(_rate, _wallet, _token)
     CappedCrowdsale(_cap)
     RefundableCrowdsale(_goal)
