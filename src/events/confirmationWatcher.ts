@@ -103,6 +103,10 @@ export class ConfirmationWatcher extends EventWatcher {
 
   // Handles a new log event, updating the db if needed
   protected async processEvent(log: any): Promise<void> {
+    if (!log || !log.address) {
+      return;
+    }
+
     const walletAddress = log.address;
     let campaign = await this.lookupCampaign(walletAddress);
     if (!campaign) {
