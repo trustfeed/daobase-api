@@ -79,7 +79,7 @@ export const validateData = (onChainData: OnChainData) => {
     },
     version: {
       presence: true,
-      inclusion: ['0.0.0']
+      inclusion: ['0.0.0', '1.0.0']
     }
   };
   let errs = validate(onChainData, constraints);
