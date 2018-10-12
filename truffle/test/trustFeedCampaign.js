@@ -3,53 +3,53 @@ var TrustFeedToken = artifacts.require('TrustFeedToken');
 var TrustFeedCrowdsale = artifacts.require('TrustFeedCrowdsale');
 
 contract('TrustFeedCampaign', function (accounts) {
-  it('Buy token', function () {
-    let instance, crowdsale, crowdsaleAddr, token;
-    TrustFeedCampaign.deployed()
-      .then(i => {
-        instance = i;
-        return instance.crowdsale.call();
-      }).then(c => {
-        let crowdsaleFactory = web3.eth.contract(TrustFeedCrowdsale.abi);
-        crowdsale = crowdsaleFactory.at(c);
-        crowdsaleAddr = c;
-        return instance.token.call();
-      }).then(t => {
-        let tokenFact = web3.eth.contract(TrustFeedToken.abi);
-        token = tokenFact.at(t);
+  it('Buy token', async function () {
+    let campaign = await TrustFeedCampaign.deployed();
+    let crowdsaleAddr = await campaign.crowdsale.call();
+    let crowdsaleFactory = web3.eth.contract(TrustFeedCrowdsale.abi);
+    let crowdsale = crowdsaleFactory.at(crowdsaleAddr);
 
-        return token.balanceOf.call(crowdsaleAddr);
-      }).then(b => {
-        console.log('crowdsale balance:', b.valueOf());
-        return crowdsale.openingTime.call();
-      }).then(o => {
-        console.log('opening time:', new Date(o.valueOf() * 1000));
-        crowdsale.buyTokens.sendTransaction(
-          accounts[5],
-          {
-            from: accounts[5],
-            value: 2000,
-            gas: 1000000,
-          },
-          (err, r) => {
-            console.log(err, r);
-            token.balanceOf.call(accounts[5], (err, b) => {
-              console.log(err, b.valueOf());
-            });
-          }
-        );
-      })
-      .catch(console.log);
-    //
-    //        return web3.eth.sendTransaction({
-    //          from: accounts[2],
-    //          to: crowdsale,
-    //          value: '1000',
-    //          gas: '1000000',
-    //          gasPrice: '1',
-    //        });
-    //      }).then(r => {
-    //    	console.log(r);
-    //      });
+    let openingTime = Number(crowdsale.openingTime.call().toString());
+    let closingTime = Number(crowdsale.closingTime.call().toString());
+
+    let tokenAddr = await campaign.token.call();
+    let tokenFactory = web3.eth.contract(TrustFeedToken.abi);
+    let token = tokenFactory.at(tokenAddr);
+
+    let walletAddr = await campaign.wallet.call();
+
+    while ((new Date()).getTime() / 1000 < openingTime);
+
+    crowdsale.buyTokens.sendTransaction(
+      accounts[5],
+      {
+        from: accounts[5],
+        value: web3.toWei('1', 'ether'),
+        gas: 1000000,
+      }
+    );
+    crowdsale.buyTokens.sendTransaction(
+      accounts[6],
+      {
+        from: accounts[5],
+        value: web3.toWei('2', 'ether'),
+        gas: 1000000,
+      }
+    );
+
+    // Use a proper sleep function
+    while (((new Date()).getTime() / 1000) < (closingTime + 3)) { }
+
+    crowdsale.finalize.sendTransaction(
+      {
+        from: accounts[7],
+        gas: 1000000,
+      }
+    );
+
+    assert.equal(crowdsale.finalized.call(), true, 'not finalised');
+    assert.equal(web3.eth.getBalance(walletAddr), web3.toWei('3', 'ether'), 'wallet did\'t recieve the funds');
+    assert.equal(token.balanceOf.call(accounts[5]), web3.toWei('1', 'ether'), 'accounts[5] didn\'t recieve the tokens');
+    assert.equal(token.balanceOf.call(accounts[6]), web3.toWei('2', 'ether'), 'accounts[6] didn\'t recieve the tokens');
   });
 });
