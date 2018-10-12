@@ -20,9 +20,6 @@ export class FinalisedWatcher extends EventWatcher {
 
   // Map the wallet address to campaign id
   private crowdsaleAddresses: any = {};
-  // TODO: Put this data into mongo to prevent re-crawling on every restart
-  private scrapedTo = 3122578;
-  private chunckSize = 10000;
 
   constructor(
     @inject(TYPES.Web3Service) private web3Service: Web3Service,

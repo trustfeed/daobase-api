@@ -68,7 +68,9 @@ export class CampaignVerifier extends EventWatcher {
     };
 
     while (this.scrapedTo <= (await this.web3.eth.getBlockNumber())) {
-      let to = this.scrapedTo + this.chunckSize;
+      let to = Math.min(
+        this.scrapedTo + this.chunckSize,
+	await this.web3.eth.getBlockNumber());
       let logs = await this.web3.eth.getPastLogs({
 	// TODO: Does the wider window help.
         fromBlock: this.web3.utils.toHex(this.scrapedTo - 1),

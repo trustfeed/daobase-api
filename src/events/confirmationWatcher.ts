@@ -139,7 +139,10 @@ export class ConfirmationWatcher extends EventWatcher {
 
   private async crawl() {
     while (this.scrapedTo <= (await this.web3.eth.getBlockNumber())) {
-      let to = this.scrapedTo + this.chunckSize;
+      let to = Math.min(
+        this.scrapedTo + this.chunckSize,
+	await this.web3.eth.getBlockNumber());
+
       let logs = await this.web3.eth.getPastLogs({
         fromBlock: this.web3.utils.toHex(this.scrapedTo - 1),
         toBlock: this.web3.utils.toHex(to + 1),
