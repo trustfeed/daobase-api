@@ -1,0 +1,111 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+    name: daobase-api-private
+spec:
+    replicas: 1
+    strategy:
+        type: RollingUpdate
+    template:
+        metadata:
+            labels: 
+                name: daobase-api-private
+        spec:
+            containers:
+                - name: daobase-api-private
+                  image: registry.trustfeed.io/jpw/daobase-api-staging:${BUILD_NUMBER}
+                  ports:
+                      - containerPort: 8080
+                  env:
+                      - name: MONGO_USERNAME
+                        valueFrom:
+                          secretKeyRef:
+                                  name: mongo
+                                  key: username
+                      - name: MONGO_PASSWORD
+                        valueFrom:
+                          secretKeyRef:
+                                  name: mongo
+                                  key: password
+                      - name: MONGO_HOST
+                        value: ip-10-240-37-138.ap-northeast-2.compute.internal
+                      - name: MONGO_PORT
+                        value: "27017"
+                      - name: MONGO_DB_NAME
+                        value: "daobase-private"
+                      - name: TRUSTFEED__WALLET_ADDRESS
+                        value: 0x40776a2cEC264c7762A4f58ef50Dd5A4B06916F5
+                      - name: FRONTEND_HOST
+                        value: http://test.daobase.io
+                      - name: BACKEND_HOST
+                        value: https://api-private.daobase.io
+                      - name: NODE_ENV
+                        value: production
+                      - name: AWS_ACCESS_KEY_ID
+                        valueFrom:
+                          secretKeyRef:
+                                  name: aws-s3
+                                  key: access-key-id
+                      - name: AWS_SECRET_ACCESS_KEY
+                        valueFrom:
+                          secretKeyRef:
+                                  name: aws-s3
+                                  key: secret-access-key
+                      - name: AWS_REGION
+                        valueFrom:
+                          secretKeyRef:
+                                  name: aws-s3
+                                  key: region
+                      - name: INFURA_KEY
+                        valueFrom:
+                          secretKeyRef:
+                                  name: infura
+                                  key: key
+                      - name: COIN_PAYMENTS_KEY
+                        valueFrom:
+                          secretKeyRef:
+                                  name: coin-payments
+                                  key: key
+                      - name: COIN_PAYMENTS_SECRET
+                        valueFrom:
+                          secretKeyRef:
+                                  name: coin-payments
+                                  key: secret
+                      - name: COIN_PAYMENTS_MERCHANT_ID
+                        valueFrom:
+                          secretKeyRef:
+                                  name: coin-payments
+                                  key: merchant-id
+                      - name: COIN_PAYMENTS_IPN_SECRET
+                        valueFrom:
+                          secretKeyRef:
+                                  name: coin-payments
+                                  key: ipn-secret
+                      - name: COIN_PAYMENTS_ADDRESS
+                        valueFrom:
+                          secretKeyRef:
+                                  name: coin-payments-account
+                                  key: publicAddress
+                      - name: COIN_PAYMENTS_PRIVATE_KEY
+                        valueFrom:
+                          secretKeyRef:
+                                  name: coin-payments-account
+                                  key: privateKey
+            imagePullSecrets:
+                - name: registry-secret
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: daobase-api-private
+    labels:
+        name: daobase-api-private
+spec:
+  ports:
+  - port:       80
+    targetPort: 8080
+  selector:
+    name: daobase-api-private
+  type: ClusterIP
