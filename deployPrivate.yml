@@ -58,7 +58,7 @@ spec:
                                   name: aws-s3
                                   key: region
                       - name: INFURA_HOST
-                        value: "10.240.37.138:8546"
+                        value: ws://10.240.37.138:8546
                       - name: INFURA_KEY
                         valueFrom:
                           secretKeyRef:
