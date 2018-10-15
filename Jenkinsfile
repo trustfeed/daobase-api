@@ -70,7 +70,7 @@ pipeline {
         branch 'staging'
       }
       steps {
-        kubernetesDeploy(kubeconfigId: 'k8s-trustfeed', configs: 'deploymentPrivate.yml', enableConfigSubstitution: true)
+        kubernetesDeploy(kubeconfigId: 'k8s-trustfeed', configs: 'deployPrivate.yml', enableConfigSubstitution: true)
       }
     }
    }
