@@ -67,14 +67,14 @@ export class CampaignVerifier extends EventWatcher {
       return this.verifyRegistyEvent(log).catch(e => console.log(e.message));
     };
 
-    while (this.scrapedTo <= (await this.web3.eth.getBlockNumber())) {
+    while (this.scrapedTo < (await this.web3.eth.getBlockNumber())) {
       let to = Math.min(
         this.scrapedTo + this.chunckSize,
 	await this.web3.eth.getBlockNumber());
       let logs = await this.web3.eth.getPastLogs({
 	// TODO: Does the wider window help.
-        fromBlock: this.web3.utils.toHex(this.scrapedTo - 1),
-        toBlock: this.web3.utils.toHex(to + 1),
+        fromBlock: this.web3.utils.toHex(this.scrapedTo),
+        toBlock: this.web3.utils.toHex(to),
         topics: [this.web3.utils.sha3('NewCampaign(address,string)')]
       });
 

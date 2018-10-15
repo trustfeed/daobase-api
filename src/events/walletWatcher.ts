@@ -49,6 +49,7 @@ export class WalletWatcher extends EventWatcher {
       `./contracts/v${version}/TrustFeedWallet.json`,
       'utf-8'
     ));
+    console.log('wallet address', config.trustfeedWalletAddress);
     this.contract = this.web3Service.createContract(data.abi, config.trustfeedWalletAddress);
   }
 
