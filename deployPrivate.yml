@@ -57,6 +57,8 @@ spec:
                           secretKeyRef:
                                   name: aws-s3
                                   key: region
+                      - name: INFURA_HOST
+                        value: "wss://parity-ws.trustfeed.io:443"
                       - name: INFURA_KEY
                         valueFrom:
                           secretKeyRef:
