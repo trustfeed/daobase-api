@@ -54,7 +54,7 @@ export class ConfirmationWatcher extends EventWatcher {
   // Map the wallet address to campaign id
   private walletAddresses: any = {};
   // TODO: Put this data into mongo to prevent re-crawling on every restart
-  private scrapedTo = 0;
+  private scrapedTo = 1;
   private chunckSize = 10000;
 
   constructor(

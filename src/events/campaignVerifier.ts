@@ -21,7 +21,7 @@ export class CampaignVerifier extends EventWatcher {
   ) {
     super();
     // TODO: Store these in mongo to avoid re-scraping after restarts
-    this.scrapedTo = 0;
+    this.scrapedTo = 1;
     this.chunckSize = 10000;
   }
 
