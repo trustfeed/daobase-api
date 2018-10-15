@@ -121,6 +121,10 @@ export class ConfirmationWatcher extends EventWatcher {
     }
     const expectedTransaction = hc.getFinaliseTransaction(campaign, this.web3Service);
 
+    if (campaign.onChainData.walletContract === null ||
+        campaign.onChainData.walletContract === undefined) {
+      return;
+    }
     const contractJSON = campaign.onChainData.walletContract;
     const contract = this.web3Service.createContract(contractJSON.abi, contractJSON.address);
     this.checkExpected(campaign, contract, log.topics);
@@ -138,14 +142,14 @@ export class ConfirmationWatcher extends EventWatcher {
   }
 
   private async crawl() {
-    while (this.scrapedTo <= (await this.web3.eth.getBlockNumber())) {
+    while (this.scrapedTo < (await this.web3.eth.getBlockNumber())) {
       let to = Math.min(
         this.scrapedTo + this.chunckSize,
 	await this.web3.eth.getBlockNumber());
 
       let logs = await this.web3.eth.getPastLogs({
-        fromBlock: this.web3.utils.toHex(this.scrapedTo - 1),
-        toBlock: this.web3.utils.toHex(to + 1),
+        fromBlock: this.web3.utils.toHex(this.scrapedTo),
+        toBlock: this.web3.utils.toHex(to),
         topics: [ Web3.utils.sha3('Confirmation(address,uint256)')]
       });
 

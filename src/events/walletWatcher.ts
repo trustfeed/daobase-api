@@ -24,10 +24,8 @@ export class WalletWatcher extends EventWatcher {
     @inject(TYPES.Web3Service) private web3Service: Web3Service
   ) {
     super();
-    console.log('here');
 
     this.readContract();
-    console.log('read');
     this.setCurrentAddresses();
   }
 
@@ -49,14 +47,12 @@ export class WalletWatcher extends EventWatcher {
       `./contracts/v${version}/TrustFeedWallet.json`,
       'utf-8'
     ));
-    console.log('wallet address', config.trustfeedWalletAddress);
     this.contract = this.web3Service.createContract(data.abi, config.trustfeedWalletAddress);
   }
 
   // Grab the current state of the wallet
   private async setCurrentAddresses() {
     const addresses = await this.contract.methods.getOwners().call();
-    console.log(addresses);
     let s = new Set([]);
     addresses.map(a => { s.add(a.toString().toLowerCase()); });
     this.trustFeedAddresses = s;
