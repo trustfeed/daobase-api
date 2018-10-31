@@ -13,6 +13,7 @@
     "lint": "semistandard --env node"
   },
   "dependencies": {
+    "aglio": "^2.3.0",
     "aws-sdk": "^2.291.0",
     "body-parser": "^1.18.3",
     "coinpayments": "^1.1.8",

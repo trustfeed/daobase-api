@@ -1,0 +1,569 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>daobase-api</title><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"><style>@import url('https://fonts.googleapis.com/css?family=Roboto:400,700|Inconsolata|Raleway:200');.hljs-comment,.hljs-title{color:#8e908c}.hljs-variable,.hljs-attribute,.hljs-tag,.hljs-regexp,.ruby .hljs-constant,.xml .hljs-tag .hljs-title,.xml .hljs-pi,.xml .hljs-doctype,.html .hljs-doctype,.css .hljs-id,.css .hljs-class,.css .hljs-pseudo{color:#c82829}.hljs-number,.hljs-preprocessor,.hljs-pragma,.hljs-built_in,.hljs-literal,.hljs-params,.hljs-constant{color:#f5871f}.ruby .hljs-class .hljs-title,.css .hljs-rules .hljs-attribute{color:#eab700}.hljs-string,.hljs-value,.hljs-inheritance,.hljs-header,.ruby .hljs-symbol,.xml .hljs-cdata{color:#718c00}.css .hljs-hexcolor{color:#3e999f}.hljs-function,.python .hljs-decorator,.python .hljs-title,.ruby .hljs-function .hljs-title,.ruby .hljs-title .hljs-keyword,.perl .hljs-sub,.javascript .hljs-title,.coffeescript .hljs-title{color:#4271ae}.hljs-keyword,.javascript .hljs-function{color:#8959a8}.hljs{display:block;background:white;color:#4d4d4c;padding:.5em}.coffeescript .javascript,.javascript .xml,.tex .hljs-formula,.xml .javascript,.xml .vbscript,.xml .css,.xml .hljs-cdata{opacity:.5}.right .hljs-comment{color:#969896}.right .css .hljs-class,.right .css .hljs-id,.right .css .hljs-pseudo,.right .hljs-attribute,.right .hljs-regexp,.right .hljs-tag,.right .hljs-variable,.right .html .hljs-doctype,.right .ruby .hljs-constant,.right .xml .hljs-doctype,.right .xml .hljs-pi,.right .xml .hljs-tag .hljs-title{color:#c66}.right .hljs-built_in,.right .hljs-constant,.right .hljs-literal,.right .hljs-number,.right .hljs-params,.right .hljs-pragma,.right .hljs-preprocessor{color:#de935f}.right .css .hljs-rule .hljs-attribute,.right .ruby .hljs-class .hljs-title{color:#f0c674}.right .hljs-header,.right .hljs-inheritance,.right .hljs-name,.right .hljs-string,.right .hljs-value,.right .ruby .hljs-symbol,.right .xml .hljs-cdata{color:#b5bd68}.right .css .hljs-hexcolor,.right .hljs-title{color:#8abeb7}.right .coffeescript .hljs-title,.right .hljs-function,.right .javascript .hljs-title,.right .perl .hljs-sub,.right .python .hljs-decorator,.right .python .hljs-title,.right .ruby .hljs-function .hljs-title,.right .ruby .hljs-title .hljs-keyword{color:#81a2be}.right .hljs-keyword,.right .javascript .hljs-function{color:#b294bb}.right .hljs{display:block;overflow-x:auto;background:#1d1f21;color:#c5c8c6;padding:.5em;-webkit-text-size-adjust:none}.right .coffeescript .javascript,.right .javascript .xml,.right .tex .hljs-formula,.right .xml .css,.right .xml .hljs-cdata,.right .xml .javascript,.right .xml .vbscript{opacity:.5}body{color:black;background:white;font:400 14px / 1.42 'Roboto',Helvetica,sans-serif}header{border-bottom:1px solid #f2f2f2;margin-bottom:12px}h1,h2,h3,h4,h5{color:black;margin:12px 0}h1 .permalink,h2 .permalink,h3 .permalink,h4 .permalink,h5 .permalink{margin-left:0;opacity:0;transition:opacity .25s ease}h1:hover .permalink,h2:hover .permalink,h3:hover .permalink,h4:hover .permalink,h5:hover .permalink{opacity:1}.triple h1 .permalink,.triple h2 .permalink,.triple h3 .permalink,.triple h4 .permalink,.triple h5 .permalink{opacity:.15}.triple h1:hover .permalink,.triple h2:hover .permalink,.triple h3:hover .permalink,.triple h4:hover .permalink,.triple h5:hover .permalink{opacity:.15}h1{font:200 36px 'Raleway',Helvetica,sans-serif;font-size:36px}h2{font:200 36px 'Raleway',Helvetica,sans-serif;font-size:30px}h3{font-size:100%;text-transform:uppercase}h5{font-size:100%;font-weight:normal}p{margin:0 0 10px}p.choices{line-height:1.6}a{color:#428bca;text-decoration:none}li p{margin:0}hr.split{border:0;height:1px;width:100%;padding-left:6px;margin:12px auto;background-image:linear-gradient(to right, rgba(0,0,0,0) 20%, rgba(0,0,0,0.2) 51.4%, rgba(255,255,255,0.2) 51.4%, rgba(255,255,255,0) 80%)}dl dt{float:left;width:130px;clear:left;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}dl dd{margin-left:150px}blockquote{color:rgba(0,0,0,0.5);font-size:15.5px;padding:10px 20px;margin:12px 0;border-left:5px solid #e8e8e8}blockquote p:last-child{margin-bottom:0}pre{background-color:#f5f5f5;padding:12px;border:1px solid #cfcfcf;border-radius:6px;overflow:auto}pre code{color:black;background-color:transparent;padding:0;border:none}code{color:#444;background-color:#f5f5f5;font:'Inconsolata',monospace;padding:1px 4px;border:1px solid #cfcfcf;border-radius:3px}ul,ol{padding-left:2em}table{border-collapse:collapse;border-spacing:0;margin-bottom:12px}table tr:nth-child(2n){background-color:#fafafa}table th,table td{padding:6px 12px;border:1px solid #e6e6e6}.text-muted{opacity:.5}.note,.warning{padding:.3em 1em;margin:1em 0;border-radius:2px;font-size:90%}.note h1,.warning h1,.note h2,.warning h2,.note h3,.warning h3,.note h4,.warning h4,.note h5,.warning h5,.note h6,.warning h6{font-family:200 36px 'Raleway',Helvetica,sans-serif;font-size:135%;font-weight:500}.note p,.warning p{margin:.5em 0}.note{color:black;background-color:#f0f6fb;border-left:4px solid #428bca}.note h1,.note h2,.note h3,.note h4,.note h5,.note h6{color:#428bca}.warning{color:black;background-color:#fbf1f0;border-left:4px solid #c9302c}.warning h1,.warning h2,.warning h3,.warning h4,.warning h5,.warning h6{color:#c9302c}header{margin-top:24px}nav{position:fixed;top:24px;bottom:0;overflow-y:auto}nav .resource-group{padding:0}nav .resource-group .heading{position:relative}nav .resource-group .heading .chevron{position:absolute;top:12px;right:12px;opacity:.5}nav .resource-group .heading a{display:block;color:black;opacity:.7;border-left:2px solid transparent;margin:0}nav .resource-group .heading a:hover{text-decoration:none;background-color:bad-color;border-left:2px solid black}nav ul{list-style-type:none;padding-left:0}nav ul a{display:block;font-size:13px;color:rgba(0,0,0,0.7);padding:8px 12px;border-top:1px solid #d9d9d9;border-left:2px solid transparent;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}nav ul a:hover{text-decoration:none;background-color:bad-color;border-left:2px solid black}nav ul>li{margin:0}nav ul>li:first-child{margin-top:-12px}nav ul>li:last-child{margin-bottom:-12px}nav ul ul a{padding-left:24px}nav ul ul li{margin:0}nav ul ul li:first-child{margin-top:0}nav ul ul li:last-child{margin-bottom:0}nav>div>div>ul>li:first-child>a{border-top:none}.preload *{transition:none !important}.pull-left{float:left}.pull-right{float:right}.badge{display:inline-block;float:right;min-width:10px;min-height:14px;padding:3px 7px;font-size:12px;color:#000;background-color:#f2f2f2;border-radius:10px;margin:-2px 0}.badge.get{color:#70bbe1;background-color:#d9edf7}.badge.head{color:#70bbe1;background-color:#d9edf7}.badge.options{color:#70bbe1;background-color:#d9edf7}.badge.put{color:#f0db70;background-color:#fcf8e3}.badge.patch{color:#f0db70;background-color:#fcf8e3}.badge.post{color:#93cd7c;background-color:#dff0d8}.badge.delete{color:#ce8383;background-color:#f2dede}.collapse-button{float:right}.collapse-button .close{display:none;color:#428bca;cursor:pointer}.collapse-button .open{color:#428bca;cursor:pointer}.collapse-button.show .close{display:inline}.collapse-button.show .open{display:none}.collapse-content{max-height:0;overflow:hidden;transition:max-height .3s ease-in-out}nav{width:220px}.container{max-width:940px;margin-left:auto;margin-right:auto}.container .row .content{margin-left:244px;width:696px}.container .row:after{content:'';display:block;clear:both}.container-fluid nav{width:22%}.container-fluid .row .content{margin-left:24%}.container-fluid.triple nav{width:16.5%;padding-right:1px}.container-fluid.triple .row .content{position:relative;margin-left:16.5%;padding-left:24px}.middle:before,.middle:after{content:'';display:table}.middle:after{clear:both}.middle{box-sizing:border-box;width:51.5%;padding-right:12px}.right{box-sizing:border-box;float:right;width:48.5%;padding-left:12px}.right a{color:#428bca}.right h1,.right h2,.right h3,.right h4,.right h5,.right p,.right div{color:white}.right pre{background-color:#1d1f21;border:1px solid #1d1f21}.right pre code{color:#c5c8c6}.right .description{margin-top:12px}.triple .resource-heading{font-size:125%}.definition{margin-top:12px;margin-bottom:12px}.definition .method{font-weight:bold}.definition .method.get{color:#2e8ab8}.definition .method.head{color:#2e8ab8}.definition .method.options{color:#2e8ab8}.definition .method.post{color:#56b82e}.definition .method.put{color:#b8a22e}.definition .method.patch{color:#b8a22e}.definition .method.delete{color:#b82e2e}.definition .uri{word-break:break-all;word-wrap:break-word}.definition .hostname{opacity:.5}.example-names{background-color:#eee;padding:12px;border-radius:6px}.example-names .tab-button{cursor:pointer;color:black;border:1px solid #ddd;padding:6px;margin-left:12px}.example-names .tab-button.active{background-color:#d5d5d5}.right .example-names{background-color:#444}.right .example-names .tab-button{color:white;border:1px solid #666;border-radius:6px}.right .example-names .tab-button.active{background-color:#5e5e5e}#nav-background{position:fixed;left:0;top:0;bottom:0;width:16.5%;padding-right:14.4px;background-color:#fbfbfb;border-right:1px solid #f0f0f0;z-index:-1}#right-panel-background{position:absolute;right:-12px;top:-12px;bottom:-12px;width:48.6%;background-color:#333;z-index:-1}@media (max-width:1200px){nav{width:198px}.container{max-width:840px}.container .row .content{margin-left:224px;width:606px}}@media (max-width:992px){nav{width:169.4px}.container{max-width:720px}.container .row .content{margin-left:194px;width:526px}}@media (max-width:768px){nav{display:none}.container{width:95%;max-width:none}.container .row .content,.container-fluid .row .content,.container-fluid.triple .row .content{margin-left:auto;margin-right:auto;width:95%}#nav-background{display:none}#right-panel-background{width:48.6%}}.back-to-top{position:fixed;z-index:1;bottom:0;right:24px;padding:4px 8px;color:rgba(0,0,0,0.5);background-color:#f2f2f2;text-decoration:none !important;border-top:1px solid #d9d9d9;border-left:1px solid #d9d9d9;border-right:1px solid #d9d9d9;border-top-left-radius:3px;border-top-right-radius:3px}.resource-group{padding:12px;margin-bottom:12px;background-color:white;border:1px solid #d9d9d9;border-radius:6px}.resource-group h2.group-heading,.resource-group .heading a{padding:12px;margin:-12px -12px 12px -12px;background-color:#f2f2f2;border-bottom:1px solid #d9d9d9;border-top-left-radius:6px;border-top-right-radius:6px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}.triple .content .resource-group{padding:0;border:none}.triple .content .resource-group h2.group-heading,.triple .content .resource-group .heading a{margin:0 0 12px 0;border:1px solid #d9d9d9}nav .resource-group .heading a{padding:12px;margin-bottom:0}nav .resource-group .collapse-content{padding:0}.action{margin-bottom:12px;padding:12px 12px 0 12px;overflow:hidden;border:1px solid transparent;border-radius:6px}.action h4.action-heading{padding:6px 12px;margin:-12px -12px 12px -12px;border-bottom:1px solid transparent;border-top-left-radius:6px;border-top-right-radius:6px;overflow:hidden}.action h4.action-heading .name{float:right;font-weight:normal;padding:6px 0}.action h4.action-heading .method{padding:6px 12px;margin-right:12px;border-radius:3px;display:inline-block}.action h4.action-heading .method.get{color:#fff;background-color:#337ab7}.action h4.action-heading .method.head{color:#fff;background-color:#337ab7}.action h4.action-heading .method.options{color:#fff;background-color:#337ab7}.action h4.action-heading .method.put{color:#fff;background-color:#ed9c28}.action h4.action-heading .method.patch{color:#fff;background-color:#ed9c28}.action h4.action-heading .method.post{color:#fff;background-color:#5cb85c}.action h4.action-heading .method.delete{color:#fff;background-color:#d9534f}.action h4.action-heading code{color:#444;background-color:#f5f5f5;border-color:#cfcfcf;font-weight:normal;word-break:break-all;display:inline-block;margin-top:2px}.action dl.inner{padding-bottom:2px}.action .title{border-bottom:1px solid white;margin:0 -12px -1px -12px;padding:12px}.action.get{border-color:#bce8f1}.action.get h4.action-heading{color:#337ab7;background:#d9edf7;border-bottom-color:#bce8f1}.action.head{border-color:#bce8f1}.action.head h4.action-heading{color:#337ab7;background:#d9edf7;border-bottom-color:#bce8f1}.action.options{border-color:#bce8f1}.action.options h4.action-heading{color:#337ab7;background:#d9edf7;border-bottom-color:#bce8f1}.action.post{border-color:#d6e9c6}.action.post h4.action-heading{color:#5cb85c;background:#dff0d8;border-bottom-color:#d6e9c6}.action.put{border-color:#faebcc}.action.put h4.action-heading{color:#ed9c28;background:#fcf8e3;border-bottom-color:#faebcc}.action.patch{border-color:#faebcc}.action.patch h4.action-heading{color:#ed9c28;background:#fcf8e3;border-bottom-color:#faebcc}.action.delete{border-color:#ebccd1}.action.delete h4.action-heading{color:#d9534f;background:#f2dede;border-bottom-color:#ebccd1}</style></head><body class="preload"><a href="#top" class="text-muted back-to-top"><i class="fa fa-toggle-up"></i>&nbsp;Back to top</a><div class="container"><div class="row"><nav><div class="resource-group"><div class="heading"><div class="chevron"><i class="open fa fa-angle-down"></i></div><a href="#top">Overview</a></div><div class="collapse-content"><ul><li><a href="#header-sign-in-sign-up">Sign In/Sign Up</a></li><li><a href="#header-user-details">User Details</a></li><li><a href="#header-verify-email-address">Verify Email Address</a></li><li><a href="#header-admin-hosted-campaigns">Admin Hosted Campaigns</a></li><li><a href="#header-create-a-new-campaign">Create a new campaign</a></li><li><a href="#header-view-all-owned-campaigns">View All Owned Campaigns</a></li><li><a href="#header-view-one-campaign">View One Campaign</a></li><li><a href="#header-update-a-campaigns-on-chain-data">Update a Campaigns On-Chain Data</a></li><li><a href="#header-update-a-campaigns-off-chain-data">Update a Campaigns Off-Chain Data</a></li><li><a href="#header-upload-an-cover-image-for-a-campaign">Upload an Cover Image for a Campaign</a></li><li><a href="#header-upload-a-white-paper-for-a-campaign">Upload a White Paper for a Campaign</a></li><li><a href="#header-submit-for-review">Submit for Review</a></li><li><a href="#header-cancel-a-submitted-review">Cancel a Submitted Review</a></li><li><a href="#header-deploying-a-campaign">Deploying a Campaign</a></li><li><a href="#header-finalise-a-campaign">Finalise a Campaign</a></li><li><a href="#header-admin-for-external-campaigns">Admin for External Campaigns</a></li><li><a href="#header-public-campaign">Public Campaign</a></li><li><a href="#header-investments">Investments</a></li><li><a href="#header-kyc">KYC</a></li><li><a href="#header-alternative-payment">Alternative Payment</a></li><li><a href="#header-trustfeed-admin-apis">TrustFeed Admin APIs</a></li><li><a href="#header-campaings-to-review">Campaings to review</a></li><li><a href="#header-campaings-review">Campaings Review</a></li><li><a href="#header-kyc-applications-to-review">KYC Applications to review</a></li><li><a href="#header-kyc-review">KYC Review</a></li></ul></div></div><p style="text-align: center; word-wrap: break-word;"><a href="http://api-staging.daobaase.io/v1">http://api-staging.daobaase.io/v1</a></p></nav><div class="content"><header><h1 id="top">daobase-api</h1></header><h2 id="header-sign-in-sign-up">Sign In/Sign Up <a class="permalink" href="#header-sign-in-sign-up" aria-hidden="true">¶</a></h2>
+<p>Try to sign in;</p>
+<pre><code class="language-bash">curl -XGET <span class="hljs-variable">${HOST}</span>/nonce?publicAddress=<span class="hljs-variable">${addr}</span></code></pre>
+<p>This returns 200 with the data <code>{ &quot;nonce&quot;: &quot;4213&quot; }</code>. If the public address is not registered it returns a 404.</p>
+<p>If the address is not found create the account;</p>
+<pre><code class="language-bash">curl -XPOST <span class="hljs-variable">${HOST}</span>/users -h <span class="hljs-string">'content-type: application/json'</span> --data <span class="hljs-string">'{"publicAddress" : ${addr}}'</span></code></pre>
+<p>This returns 201 with the data <code>{ &quot;nonce&quot; : &quot;4323523&quot; }</code>.</p>
+<p>Sign the nonce with metamask and post to auth;</p>
+<pre><code class="language-bash">curl -XPOST <span class="hljs-variable">${HOST}</span>/auth -h <span class="hljs-string">'content-type: application/json'</span> --data <span class="hljs-string">'{ "publicAddress" : ${addr}, "signature" : ${sig} }'</span></code></pre>
+<p>This should return an access token.</p>
+<h2 id="header-user-details">User Details <a class="permalink" href="#header-user-details" aria-hidden="true">¶</a></h2>
+<p>When logged in you can get the current user data from here</p>
+<pre><code class="language-bash">curl -H <span class="hljs-string">'x-access-token: fdsa'</span> -XGET <span class="hljs-variable">${HOST}</span>/users</code></pre>
+<p>You can then update the name and email address with this;</p>
+<pre><code class="language-bash">curl -XPUT <span class="hljs-variable">${HOST}</span>/users/<span class="hljs-variable">${ID}</span> -H <span class="hljs-string">'x-access-token: fdsa'</span> -H <span class="hljs-string">'content-type: application/json'</span> --data <span class="hljs-string">'{"name": "James", "email": "wetter.j@gmail.com" }'</span></code></pre>
+<p>The verification email will only be sent if the email address is different from the current account. Resend of verification will be forced via a different endpoint.</p>
+<h2 id="header-verify-email-address">Verify Email Address <a class="permalink" href="#header-verify-email-address" aria-hidden="true">¶</a></h2>
+<p>After changing the email address associated with a public address a confirmation email can be sent to the new address. The email should contain a link to a landing page on the frontend which posts to the backend and displays the result of verification. The backend endpoint is</p>
+<pre><code class="language-bash">curl -XPOST <span class="hljs-variable">${HOST}</span>/verify/email -H <span class="hljs-string">'content-type: application/json'</span> --data <span class="hljs-string">'{ "token" : "fdsafds" }'</span></code></pre>
+<p>The token will be provided as part of the emailed link. The token is valid for 24 hours.</p>
+<p>The response will include a field type which will be one of; <code>SUCCESS</code>, <code>INVALID_TOKEN</code>, <code>EXPIRED_TOKEN</code> or <code>VERIFIED_TOKEN</code>.</p>
+<h2 id="header-admin-hosted-campaigns">Admin Hosted Campaigns <a class="permalink" href="#header-admin-hosted-campaigns" aria-hidden="true">¶</a></h2>
+<p>These APIs are to create, modify and deploy campaigns on the platform. The user must be logged in. Include the JWT in the header as ‘x-access-token’.</p>
+<p>The possible status for a campaign are as follows.</p>
+<p><img src="../master/images/states.png?raw=true" alt="Daobase States"></p>
+<h3 id="header-create-a-new-campaign">Create a new campaign <a class="permalink" href="#header-create-a-new-campaign" aria-hidden="true">¶</a></h3>
+<pre><code class="language-bash">curl -H <span class="hljs-string">'x-access-token: fdsfdsad'</span> -XPOST <span class="hljs-variable">${HOST}</span>/admin/hosted-campaigns</code></pre>
+<p>On success it should return 201 and <code>{&quot;campaign_id&quot;: &quot;fdsaf&quot;}</code>.</p>
+<h3 id="header-view-all-owned-campaigns">View All Owned Campaigns <a class="permalink" href="#header-view-all-owned-campaigns" aria-hidden="true">¶</a></h3>
+<pre><code class="language-bash">curl -H <span class="hljs-string">'x-access-token: fdsafds'</span> -XGET <span class="hljs-variable">${HOST}</span>/admin/hosted-campaigns</code></pre>
+<p>On success it should return 200 and <code>{&quot;campaigns&quot;: [CAMPAIGN_OBJECTS]}</code>.</p>
+<h3 id="header-view-one-campaign">View One Campaign <a class="permalink" href="#header-view-one-campaign" aria-hidden="true">¶</a></h3>
+<pre><code class="language-bash">curl -H <span class="hljs-string">'x-access-token: fdsafds'</span> -XGET <span class="hljs-variable">${HOST}</span>/admin/hosted-campaigns/<span class="hljs-variable">${ID}</span></code></pre>
+<h3 id="header-update-a-campaigns-on-chain-data">Update a Campaigns On-Chain Data <a class="permalink" href="#header-update-a-campaigns-on-chain-data" aria-hidden="true">¶</a></h3>
+<pre><code class="language-bash">curl -H <span class="hljs-string">'x-access-token: fdsaf'</span> -XPUT <span class="hljs-variable">${HOST}</span>/admin/hosted-campaigns/<span class="hljs-variable">${ID}</span>/on-chain-data -H <span class="hljs-string">'content-type: application/json'</span> --data <span class="hljs-string">'{ "tokenSymbol" : "TFT" }'</span></code></pre>
+<p>Success should return 201. The fields that can be edited are</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tokenSymbol</td>
+<td>String</td>
+<td>The symbol to display on exchanges. Must be latin characters <a href="?">A-Z</a>.</td>
+</tr>
+<tr>
+<td>tokenName</td>
+<td>String</td>
+<td>The long name of the token. Must be latin characters and spaces (?).</td>
+</tr>
+<tr>
+<td>isMinted</td>
+<td>Bool</td>
+<td>If false the hard cap is allocated as intial supply and transfered for purchase. If true the intial supply is 0, the token is minted for each purchase.</td>
+</tr>
+<tr>
+<td>numberOfDecimals</td>
+<td>Number</td>
+<td>Must be an integer between 0 and 18.</td>
+</tr>
+<tr>
+<td>startingTime</td>
+<td>Number</td>
+<td>Unix timestamp (seconds) to start the campaign. Must be at least 24 hours in the future.</td>
+</tr>
+<tr>
+<td>duration</td>
+<td>Number</td>
+<td>The number of days the campaign will run. Must be greater than 1.</td>
+</tr>
+<tr>
+<td>softCap</td>
+<td>String</td>
+<td>The minimum to be raised. Must be greater than 0. The unit is wei, must be an integer.</td>
+</tr>
+<tr>
+<td>hardCap</td>
+<td>String</td>
+<td>The maximum that can be raised. Must be greater than the softCap. The unit is wei, must be an integer.</td>
+</tr>
+<tr>
+<td>rate</td>
+<td>String</td>
+<td>The price of the token. The tokens recieved from a purchase will be Wei _ rate _ 10^-decimals. This must be an integer.</td>
+</tr>
+<tr>
+<td>network</td>
+<td>String</td>
+<td>The name of the network. Only rinkeby is supported now.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="header-update-a-campaigns-off-chain-data">Update a Campaigns Off-Chain Data <a class="permalink" href="#header-update-a-campaigns-off-chain-data" aria-hidden="true">¶</a></h3>
+<pre><code class="language-bash">curl -H <span class="hljs-string">'x-access-token: fdsaf'</span> -XPUT <span class="hljs-variable">${HOST}</span>/admin/hosted-campaigns/<span class="hljs-variable">${ID}</span>/off-chain-data -H <span class="hljs-string">'content-type: application/json'</span> --data <span class="hljs-string">'{ "description" : "My amazing crowdsale" }'</span></code></pre>
+<p>Success should return 201. The fields that can be edited are</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>coverImageURL</td>
+<td>String</td>
+<td>The url for the cover image.</td>
+</tr>
+<tr>
+<td>whitePaperURL</td>
+<td>String</td>
+<td>The url for the white paper.</td>
+</tr>
+<tr>
+<td>description</td>
+<td>String</td>
+<td>A short description of the campaign.</td>
+</tr>
+<tr>
+<td>keywords</td>
+<td>[String]</td>
+<td>A list of keywords for the campaign.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="header-upload-an-cover-image-for-a-campaign">Upload an Cover Image for a Campaign <a class="permalink" href="#header-upload-an-cover-image-for-a-campaign" aria-hidden="true">¶</a></h3>
+<pre><code class="language-bash">curl -H <span class="hljs-string">'x-access-token: fdsaf'</span> -XPOST <span class="hljs-variable">${HOST}</span>/admin/hosted-campaigns/<span class="hljs-variable">${ID}</span>/cover-image -H <span class="hljs-string">'content-type: application/json'</span> --data <span class="hljs-string">'{"extension": "png", "contentType": "image/png" }'</span></code></pre>
+<p>The extension and contentType is optional. Defaults to jpg and image/jpeg.</p>
+<p>On success you should get 201 and <code>{&quot;uploadURL&quot; : &quot;https://tokenadmin.work.s3/fdsafd&quot;, &quot;viewURL&quot;: &quot;fdsa&quot; }</code></p>
+<h3 id="header-upload-a-white-paper-for-a-campaign">Upload a White Paper for a Campaign <a class="permalink" href="#header-upload-a-white-paper-for-a-campaign" aria-hidden="true">¶</a></h3>
+<pre><code class="language-bash">curl -H <span class="hljs-string">'x-access-token: fdsaf'</span> -XPOST <span class="hljs-variable">${HOST}</span>/admin/hosted-campaigns/<span class="hljs-variable">${ID}</span>/white-paper -H <span class="hljs-string">'content-type: application/json'</span> --data <span class="hljs-string">'{"extension": "pdf", "contentType": "application/pdf" }'</span></code></pre>
+<p>The extension and contentType is optional. Defaults to pdf and application/pdf.</p>
+<p>On success you should get 201 and <code>{&quot;uploadURL&quot; : &quot;https://tokenadmin.work.s3/fdsafd&quot;, &quot;viewURL&quot;: &quot;fdsa&quot; }</code></p>
+<h3 id="header-submit-for-review">Submit for Review <a class="permalink" href="#header-submit-for-review" aria-hidden="true">¶</a></h3>
+<p>Once the campaign data has been prepared it may be submitted for review by a system admin.</p>
+<pre><code class="language-bash">curl -H <span class="hljs-string">'x-access-token: fds'</span> -XPOST <span class="hljs-variable">${HOST}</span>/admin/hosted-campaigns/<span class="hljs-variable">${CAMPAIGN_ID}</span>/submit-for-review</code></pre>
+<p>For now the user can force the review to be finalised.</p>
+<pre><code class="language-bash">curl -H <span class="hljs-string">'x-access-token: fds'</span> -XPOST <span class="hljs-variable">${HOST}</span>/admin/hosted-campaigns/<span class="hljs-variable">${CAMPAIGN_ID}</span>/review-passed</code></pre>
+<h3 id="header-cancel-a-submitted-review">Cancel a Submitted Review <a class="permalink" href="#header-cancel-a-submitted-review" aria-hidden="true">¶</a></h3>
+<p>Once a campaign is pending review or reviewed it can be returned to the draft status with cancel.</p>
+<pre><code class="language-bash">curl -H <span class="hljs-string">'x-access-token: fds'</span> -XPOST <span class="hljs-variable">${HOST}</span>/admin/hosted-campaigns/<span class="hljs-variable">${CAMPAIGN_ID}</span>/cancel-review</code></pre>
+<h3 id="header-deploying-a-campaign">Deploying a Campaign <a class="permalink" href="#header-deploying-a-campaign" aria-hidden="true">¶</a></h3>
+<p>Once the review stage is passed the server can prepare a transaction that deploys both token and crowdsale.</p>
+<pre><code class="language-bash">curl -H <span class="hljs-string">'x-access-token: fdsaf'</span> -XPOST <span class="hljs-variable">${HOST}</span>/admin/hosted-campaigns/<span class="hljs-variable">${ID}</span>/deployment-transaction</code></pre>
+<p>This will return a transaction that needs to be sent to the Ethereum network via metamask. The user has to make sure the network is set to the same network as TrustFeed server.</p>
+<p>The returned data will be like this;</p>
+<pre><code class="language-javascript">{
+  transaction: <span class="hljs-string">"0x54AE23..."</span>,
+}</code></pre>
+<p>It can be sent to the Ethereum network with something like this;</p>
+<pre><code class="language-javascript">web3.eth.sendTransaction(
+  {
+    from: <span class="hljs-string">'0XTHE_PUBLIC_ADDRESS_OF_USER'</span>,
+    data: <span class="hljs-string">'0XTHE_TRANSACTION_FROM_ABOVE'</span>
+  }
+)</code></pre>
+<h3 id="header-finalise-a-campaign">Finalise a Campaign <a class="permalink" href="#header-finalise-a-campaign" aria-hidden="true">¶</a></h3>
+<p>The campaign must be past soft cap and the closing time must be in the past.</p>
+<p>First the proposer should request finalisation;</p>
+<pre><code class="language-bash">curl -H <span class="hljs-string">'x-access-token: fdsaf'</span> -XPOST <span class="hljs-variable">${HOST}</span>/admin/hosted-campaigns/<span class="hljs-variable">${ID}</span>/finalise</code></pre>
+<p>This returns the byte code that will submit the transaction to the multisig wallet. Send it to the address of the multisig wallet to intialise the finalisation process. Once this transaction has been seen by the event watcher a trustfeed admin must confirm the transaction and then execute the transaction.</p>
+<p>Next trustfeed must confirm the transaction. From backoffice get the bytecode to confirm and execute the transaction with.</p>
+<pre><code class="language-bash">curl -H <span class="hljs-string">'x-access-token: fdsaf'</span> -XPOST <span class="hljs-variable">${HOST}</span>/trustfeed/finalise-campaign</code></pre>
+<p>This bytecode must be sent to the TrustFeed wallet. Once the event is seen by the event watcher the campaign status will be updated accordingly.</p>
+<h2 id="header-admin-for-external-campaigns">Admin for External Campaigns <a class="permalink" href="#header-admin-for-external-campaigns" aria-hidden="true">¶</a></h2>
+<p>Users can create new external campaigns;</p>
+<pre><code class="language-bash">curl -H <span class="hljs-string">'x-access-token: fdsaf'</span> -XPOST <span class="hljs-variable">${HOST}</span>/admin/external-campaigns -H <span class="hljs-string">'content-type: application/json'</span> --data <span class="hljs-string">'{ "name" : "some campaign" }'</span></code></pre>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>name</td>
+<td>String</td>
+<td>The name of the campaign.</td>
+</tr>
+<tr>
+<td>symbol</td>
+<td>String</td>
+<td>The token symbol.</td>
+</tr>
+<tr>
+<td>description</td>
+<td>String</td>
+<td>A short description of the ICO.</td>
+</tr>
+<tr>
+<td>companyURL</td>
+<td>String</td>
+<td>The URL to the main site of the company.</td>
+</tr>
+<tr>
+<td>whitePaperURL</td>
+<td>String</td>
+<td>A URL to the white paper.</td>
+</tr>
+<tr>
+<td>coverImageURL</td>
+<td>String</td>
+<td>A URL for the image to use as a cover image.</td>
+</tr>
+<tr>
+<td>preICO</td>
+<td>Duration</td>
+<td>The openingTime and closingTime in unix time.</td>
+</tr>
+<tr>
+<td>ico</td>
+<td>Duration</td>
+<td>The openingTime and closingTime in unix time.</td>
+</tr>
+<tr>
+<td>links</td>
+<td>[Link]</td>
+<td>The type and url of any additional links.</td>
+</tr>
+<tr>
+<td>location</td>
+<td>String</td>
+<td>The country in which the company is based.</td>
+</tr>
+<tr>
+<td>team</td>
+<td>[Member]</td>
+<td>A list of the team members (this needs to be improved - members shared between ICOs).</td>
+</tr>
+</tbody>
+</table>
+<p>Users can update external campaigns;</p>
+<pre><code class="language-bash">curl -H <span class="hljs-string">'x-access-token: fdsaf'</span> -XPOST <span class="hljs-variable">${HOST}</span>/admin/external-campaigns/<span class="hljs-variable">${ID}</span> -H <span class="hljs-string">'content-type: application/json'</span> --data <span class="hljs-string">'{ "name" : "some campaign" }'</span></code></pre>
+<p>The data packet is the same as POST.</p>
+<h2 id="header-public-campaign">Public Campaign <a class="permalink" href="#header-public-campaign" aria-hidden="true">¶</a></h2>
+<p>Soon this will only contain active campaigns, not drafts or complete campaigns. For now it shows everything.</p>
+<p>View all public campaigns with;</p>
+<pre><code class="language-bash">curl -H <span class="hljs-string">'x-access-token: fdsa'</span> <span class="hljs-variable">${HOST}</span>/campaigns</code></pre>
+<p>It should return up to 20 campaigns and an offset to use to get the next page if more results are available.</p>
+<pre><code class="language-bash">curl -H <span class="hljs-string">'x-access-token: fdsa'</span> <span class="hljs-variable">${HOST}</span>/campaigns?offset=fdsadfa</code></pre>
+<p>View one campaign with</p>
+<pre><code class="language-bash">curl -H <span class="hljs-string">'x-access-token: fdsa'</span> <span class="hljs-variable">${HOST}</span>/campaigns/<span class="hljs-variable">${CAMPAIGN_ID}</span></code></pre>
+<h2 id="header-investments">Investments <a class="permalink" href="#header-investments" aria-hidden="true">¶</a></h2>
+<p>The current token investments of an account can be viewed with this;</p>
+<pre><code class="language-bash">curl -H <span class="hljs-string">'x-access-token: fdsadf'</span> <span class="hljs-string">'${HOST}/investments?order=symbol&amp;offset=FDSAD'</span></code></pre>
+<p>Order can be; <code>symbol</code> (default), <code>name</code> or <code>owned</code>. If there is more than 20 tokens the response will include <code>nextOffset</code> which can be passed to the query to fetch the next page of tokens.</p>
+<p>This should include all ERC20 tokens purchased after account creation. For hosted campaigns it will included all tokens (even those purchased before account creation).</p>
+<h2 id="header-kyc">KYC <a class="permalink" href="#header-kyc" aria-hidden="true">¶</a></h2>
+<p>To verify our customers (ICO proposer) we will use KYC. The client should upload an image of a passport and an photo of the users face, then request KYC. The KYC should first be reviewed by TrustFeed, then forwarded to onfido. For MVP it will just be verified after 5 minutes.</p>
+<p>Get the URLs to upload;</p>
+<pre><code class="language-bash">curl -XPOST <span class="hljs-variable">${HOST}</span>/kyc/passport-image
+curl -XPOST <span class="hljs-variable">${HOST}</span>/kyc/facial-image</code></pre>
+<p>Submit the KYC request</p>
+<pre><code class="language-bash">curl -XPOST <span class="hljs-variable">${HOST}</span>/kyc -H <span class="hljs-string">'content-type: application/json'</span> --data <span class="hljs-string">'{ "passportImageUrl": "some-url", "facialImageURL": "some-other-url" }'</span></code></pre>
+<p>The user information (fetched at <code>/users</code>) will contain a field kycStatus which may be <code>PENDING</code>, <code>VERIFIED</code> or <code>FAILED</code>.</p>
+<h2 id="header-alternative-payment">Alternative Payment <a class="permalink" href="#header-alternative-payment" aria-hidden="true">¶</a></h2>
+<p>Request a transaction to be created for the given campaign, token amount and currency.</p>
+<pre><code class="language-bash">curl -XPOST <span class="hljs-variable">${HOST}</span>/campaigns/<span class="hljs-variable">${ID}</span>/alternative-payment -H <span class="hljs-string">'content-type: application/json'</span> --data <span class="hljs-string">'{ "currency": "BTC", "tokensToPurchase": "2343252" }'</span></code></pre>
+<p>Supported currencies; <code>BTC</code>, <code>LTC</code>. The <code>tokensToPurchase</code> should be a string representing an integer in the tokens decimals - like wei.</p>
+<p>The returned packed should include;</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>amount</td>
+<td>String</td>
+<td>The amount the payer must transfer in their chosen currency.</td>
+</tr>
+<tr>
+<td>transactionId</td>
+<td>String</td>
+<td>The id as generated by coin payments.</td>
+</tr>
+<tr>
+<td>address</td>
+<td>String</td>
+<td>The address into which funds should be transferred.</td>
+</tr>
+<tr>
+<td>confirmsNeeded</td>
+<td>String</td>
+<td>The number of confirmations required before transfer is made.</td>
+</tr>
+<tr>
+<td>timeout</td>
+<td>Number</td>
+<td>The number of seconds for which the transfer can be made.</td>
+</tr>
+<tr>
+<td>statusURL</td>
+<td>String</td>
+<td>Check the status via coin payments.</td>
+</tr>
+<tr>
+<td>qrCodeURL</td>
+<td>String</td>
+<td>Generate a QR code (via coin payments).</td>
+</tr>
+<tr>
+<td>currency</td>
+<td>String</td>
+<td>The currency to make the payment in.</td>
+</tr>
+<tr>
+<td>tokenTransferFee</td>
+<td>String</td>
+<td>The estimated gas cost to perform transfer (in wei). This is already included in the amount.</td>
+</tr>
+</tbody>
+</table>
+<h1 id="header-trustfeed-admin-apis">TrustFeed Admin APIs <a class="permalink" href="#header-trustfeed-admin-apis" aria-hidden="true">¶</a></h1>
+<p>These APIs are only availalbe when logged in with <code>TRUSTFEED_ADDRESS</code>. They allow the TrustFeed to accept new campaigns, pre-validate KYC to then be forwarded to an external service, and to sign multisig operations such as finalise campaign.</p>
+<h2 id="header-campaings-to-review">Campaings to review <a class="permalink" href="#header-campaings-to-review" aria-hidden="true">¶</a></h2>
+<p>Get a list of campaigns that need to be reviewed;</p>
+<pre><code><span class="hljs-title">bash</span> -XGET -H <span class="hljs-string">'x-access-token: fdsa'</span> <span class="hljs-variable">${HOST}</span>/trustfeed/campaigns-pending-review</code></pre>
+<h2 id="header-campaings-review">Campaings Review <a class="permalink" href="#header-campaings-review" aria-hidden="true">¶</a></h2>
+<p>To post the status of a reviewed campaign;</p>
+<p>A passed review;</p>
+<pre><code>bash -<span class="hljs-type">XPOST</span> -<span class="hljs-type">H</span> <span class="hljs-symbol">'x</span>-access-token: fdsa' ${<span class="hljs-type">HOST</span>}/trustfeed/campaign-review -<span class="hljs-type">H</span> <span class="hljs-symbol">'content</span>-<span class="hljs-class"><span class="hljs-keyword">type</span>:</span> application/json' --data '{ <span class="hljs-string">"campaignID"</span>: <span class="hljs-string">"fdsaf"</span>, <span class="hljs-string">"isValid"</span>: <span class="hljs-literal">true</span> }'</code></pre>
+<p>A failed review;</p>
+<pre><code>bash -<span class="hljs-type">XPOST</span> -<span class="hljs-type">H</span> <span class="hljs-symbol">'x</span>-access-token: fdsa' ${<span class="hljs-type">HOST</span>}/trustfeed/campaign-review -<span class="hljs-type">H</span> <span class="hljs-symbol">'content</span>-<span class="hljs-class"><span class="hljs-keyword">type</span>:</span> application/json' --data '{ <span class="hljs-string">"campaignID"</span>: <span class="hljs-string">"fdsaf"</span>, <span class="hljs-string">"isValid"</span>: <span class="hljs-literal">false</span>, <span class="hljs-string">"note"</span> : <span class="hljs-string">"Some explination of failure"</span> }'</code></pre>
+<h2 id="header-kyc-applications-to-review">KYC Applications to review <a class="permalink" href="#header-kyc-applications-to-review" aria-hidden="true">¶</a></h2>
+<p>Get a list of KYC applications that need to be reviewed;</p>
+<pre><code><span class="hljs-title">bash</span> -XGET -H <span class="hljs-string">'x-access-token: fdsa'</span> <span class="hljs-variable">${HOST}</span>/trustfeed/kycs-pending-review</code></pre>
+<h2 id="header-kyc-review">KYC Review <a class="permalink" href="#header-kyc-review" aria-hidden="true">¶</a></h2>
+<p>To post the status of a reviewed KYC;</p>
+<p>A passed review;</p>
+<pre><code>bash -<span class="hljs-type">XPOST</span> -<span class="hljs-type">H</span> <span class="hljs-symbol">'x</span>-access-token: fdsa' ${<span class="hljs-type">HOST</span>}/trustfeed/kyc-review-<span class="hljs-type">H</span> <span class="hljs-symbol">'content</span>-<span class="hljs-class"><span class="hljs-keyword">type</span>:</span> application/json' --data '{ <span class="hljs-string">"kycID"</span>: <span class="hljs-string">"fdsaf"</span>, <span class="hljs-string">"isValid"</span>: <span class="hljs-literal">true</span> }'</code></pre>
+<p>This should just forward to application to some third party. For now this is the only validation that is done.</p>
+<p>A failed review;</p>
+<pre><code>bash -<span class="hljs-type">XPOST</span> -<span class="hljs-type">H</span> <span class="hljs-symbol">'x</span>-access-token: fdsa' ${<span class="hljs-type">HOST</span>}/trustfeed/kyc-review -<span class="hljs-type">H</span> <span class="hljs-symbol">'content</span>-<span class="hljs-class"><span class="hljs-keyword">type</span>:</span> application/json' --data '{ <span class="hljs-string">"kycID"</span>: <span class="hljs-string">"fdsaf"</span>, <span class="hljs-string">"isValid"</span>: <span class="hljs-literal">false</span>, <span class="hljs-string">"note"</span> : <span class="hljs-string">"Some explination of failure"</span> }'</code></pre>
+</div></div></div><p style="text-align: center;" class="text-muted">Generated by&nbsp;<a href="https://github.com/danielgtaylor/aglio" class="aglio">aglio</a>&nbsp;on 01 Nov 2018</p><script>/* eslint-env browser */
+/* eslint quotes: [2, "single"] */
+'use strict';
+
+/*
+  Determine if a string ends with another string.
+*/
+function endsWith(str, suffix) {
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
+}
+
+/*
+  Get a list of direct child elements by class name.
+*/
+function childrenByClass(element, name) {
+  var filtered = [];
+
+  for (var i = 0; i < element.children.length; i++) {
+    var child = element.children[i];
+    var classNames = child.className.split(' ');
+    if (classNames.indexOf(name) !== -1) {
+      filtered.push(child);
+    }
+  }
+
+  return filtered;
+}
+
+/*
+  Get an array [width, height] of the window.
+*/
+function getWindowDimensions() {
+  var w = window,
+      d = document,
+      e = d.documentElement,
+      g = d.body,
+      x = w.innerWidth || e.clientWidth || g.clientWidth,
+      y = w.innerHeight || e.clientHeight || g.clientHeight;
+
+  return [x, y];
+}
+
+/*
+  Collapse or show a request/response example.
+*/
+function toggleCollapseButton(event) {
+    var button = event.target.parentNode;
+    var content = button.parentNode.nextSibling;
+    var inner = content.children[0];
+
+    if (button.className.indexOf('collapse-button') === -1) {
+      // Clicked without hitting the right element?
+      return;
+    }
+
+    if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+        // Currently showing, so let's hide it
+        button.className = 'collapse-button';
+        content.style.maxHeight = '0px';
+    } else {
+        // Currently hidden, so let's show it
+        button.className = 'collapse-button show';
+        content.style.maxHeight = inner.offsetHeight + 12 + 'px';
+    }
+}
+
+function toggleTabButton(event) {
+    var i, index;
+    var button = event.target;
+
+    // Get index of the current button.
+    var buttons = childrenByClass(button.parentNode, 'tab-button');
+    for (i = 0; i < buttons.length; i++) {
+        if (buttons[i] === button) {
+            index = i;
+            button.className = 'tab-button active';
+        } else {
+            buttons[i].className = 'tab-button';
+        }
+    }
+
+    // Hide other tabs and show this one.
+    var tabs = childrenByClass(button.parentNode.parentNode, 'tab');
+    for (i = 0; i < tabs.length; i++) {
+        if (i === index) {
+            tabs[i].style.display = 'block';
+        } else {
+            tabs[i].style.display = 'none';
+        }
+    }
+}
+
+/*
+  Collapse or show a navigation menu. It will not be hidden unless it
+  is currently selected or `force` has been passed.
+*/
+function toggleCollapseNav(event, force) {
+    var heading = event.target.parentNode;
+    var content = heading.nextSibling;
+    var inner = content.children[0];
+
+    if (heading.className.indexOf('heading') === -1) {
+      // Clicked without hitting the right element?
+      return;
+    }
+
+    if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+      // Currently showing, so let's hide it, but only if this nav item
+      // is already selected. This prevents newly selected items from
+      // collapsing in an annoying fashion.
+      if (force || window.location.hash && endsWith(event.target.href, window.location.hash)) {
+        content.style.maxHeight = '0px';
+      }
+    } else {
+      // Currently hidden, so let's show it
+      content.style.maxHeight = inner.offsetHeight + 12 + 'px';
+    }
+}
+
+/*
+  Refresh the page after a live update from the server. This only
+  works in live preview mode (using the `--server` parameter).
+*/
+function refresh(body) {
+    document.querySelector('body').className = 'preload';
+    document.body.innerHTML = body;
+
+    // Re-initialize the page
+    init();
+    autoCollapse();
+
+    document.querySelector('body').className = '';
+}
+
+/*
+  Determine which navigation items should be auto-collapsed to show as many
+  as possible on the screen, based on the current window height. This also
+  collapses them.
+*/
+function autoCollapse() {
+  var windowHeight = getWindowDimensions()[1];
+  var itemsHeight = 64; /* Account for some padding */
+  var itemsArray = Array.prototype.slice.call(
+    document.querySelectorAll('nav .resource-group .heading'));
+
+  // Get the total height of the navigation items
+  itemsArray.forEach(function (item) {
+    itemsHeight += item.parentNode.offsetHeight;
+  });
+
+  // Should we auto-collapse any nav items? Try to find the smallest item
+  // that can be collapsed to show all items on the screen. If not possible,
+  // then collapse the largest item and do it again. First, sort the items
+  // by height from smallest to largest.
+  var sortedItems = itemsArray.sort(function (a, b) {
+    return a.parentNode.offsetHeight - b.parentNode.offsetHeight;
+  });
+
+  while (sortedItems.length && itemsHeight > windowHeight) {
+    for (var i = 0; i < sortedItems.length; i++) {
+      // Will collapsing this item help?
+      var itemHeight = sortedItems[i].nextSibling.offsetHeight;
+      if ((itemsHeight - itemHeight <= windowHeight) || i === sortedItems.length - 1) {
+        // It will, so let's collapse it, remove its content height from
+        // our total and then remove it from our list of candidates
+        // that can be collapsed.
+        itemsHeight -= itemHeight;
+        toggleCollapseNav({target: sortedItems[i].children[0]}, true);
+        sortedItems.splice(i, 1);
+        break;
+      }
+    }
+  }
+}
+
+/*
+  Initialize the interactive functionality of the page.
+*/
+function init() {
+    var i, j;
+
+    // Make collapse buttons clickable
+    var buttons = document.querySelectorAll('.collapse-button');
+    for (i = 0; i < buttons.length; i++) {
+        buttons[i].onclick = toggleCollapseButton;
+
+        // Show by default? Then toggle now.
+        if (buttons[i].className.indexOf('show') !== -1) {
+            toggleCollapseButton({target: buttons[i].children[0]});
+        }
+    }
+
+    var responseCodes = document.querySelectorAll('.example-names');
+    for (i = 0; i < responseCodes.length; i++) {
+        var tabButtons = childrenByClass(responseCodes[i], 'tab-button');
+        for (j = 0; j < tabButtons.length; j++) {
+            tabButtons[j].onclick = toggleTabButton;
+
+            // Show by default?
+            if (j === 0) {
+                toggleTabButton({target: tabButtons[j]});
+            }
+        }
+    }
+
+    // Make nav items clickable to collapse/expand their content.
+    var navItems = document.querySelectorAll('nav .resource-group .heading');
+    for (i = 0; i < navItems.length; i++) {
+        navItems[i].onclick = toggleCollapseNav;
+
+        // Show all by default
+        toggleCollapseNav({target: navItems[i].children[0]});
+    }
+}
+
+// Initial call to set up buttons
+init();
+
+window.onload = function () {
+    autoCollapse();
+    // Remove the `preload` class to enable animations
+    document.querySelector('body').className = '';
+};
+</script></body></html>
