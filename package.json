@@ -1,9 +1,9 @@
 {
-  "name": "crowdsale-api",
+  "name": "daobase-api",
   "version": "1.0.0",
   "description": "The easiest ICOs possible.",
   "main": "index.js",
-  "repository": "github.com/trustfeed/crowdsale-api",
+  "repository": "github.com/trustfeed/daobase-api",
   "author": "James Wetter <wetter.j@gmail.com>",
   "license": "?",
   "scripts": {
