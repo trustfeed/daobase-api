@@ -3,47 +3,118 @@ HOST: http://api-staging.daobaase.io/v1
 
 # daobase-api
 
-## Sign In/Sign Up
+## Nonce [/nonce]
 
-Try to sign in;
+### Get Nonce of ETH Public Address [GET]
+response nonce of eth public address. if the public address is not registered, it return a 404
+
++ Parameters
+	+ publicAddress (string) 
+
++ Response 200 (application/json)
+		{
+			"nonce" : "4213"
+		}
+
++ Example
 
 ```bash
 curl -XGET ${HOST}/nonce?publicAddress=${addr}
 ```
 
-This returns 200 with the data `{ "nonce": "4213" }`. If the public address is not registered it returns a 404.
+## Users [/users]
 
-If the address is not found create the account;
+### Sign Up [POST]
++ Request (application/json)
+	{
+		"publicAddress": "${addr}"
+	}
+
+	+ SignIn
+
+	{
+		"publicAddress": "${addr}",
+		"signature": "${sig}"
+	}
+		
++ Response 201 (application/json)
+
+	{
+		"nonce" : "4323523"
+	}
+
++ Example
 
 ```bash
 curl -XPOST ${HOST}/users -h 'content-type: application/json' --data '{"publicAddress" : ${addr}}'
 ```
 
-This returns 201 with the data `{ "nonce" : "4323523" }`.
+## User Details [/users/:id]
 
-Sign the nonce with metamask and post to auth;
-
-```bash
-curl -XPOST ${HOST}/auth -h 'content-type: application/json' --data '{ "publicAddress" : ${addr}, "signature" : ${sig} }'
-```
-
-This should return an access token.
-
-## User Details
-
+### Get User Details [GET]
 When logged in you can get the current user data from here
+
++ Headers 
+	+ x-access-token: ${x-access-token} 
+
++ Response 200 (application/json)
+
+	{
+	}
+
++ Example
 
 ```bash
 curl -H 'x-access-token: fdsa' -XGET ${HOST}/users
 ```
 
-You can then update the name and email address with this;
+### Update User Details [PATCH]
+You can then update the name and email address with this.
+The verification email will only be sent if the email address is different from the current account. Resend of verification will be forced via a different endpoint.
+
++ Headers 
+	+ x-access-token: ${x-access-token} 
+
++ Request (application/json)
+	
+	{
+	
+	}
+
++ Response 200 (application/json)
+
+	{
+	}
+
++ Example
 
 ```bash
-curl -XPUT ${HOST}/users/${ID} -H 'x-access-token: fdsa' -H 'content-type: application/json' --data '{"name": "James", "email": "wetter.j@gmail.com" }'
+curl -XPATCH ${HOST}/users/${ID} -H 'x-access-token: fdsa' -H 'content-type: application/json' --data '{"name": "James", "email": "wetter.j@gmail.com" }'
 ```
 
-The verification email will only be sent if the email address is different from the current account. Resend of verification will be forced via a different endpoint.
+
+## AUTH [/auth]
+### Authentication(Sign in)[POST]
+Sign the nonce with metamask and post to auth;
++ Request (application/json)
+
+	{
+		"publicAddress": "${addr}",
+		"signature": "${sig}"
+	}
+
+
++ Response 200 (application/json)
+
+	{
+		"":""
+	}
+
++ Example
+
+```bash
+curl -XPOST ${HOST}/auth -h 'content-type: application/json' --data '{ "publicAddress" : ${addr}, "signature" : ${sig} }'
+```
 
 ## Verify Email Address
 
@@ -58,12 +129,6 @@ The token will be provided as part of the emailed link. The token is valid for 2
 The response will include a field type which will be one of; `SUCCESS`, `INVALID_TOKEN`, `EXPIRED_TOKEN` or `VERIFIED_TOKEN`.
 
 ## Admin Hosted Campaigns
-
-These APIs are to create, modify and deploy campaigns on the platform. The user must be logged in. Include the JWT in the header as 'x-access-token'.
-
-The possible status for a campaign are as follows.
-
-![Daobase States](../master/images/states.png?raw=true)
 
 ### Create a new campaign
 
