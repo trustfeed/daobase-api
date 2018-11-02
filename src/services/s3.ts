@@ -22,7 +22,7 @@ export class S3Service {
   ): Promise<string> {
     let rand = (+new Date()).toString(36);
     const params = {
-      Bucket: 'tokenadmin.work',
+      Bucket: 'daobase',
       Key: prefix + '/' + id + '-' + rand + '.' + extension,
       Expires: 60,
       ContentType: contentType

@@ -131,7 +131,7 @@ curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/hosted-campaigns/${ID}/cove
 
 The extension and contentType is optional. Defaults to jpg and image/jpeg.
 
-On success you should get 201 and `{"uploadURL" : "https://tokenadmin.work.s3/fdsafd", "viewURL": "fdsa" }`
+On success you should get 201 and `{"uploadURL" : "https://daobase.s3/fdsafd", "viewURL": "fdsa" }`
 
 ### Upload a White Paper for a Campaign
 
@@ -141,7 +141,7 @@ curl -H 'x-access-token: fdsaf' -XPOST ${HOST}/admin/hosted-campaigns/${ID}/whit
 
 The extension and contentType is optional. Defaults to pdf and application/pdf.
 
-On success you should get 201 and `{"uploadURL" : "https://tokenadmin.work.s3/fdsafd", "viewURL": "fdsa" }`
+On success you should get 201 and `{"uploadURL" : "https://daobase.s3/fdsafd", "viewURL": "fdsa" }`
 
 ### Submit for Review
 
