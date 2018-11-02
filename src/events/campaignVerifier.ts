@@ -26,7 +26,7 @@ export class CampaignVerifier extends EventWatcher {
   }
 
   // Internal function that checks validity of creation event
-  private async verifyRegistyEvent(registryEvent) {
+  private async verifyRegistryEvent(registryEvent) {
     const returnValues = this.web3.eth.abi.decodeParameters(
       ['address', 'string'],
       registryEvent.data);
@@ -64,13 +64,13 @@ export class CampaignVerifier extends EventWatcher {
   // Scrape old events in chuncks.
   private async scrape() {
     const processLog = log => {
-      return this.verifyRegistyEvent(log).catch(e => console.log(e.message));
+      return this.verifyRegistryEvent(log).catch(e => console.log(e.message));
     };
 
     while (this.scrapedTo <= (await this.web3.eth.getBlockNumber())) {
       let to = this.scrapedTo + this.chunckSize;
       let logs = await this.web3.eth.getPastLogs({
-	// TODO: Does the wider window help.
+	      // TODO: Does the wider window help.
         fromBlock: this.web3.utils.toHex(this.scrapedTo - 1),
         toBlock: this.web3.utils.toHex(to + 1),
         topics: [this.web3.utils.sha3('NewCampaign(address,string)')]
@@ -98,7 +98,7 @@ export class CampaignVerifier extends EventWatcher {
   // Process a registry event
   protected async processEvent(registryEvent) {
     console.log(registryEvent);
-    this.verifyRegistyEvent(registryEvent).catch(err => {
+    this.verifyRegistryEvent(registryEvent).catch(err => {
       console.log('registry event failed to verify:', err.message);
     });
   }
