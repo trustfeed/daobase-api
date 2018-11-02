@@ -8,11 +8,9 @@ const config = {
   mongoDBName: process.env.MONGO_DB_NAME || 'daobase-dev',
 
   port: process.env.PORT || 8080,
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  accessKeyId: process.env.AWS_ACCESS_KEY,
+  secretAccessKey: process.env.AWS_SECRET_KEY,
   region: process.env.AWS_REGION,
-  mailgunApiKey: process.env.MAILGUN_API_KEY,
-  mailgunDomain: process.env.MAILGUN_DOMAIN || 'mg.trustfeed.io',
   infuraURL: process.env.INFURA_HOST || 'wss://rinkeby.infura.io/ws',
 
   trustfeedWalletAddress: process.env.TRUSTFEED_WALLET_ADDRESS || '0x69322f30F350Ac28c5336a87406C0593f11fFF9a',

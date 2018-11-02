@@ -92,10 +92,8 @@ export class CoinPaymentsService {
     const gasCost = Web3.utils.toBN(transaction.transferFee);
     const gasPrice = Web3.utils.toBN(transaction.gasPrice);
     const gas = gasCost.div(gasPrice);
-    const value = Web3.utils.toBN(Web3.utils.toWei(transaction.etherAmount))
-      .sub(gasCost);
-    const buyTokens = await contract.methods
-      .buyTokens(transaction.userAddress);
+    const value = Web3.utils.toBN(Web3.utils.toWei(transaction.etherAmount)).sub(gasCost);
+    const buyTokens = await contract.methods.buyTokens(transaction.userAddress);
     const coinPaymentsAccount = this.web3Service.coinPaymentsAccount();
     let tx = await coinPaymentsAccount.signTransaction({
       data: buyTokens.encodeABI(),
