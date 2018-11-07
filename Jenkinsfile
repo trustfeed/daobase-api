@@ -26,10 +26,7 @@ pipeline {
   stages {
     stage('Build image') {
       when {
-        anyOf {
-          branch 'master'
-          branch 'staging'
-	}
+        branch 'staging'
       }
       steps {
         script {
@@ -40,10 +37,7 @@ pipeline {
     }
     stage('Push image') {
       when {
-        anyOf {
-          branch 'master'
-          branch 'staging'
-	}
+        branch 'staging'
       }
       steps {
         script {
@@ -55,10 +49,7 @@ pipeline {
     }
     stage('Delete local image') {
       when {
-        anyOf {
-          branch 'master'
-          branch 'staging'
-	}
+        branch 'staging'
       }
       steps {
         script {
@@ -68,10 +59,7 @@ pipeline {
     }
     stage('Deploy') {
       when {
-        anyOf {
-          branch 'master'
-          branch 'staging'
-        }
+        branch 'staging'
       }
       steps {
         kubernetesDeploy(kubeconfigId: 'k8s-trustfeed', configs: deploymentScript, enableConfigSubstitution: true)
